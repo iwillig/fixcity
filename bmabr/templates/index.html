@@ -1,0 +1,166 @@
+{% extends "base.html" %} 
+{% block title %} fixcity.org {% endblock %} 
+
+{% block header %} 
+
+<script src="/site_media/openlayers/OpenLayers.js"></script>
+<script defer="defer" type="text/javascript">
+    var map, layer, select;
+    var options = {
+            projection: new OpenLayers.Projection("EPSG:900913"),
+	    displayProjection: new OpenLayers.Projection("EPSG:4326"),
+	    units: "m",
+	    numZoomLevels:19,
+            maxResolution: 156543.03390625,
+	    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+					     20037508.34, 20037508.34)
+	   };
+
+        function loadMap(){
+	map = new OpenLayers.Map('map',options);
+
+	var osm = new OpenLayers.Layer.WMS(
+                 "OpenStreetMap",
+                 "http://maps.opengeo.org/geoserver/gwc/service/wms",   
+       {
+            layers: "openstreetmap", 
+            format: "image/png",
+            bgcolor: '#A1BDC4'
+            }, 
+            {wrapDateLine: true} 
+        );
+    
+	var style = new OpenLayers.Style({
+                    pointRadius: "${radius}",
+		    fillColor: "#DFABAB",
+                    strokeColor: "#8147ad",
+                    strokeWidth: 2,
+                    strokeOpacity: 0.8
+		    
+                }, {
+                    context: {
+                        radius: function(feature) {
+                            return Math.min(feature.attributes.count, 7) + 5;
+                        }
+                    }
+                });
+
+
+	var racks = new OpenLayers.Layer.Vector("Racks", {
+		    projection: map.displayProjection,
+                    strategies: [
+                        new OpenLayers.Strategy.Fixed(),
+                        new OpenLayers.Strategy.Cluster()
+                    ],		  
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: "./rack/requested.kml",
+                        params: {		     
+				
+                        },
+                        format: new OpenLayers.Format.KML()
+                    }),
+                    styleMap: new OpenLayers.StyleMap({
+                        "default": style,
+                        "select": {
+                            fillColor: "#8aeeef",
+                            strokeColor: "#32a8a9"
+                        }
+                    })
+
+                });
+    
+        map.addLayers([osm,racks]);
+
+
+        var bounds = new OpenLayers.Bounds{{rack_extent}} ; 
+	bounds.transform(map.displayProjection, map.projection); 
+        map.zoomToExtent(bounds); 
+        }
+
+
+</script>
+
+<script type="text/javascript" src="/site_media/jquery.js"></script>
+<script type="text/javascript" src="/site_media/corner/jquery.corners.js"></script>
+<script type="text/javascript">
+ $(document).ready(function() {
+       $("#tip-control").click(function () {
+      $("#tip").toggle();
+    });
+    $('#menu li').corners('top','10px');
+    $('#tip-con').corners('top','10px');
+
+    loadMap();
+
+ });
+</script>
+
+{% endblock %}
+
+{% block menu %} 
+<ul id="menu">
+  <li class="active">
+    <a href="/">(1) REQUEST</a>
+    <p> Request a bike rack </p>
+  </li>
+  <li class="arrow"> </li>
+  <li>
+    <a href="/assess/">(2) ASSESS</a>
+    <p> Assess current requested locations </p>
+  </li>
+  <li class="arrow"> </li>
+  <li>
+    <a href="/submit/">(3) SUBMIT</a>
+    <p> Submit your request to the DOT </p>
+  </li>
+  <li class="arrow"> </li>
+  <li>
+    <a href="/built/"> (4) BUILT</a>
+    <p> See racks aready built </p>
+  </li>
+</ul>
+{% endblock %}
+
+
+{% block content %} 
+  <div id="page-title">
+    <h2 class="title">Home Page</h2>
+    <div id="tip-con"> 
+      <h3 id="tip-control">Tips and help click to view</h3>
+      <div id="tip">
+	<h4>Lily, we need some tips</h4>
+	<p> Vivamus tincidunt tristique urna. Ut id justo quis nulla gravida feugiat. In hac habitasse platea dictumst. Nam dictum molestie orci. Suspendisse potenti. Nam a odio in nulla ultricies venenatis. Pellentesque ac tellus. Sed dignissim quam vel orci. Proin nulla orci, auctor nec, tempus euismod, consectetur cursus, metus. Curabitur sagittis pellentesque felis. </p>
+      </div> 
+    </div>
+  </div>
+  <div id="map-con">
+    <h4>Find location by community board</h4>
+    <a href="#">Select by Community Board </a>
+    <div id="cbmenu">
+      {% for comunityboard in communityboard_list %}
+      <a href="#">{{comunityboard.name}}</a>
+      {% endfor %}
+    </div>
+    <div id="map"> 
+    </div>
+  </div>
+  
+  <div id="activity-con">
+    <h3>Welcome to our site</h3>
+    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ac sem id justo sodales suscipit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc condimentum iaculis nisl. Aenean id purus ut tellus commodo tincidunt. Praesent orci magna, pulvinar vel, tempus ut, semper et, nibh. Sed erat. Aliquam ornare odio a nulla. Vivamus vel justo id mi sodales fringilla. Integer varius turpis in augue. Maecenas adipiscing tortor at velit. Duis sed nunc at velit sollicitudin elementum. Vivamus sem. Sed commodo. Sed vulputate. Maecenas tempus dapibus lorem. Duis eget enim nec dolor luctus pharetra. Nunc et arcu.</p>
+    <hr />
+    <div id="search-con"> 
+      <h4> Find request location by text search </h4>
+      <div class="search"> 
+	<form action="rack/new/" method="get"> 
+	  <p> Search for location <strong><a href="rack/new/?address=Brooklyn%2C+NY%2C+11238">Brooklyn, NY, 11238</a></strong></p>
+	  <input type="text"  name="address" /> 
+	  <input type="submit" value="Search for location"> 
+	</form>
+      </div> 
+    </div>
+  </div>
+{% endblock %} 
+
+
+

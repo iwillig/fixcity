@@ -1,0 +1,16 @@
+{% extends "base.kml" %}
+{% block placemarks %}
+
+{% for rack in racks %}
+  <Placemark>
+
+    <name>{{rack.id}}</name>
+    <description>{{rack.meta}}}</description>
+
+    {% autoescape off %}
+    {{rack.location.kml}}    
+    {% endautoescape %}	
+
+  </Placemark>
+{% endfor %}{% endblock %}
+

@@ -1,0 +1,77 @@
+body { } 
+.login-con {  }
+.container { background:#a0b1d2; min-height: 650px; 
+border: 5px solid #808080 ; }
+.container h1 { margin: 10px;  } 
+
+.content { background: #eee ; min-height: 550px;}
+h1 { color: #672258 ; }
+p { margin: 0px; } 
+div#header { width: 100% ; height: 60px; }
+
+div#page-title { padding: 10px;  } 
+h2.title { float: left ; }
+
+div#activity-con { width: 510px;padding: 10px;}
+
+div#map-con {float: right ; width: 540px; padding: 10px;}
+
+div#map {background: #eee; height: 400px; width: 540px; margin: 10px; }
+
+div#location-rack-map { height: 200px; } 
+
+#tip-con {margin-left:540px; width: 540px;background:#ba4747;height: 40px;color: white ; 
+text-align: center ; 
+}
+#top-control {margin: 5px; }
+#tip {width: 540px;background:#ff9900 ; display: none ; opacity: .9 ; position:absolute; 
+height: 400px;
+z-index: 30000;}
+#tip p {margin: 10px;}
+#tip h4 {margin: 10px;}
+
+#cbmenu { 
+display: none ; 
+} 
+
+div#request-map {height: 500px; width: 540px;}
+
+div#overview-map { height: 200px;width: 540px; }
+div#overview-about { margin: 10px;width: 500px;min-height: 300px;}
+div#overview-meta { margin: 10px; padding: 10px; }
+div#overview-comment { margin: 10px; padding: 10px; }
+
+ul.comments { margin: 10px; width: 600px; }
+
+ul#menu {margin-left: 40px; margin-bottom: 0px;padding: 5px;}
+#menu li { float: left; list-style: none ; 
+padding-left: 10px; padding-right: 10px; padding-top: 10px;
+}
+
+#menu li a { font-size: 150% ;} 
+.active { background: #eee; height: 50px; }
+
+#newrack button { font-size: 200% ;  margin: 10px;}
+div#search-con {width: 300px;}
+div.feeds h3 { background: #eee ; } 
+ul.feed { margin: 0px;}
+.feed li { list-style: none; margin: 5px;}
+div.formwrapper { border-bottom: 2px dashed #808080 ; padding: 10px;}
+#location {  display: none ; }
+.errorlist { background: red ; color: white ; font-weight: bold ; }
+
+.arrow { height: 50px; width: 50px; background: url(images/arrow-next.png);
+background-position: center center; 
+background-repeat: no-repeat ;  
+margin: 0 auto ; }
+div.form-header {}
+#id_status { display: none; } 
+a.title { color: #672258; text-decoration:none;}
+
+
+.request { background: #dfabab; }
+.pendding { background: #abdeab; }
+.built { background: #ababde; }
+
+#id_rack { display: none; }
+

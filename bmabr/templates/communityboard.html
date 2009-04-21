@@ -1,0 +1,26 @@
+{% extends "buildmeabikerack/base.html" %}
+{% block title %} buildmeabikerack - community board  {% endblock %}
+
+{% block header %} 
+
+
+
+{% endblock %}
+
+{% block content %}
+
+    {% for comunityboard in communityboard_list  %} 
+    <h2>Community Board {{comunityboard.name}}</h2>    
+    <h4>{{comunity_board.neighborhoods}}</h4>     
+    {% endfor %}
+
+  </div>
+
+{% endblock %}
+
+
+
+
+
+
+

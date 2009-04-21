@@ -1,0 +1,10 @@
+
+
+Overview for fxicity.org and build me a bike rack. 
+================================================== 
+
+
+This is a (geo)django based application that allows citizens to
+request bike racks in the community. It makes extensive use of
+PostGIS, Geos, and OpenLayers. For more information on this mapping libaries
+please see their

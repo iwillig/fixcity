@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+`  <title>{% block title %} {% endblock %}</title> 
+     <!-- Framework CSS -->
+     <link rel="stylesheet" href="/site_media/blueprint/screen.css" type="text/css" media="screen, projection">
+     <link rel="stylesheet" href="/site_media/bmabr.css" type="text/css" media=" screen, projection">
+     <!--[if IE]><link rel="stylesheet" href="site_media/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+
+     {% block header %} 
+
+
+     {% endblock %}
+
+  </head>
+  <body>
+   <div class="container">
+     <h1><a class="title" href="/">BUILD A BIKE RACK</a></h1>
+     <div id="header">
+     {% block menu %}
+     {% endblock %}
+     </div>
+     <div class="content">
+       {% block content %}{% endblock %}
+     </div>
+   </div>
+  </body>
+</html> 
+

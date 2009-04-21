@@ -1,0 +1,39 @@
+{% extends "buildmeabikerack/base.html" %} 
+{% block title %} Buildmeabikerack - Home {% endblock %} 
+
+{% block menu %} 
+<div id="header">
+  <ul id="menu" class="span-20"> 
+    <li><a href="/">index</a></li> 
+    <li class="active"><a href="/neighborhoods/">view requests by neighborhoods</a></li> 
+    <li><a href="/comunityboard/">view requests by community board</a></li> 
+  </ul>
+  <div id="login-control" class="span-20">     
+  </div>
+
+</div>
+<hr />
+{% endblock %} 
+
+
+
+{% block content %} 
+{% regroup neighborhood_list|dictsort:"city" by city as neighborhood_group %}
+{% for city in neighborhood_group %} 
+
+<div class="span-12">
+  <h3> {{city.grouper}} </h3> 
+</div>
+
+<div class="span-12">
+{% for item in city.list %} 
+     <div class="span-3 last"><a href="#"> {{item.name}}</a></div>
+{% endfor %} 
+
+</div>
+{% endfor %} 
+
+{% endblock %} 
+
+
+

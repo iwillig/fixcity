@@ -1,0 +1,173 @@
+{% extends "base.html" %} 
+{% block title %} fixcity - add new rack {% endblock %} 
+
+{% block header %} 
+<script src="/site_media/openlayers/OpenLayers.js"></script>
+<script defer="defer" type="text/javascript">
+        var map, layer;
+         var options = {
+            projection: new OpenLayers.Projection("EPSG:900913"),
+	    displayProjection: new OpenLayers.Projection("EPSG:4326"),
+	    units: "m",
+	    numZoomLevels:20,
+	    maxResolution: 156543.03390625,
+	    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+					     20037508.34, 20037508.34)
+	   };
+	
+	format = "image/png"; 
+
+        function init(){
+	map = new OpenLayers.Map('request-map',options);
+       
+	var osm = new OpenLayers.Layer.WMS(
+                 "OpenStreetMap",
+                 "http://maps.opengeo.org/geoserver/gwc/service/wms",   
+	 {
+             layers: "openstreetmap", 
+             format: "image/png",
+             bgcolor: '#A1BDC4'
+             }, 
+             {wrapDateLine: true} 
+          );
+    
+	var location_wkt = "POINT({{lng}} {{lat}})"; 
+	console.log(location_wkt); 
+	document.getElementById('location').innerHTML = location_wkt ; 
+
+
+	var markers = new OpenLayers.Layer.Markers("Markers");
+	map.addLayer(markers);       
+	var point = new OpenLayers.LonLat({{lng}},{{lat}});       
+	point.transform(map.displayProjection,map.projection)
+	var marker = new OpenLayers.Marker(point);
+	markers.addMarker(marker);	
+	map.events.register("click", map, function(e){
+		var lonlat = map.getLonLatFromViewPortPx(e.xy);
+		m = new OpenLayers.Marker(lonlat);
+		markers.clearMarkers();
+		markers.addMarker(m);
+		lonlat.transform(map.projection,map.displayProjection)
+		var location_wkt = "POINT(" + lonlat.lon + " " + lonlat.lat +")"; 
+		console.log(location_wkt); 
+		document.getElementById('location').innerHTML = location_wkt ; 
+		document.getElementById('location_log').innerHTML = location_wkt ; 
+	    }); 
+
+
+        map.addLayers([osm]);
+
+	var center = new OpenLayers.LonLat({{lng}},{{lat}});  
+	center.transform(map.displayProjection, map.projection)
+	console.log(center); 
+	map.setCenter(center,18)
+       
+        }
+</script>    
+
+<script type="text/javascript" src="/site_media/jquery.js"></script>
+<script type="text/javascript" src="/site_media/corner/jquery.corners.js"></script>
+<script type="text/javascript">
+ $(document).ready(function() {
+       $("#tip-control").click(function () {
+      $("#tip").toggle();
+    });
+    $('#menu li').corners('top');
+ });
+</script>
+
+
+
+
+<script defer="defer" type="text/javascript">
+
+window.onload = function(){
+  init() ;
+};
+
+</script>
+{% endblock %} 
+{% block menu %} 
+       <ul id="menu">
+	 <li class="active">
+	   <a href="/">(1) REQUEST</a>
+	   <p> Request a bike rack </p>
+	 </li>
+	 <li class="arrow"> </li>
+	 <li>
+	   <a href="/assess/">(2) ASSESS</a>
+	   <p> Assess current requested locations </p>
+	 </li>
+	 <li class="arrow"> </li>
+	 <li>
+	   <a href="/submit/">(3) SUBMIT</a>
+	   <p> Submit your request to the DOT </p>
+	 </li>
+	 <li class="arrow"> </li>
+	 <li>
+	   <a href="/built/"> (4) BUILT</a>
+	   <p> See racks aready built </p>
+	 </li>
+       </ul>
+{% endblock %} 
+{% block content %}
+<div id="page-title">
+  <h2 class="title">Start a rack request</h2>
+     <div id="tip-con"> 
+       <h3 id="tip-control">Tips and help click to view</h3>
+       <div id="tip">
+	  <p> Vivamus tincidunt tristique urna. Ut id justo quis nulla gravida feugiat. In hac habitasse platea dictumst. Nam dictum molestie orci. Suspendisse potenti. Nam a odio in nulla ultricies venenatis. Pellentesque ac tellus. Sed dignissim quam vel orci. Proin nulla orci, auctor nec, tempus euismod, consectetur cursus, metus. Curabitur sagittis pellentesque felis. </p>
+       </div> 
+     </div>
+</div>
+
+<div id="newrack"> 
+  <form id="newrack" enctype="multipart/form-data" action="/rack/add/" method="post">
+    <div class="form-header"> 
+      <div id="map-con">
+          <h3>Click Map to correct rack location</h3>
+	  <div id="request-map">       
+	  </div>
+	  <p id="location_log"></p>
+	  <textarea id="location" name="location"></textarea>
+      </div>
+    </div>
+    
+    <div id="activity-con">
+      <div>
+	<p><strong>Did you mean? </strong> (Current rack requests within .5 km)</p>
+	{% for rack in close_racks %} 
+	<ul>
+	  <li><span><a href="/rack/{{rack.id}}">{{rack.address}}</a></span></li>
+	</ul>
+	{% endfor %} 
+	<p><strong> Near by subway stations </strong> </p> 
+	
+	
+
+      </div>
+      <hr />
+      <h3> Please fill out this form </h3>
+      <h4>Address</h4>
+      <input type="text" name="address" value="{{address}}" />    
+      <h3>Description</h3>
+      {{form.meta}}
+      <div class="form-body">    
+	<h4> Date </h4>
+	<input type="text" name="date" id="id_date" value="{% now "m/d/y" %}"/>     
+	<h4>Contact email</h4>
+        {{form.contact_email}}
+	<h3>Photo</h3> 
+        {{form.photo}}
+	<select name="status" id="id_status">
+	  <option value="r">requested</option>
+        </select>
+      </div>    
+      <input type="submit" />
+  </form>
+  </div>
+  
+</div>
+{% endblock %} 
+
+

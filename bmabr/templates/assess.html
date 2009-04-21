@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %} assess {% endblock %}
+
+{% block header %} 
+<script type="text/javascript" src="/site_media/jquery.js"></script>
+<script type="text/javascript" src="/site_media/corner/jquery.corners.js"></script>
+<script type="text/javascript">
+ $(document).ready(function() {
+       $("#tip-control").click(function () {
+      $("#tip").toggle();
+   });
+    $('#menu li').corners('top');
+ });
+</script>
+{% endblock %}
+
+
+
+{% block menu %} 
+<ul id="menu">
+  <li>
+    <a href="/">(1) REQUEST</a>
+    <p> Request a bike rack </p>
+  </li>
+  <li class="arrow"> </li>
+  <li class="active">
+    <a href="/assess/">(2) ASSESS</a>
+    <p> Assess current requested locations </p>
+  </li>
+  <li class="arrow"> </li>
+  <li>
+    <a href="/submit/">(3) SUBMIT</a>
+    <p> Submit your request to the DOT </p>
+  </li>
+  <li class="arrow"> </li>
+  <li>
+    <a href="/built/"> (4) BUILT</a>
+    <p> See racks aready built </p>
+  </li>
+</ul>
+{% endblock %}
+
+
+{% block content %}
+<div id="page-title">
+  <h2 class="title">Rack list page</h2>
+     <div id="tip-con"> 
+       <h4><a id="tip-control" href="#">Tips and help</a> click to view</h4>
+       <div id="tip">
+	  <p> Vivamus tincidunt tristique urna. Ut id justo quis nulla gravida feugiat. In hac habitasse platea dictumst. Nam dictum molestie orci. Suspendisse potenti. Nam a odio in nulla ultricies venenatis. Pellentesque ac tellus. Sed dignissim quam vel orci. Proin nulla orci, auctor nec, tempus euismod, consectetur cursus, metus. Curabitur sagittis pellentesque felis. </p>
+       </div> 
+     </div>
+</div>
+<div id="activity-con">
+  <ul>
+    {% for rack in rack_query %} 
+    <li>
+      <h4><a href="/rack/{{rack.id}}">{{rack.address}}</a></h4>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
