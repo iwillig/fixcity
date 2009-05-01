@@ -28,11 +28,42 @@ class Rack(models.Model):
 
 
 
+class Rack_Document(models.Model): 
+    file = models.FileField(upload_to='documents/', blank=True, null=True)
+    contact_email = models.EmailField()
+    doc_rack = models.ForeignKey(Rack)
+        
+    class Meta: 
+        ordering = ['doc_rack']
+
+    def __unicode__(self):
+        return self.contact_email
+
+
+class Rack_Photo(models.Model): 
+    image = models.ImageField(upload_to='images/racks/', blank=True, null=True)
+    contact_email = models.EmailField()
+    ph_rack = models.ForeignKey(Rack)
+        
+    class Meta: 
+        ordering = ['ph_rack']
+
+    def __unicode__(self):
+        return self.contact_email
+
+
 
 class Comment(models.Model):
-      text = models.TextField()
-      contact_email = models.EmailField()
-      rack = models.ForeignKey(Rack)
+    text = models.TextField()
+    contact_email = models.EmailField()
+    rack = models.ForeignKey(Rack)
+    
+    class Meta: 
+        ordering = ['rack']
+
+    def __unicode__(self):
+        return self.contact_email
+
 
 
 class Neighborhoods(models.Model):

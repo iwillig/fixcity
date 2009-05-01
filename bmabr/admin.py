@@ -1,6 +1,16 @@
-from fixcity.bmabr.models import Rack, Comment, Neighborhoods, CommunityBoard, SubwayStations
-
 from django.contrib.gis import admin
+from fixcity.bmabr.models import Rack, Comment, Neighborhoods, CommunityBoard, SubwayStations
+from fixcity.bmabr.models import Rack_Photo, Rack_Document
+
+
+class Rack_PhotoAdmin(admin.GeoModelAdmin): 
+    list_display  = ('ph_rack','contact_email') 
+admin.site.register(Rack_Photo,Rack_PhotoAdmin)
+
+
+class Rack_DocumentAdmin(admin.GeoModelAdmin): 
+    list_display = ('doc_rack','contact_email') 
+admin.site.register(Rack_Document,Rack_DocumentAdmin)
 
 class SubwayAdmin(admin.GeoModelAdmin): 
     list_display = ('name','borough')

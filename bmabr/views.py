@@ -10,6 +10,7 @@ from fixcity.bmabr.models import Rack, Comment
 from fixcity.bmabr.models import Neighborhoods
 from fixcity.bmabr.models import CommunityBoard
 from fixcity.bmabr.models import RackForm, CommentForm
+from fixcity.bmabr.models import Rack_Document, Rack_Photo
 
 from geopy import geocoders
 
@@ -51,7 +52,6 @@ def newrack_form(request):
            })
 
 
-
 def add_rack(request): 
     form = RackForm(request.POST,request.FILES)
     if form.is_valid(): 
@@ -63,9 +63,13 @@ def add_rack(request):
 def rack(request,rack_id): 
     rack_query = Rack.objects.filter(id=rack_id)    
     comment_query = Comment.objects.filter(rack=rack_id)
+    photo_query = Rack_Photo.objects.filter(ph_rack=rack_id)
+    document_query = Rack_Document.objects.filter(doc_rack=rack_id)
     return render_to_response('rack.html', { 
             'rack_query': rack_query,            
             'comment_query': comment_query,
+            'photo_query': photo_query, 
+            'document_query': document_query,
             })
     
 
@@ -78,7 +82,6 @@ def add_comment(request):
         return HttpResponseRedirect('/rack/%s#comments'% rack_id )   
     else: 
         return HttpResponseRedirect('/error/comment') 
-
         
 
 def rack_all_kml(request): 

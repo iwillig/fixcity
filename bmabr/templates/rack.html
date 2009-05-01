@@ -16,7 +16,7 @@
 					     20037508.34, 20037508.34)
 	   };
 
-        function init(){
+        function loadMap(){
 	map = new OpenLayers.Map('overview-map',options);
 
 	var osm = new OpenLayers.Layer.WMS(
@@ -58,13 +58,20 @@
 
 </script>    
 
+<script type="text/javascript" src="/site_media/jquery.js"></script>
+<script type="text/javascript" src="/site_media/corner/jquery.corners.js"></script>
+<script type="text/javascript">
+ $(document).ready(function() {
+       $("#tip-control").click(function () {
+      $("#tip").toggle();
+    });
+    $('#menu li').corners('top','10px');
+    $('#tip-con').corners('top','10px');
 
-<script defer="defer" type="text/javascript">
-window.onload = function(){
-  init() ;
-}
+    loadMap();
+
+ });
 </script>
-
 
 {% endblock %}
 
@@ -135,6 +142,12 @@ window.onload = function(){
     </span>
     <h4> Photos </h4>
        <p> Please upload your photos about this racks. <a href="#">(How to take a photo?) </a></p>
+
+    <hr /> 
+    {% for rack_photo in photo_query %}
+       asdasd
+    {% endfor %} 
+
     </li>
     <li>
        <form action="." method="post">
@@ -144,6 +157,7 @@ window.onload = function(){
        </form>    
       <h4> Planning documents </h4>
       <p> Please upload any planning documents about this. <a href="#">(How to find the information?)</a> </p>
+      {% for 
     </li>
   </ul>
   <hr />

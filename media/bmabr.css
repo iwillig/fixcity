@@ -79,3 +79,7 @@ a.title { color: #672258; text-decoration:none;}
 
 #id_rack { display: none; }
 
+#address {  
+font-size: 250% ; 
+border: 3px solid #808080  ; 
+ }
