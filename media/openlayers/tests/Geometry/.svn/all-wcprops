@@ -1,13 +1,13 @@
 K 25
 svn:wc:ra_dav:version-url
 V 46
-/!svn/ver/8974/trunk/openlayers/tests/Geometry
+/!svn/ver/9248/trunk/openlayers/tests/Geometry
 END
 LineString.html
 K 25
 svn:wc:ra_dav:version-url
 V 62
-/!svn/ver/8974/trunk/openlayers/tests/Geometry/LineString.html
+/!svn/ver/9248/trunk/openlayers/tests/Geometry/LineString.html
 END
 MultiPolygon.html
 K 25
@@ -37,7 +37,7 @@ Polygon.html
 K 25
 svn:wc:ra_dav:version-url
 V 59
-/!svn/ver/8842/trunk/openlayers/tests/Geometry/Polygon.html
+/!svn/ver/9248/trunk/openlayers/tests/Geometry/Polygon.html
 END
 Surface.html
 K 25

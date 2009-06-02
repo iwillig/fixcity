@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block title %} assess {% endblock %}
+
+{% block header %} 
+
+<script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
+
+
+
+<link type="text/css" href="/site_media/theme/jquery-ui-1.7.1.custom.css" rel="Stylesheet" />  
+<script type="text/javascript" src="/site_media/jquery-1.3.2.min.js"></script>
+
+<script type="text/javascript" src="/site_media/jquery-ui-1.7.1.custom.min.js"></script>
+<script type="text/javascript" src="/site_media/corner/jquery.corners.js"></script>
+
+
+
+<script defer="defer" type="text/javascript">
+    var map, layer, select, select_vector ; 
+	 $(document).ready(function() {		
+		 loadMap(); 		 
+	     }); 
+
+
+    var options = {
+            projection: new OpenLayers.Projection("EPSG:900913"),
+	    displayProjection: new OpenLayers.Projection("EPSG:4326"),
+	    units: "m",
+	    numZoomLevels:19,
+            maxResolution: 156543.03390625,
+	    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+					     20037508.34, 20037508.34)
+	   };
+
+        function loadMap(){
+	map = new OpenLayers.Map('map',options);
+
+	var osm = new OpenLayers.Layer.WMS(
+                 "OpenStreetMap",
+                 "http://maps.opengeo.org/geowebcache/service/wms",   
+       {
+            layers: "openstreetmap", 
+            format: "image/png",
+            bgcolor: '#A1BDC4'
+            }, 
+            {wrapDateLine: true} 
+        );
+    
+	select_style = new OpenLayers.Style({
+                    pointRadius: "30",
+		    externalGraphic: "/site_media/images/marker.png"		    
+	    })
+	var select_vector = new OpenLayers.Layer.Vector("Selector Marker"); 
+	$('.mapevent').toggle( 
+	      function (){
+		  var location =  $(this).find("code").html() ; 	       
+		  wkt_f = new OpenLayers.Format.WKT(
+			{
+			  internalProjection: map.projection,
+		       	  externalProjection: map.displayProjection
+			}
+                       ); 
+		  features = wkt_f.read(location) ;
+ 		  select_vector.removeFeatures();  
+		  select_vector.addFeatures(features); 
+		  map.addLayer(select_vector); 
+	      }, 
+	      function () { 
+		  select_vector.removeFeatures();  
+		  map.removeLayer(select_vector); 
+	      } ); 
+
+
+	var style = new OpenLayers.Style({
+                    pointRadius: "10",
+		    label: "${id}",
+	            fontColor: "#eee",
+                    externalGraphic: "/site_media/images/marker.png"
+		    
+                }, {
+                    context: {
+                        radius: function(feature) {
+                            return Math.min(feature.attributes.count, 7) + 5;
+		    }, 
+			id: function(feature) { 
+			return feature.attributes.id ; 
+		    } 
+                    }
+                });
+
+
+	var racks = new OpenLayers.Layer.Vector("Racks", {
+		    projection: map.displayProjection,
+                    strategies: [
+                        new OpenLayers.Strategy.Fixed()
+                    ],		  
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: "./rack/requested.kml",
+                        params: {		     
+				
+                        },
+                        format: new OpenLayers.Format.KML()
+                    }),
+                    styleMap: new OpenLayers.StyleMap({
+                        "default": style,
+                        "select": {
+                            fillColor: "#8aeeef",
+                            strokeColor: "#32a8a9"
+                        }
+                    })
+
+                });
+    
+        map.addLayers([osm,racks]);
+
+
+    
+        var bounds = new OpenLayers.Bounds(-73.978431701660199, 40.6752319335938, -73.946891784667997, 40.723712921142599) ; 
+	bounds.transform(map.displayProjection, map.projection); 
+        map.zoomToExtent(bounds); 
+        }
+
+
+</script>
+{% endblock %}
+
+
+
+{% block menu %} 
+<ul id="menu">
+  <li class="suggest">
+    <a href="/">(1) SUGGEST</a>
+    <p> Suggest a bike rack location </p>
+  </li>
+  <li class="assess">
+    <a href="/assess/">(2) ASSESS</a>
+    <p> Assess current requested locations </p>
+  </li>
+  <li class="submit">
+    <a href="/submit/">(3) SUBMIT</a>
+    <p> Submit your request to the DOT </p>
+  </li>
+  <li class="built">
+    <a href="/built/"> (4) BUILD</a>
+    <p> See racks aready built </p>
+  </li>
+</ul>
+
+{% endblock %}
+
+{% block content %}
+<div class="assess">
+  <div id="map-con">
+    <div> 
+    </div>
+    <div id="map"> 
+    </div>
+  </div>
+
+
+<div id="activity-con">
+
+   
+{% regroup rack_query by communityboard as rack_list %} 
+
+   {% for rack_query in rack_list %} 
+      <h3>{{rack_query.grouper}}</h3>
+      <ul id="assess">
+      {% for item in rack_query.list %}
+	<li>
+        	<h4><a href="/rack/{{item.id}}"> <strong>{{item.id}}</strong> {{item.title}} </a></h4>
+	        <div class="mapevent" id="{{item.id}}">
+		  <code style="display:none">{{item.location}}</code>
+		  <a href="#">Show on map
+		  <img id="mapevent" src="/site_media/images/map.png" /> </a>
+		</div>
+		<h5>{{item.address}}</h5>
+	        <p>{{item.description|truncatewords:10 }}</p>
+	</li>
+      {% endfor %}
+      </ul>
+    {% endfor %} 
+</div>
+</div>
+{% endblock %}

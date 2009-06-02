@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 44
-/!svn/ver/9092/trunk/openlayers/tests/manual
+/!svn/ver/9384/trunk/openlayers/tests/manual
 END
 vector-features-performance.html
 K 25
@@ -61,7 +61,7 @@ rendered-dimensions.html
 K 25
 svn:wc:ra_dav:version-url
 V 69
-/!svn/ver/7684/trunk/openlayers/tests/manual/rendered-dimensions.html
+/!svn/ver/9384/trunk/openlayers/tests/manual/rendered-dimensions.html
 END
 reflow.html
 K 25
@@ -92,6 +92,12 @@ K 25
 svn:wc:ra_dav:version-url
 V 64
 /!svn/ver/6470/trunk/openlayers/tests/manual/google-panning.html
+END
+geojson-geomcoll-reprojection.html
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/!svn/ver/9181/trunk/openlayers/tests/manual/geojson-geomcoll-reprojection.html
 END
 feature-handler.html
 K 25

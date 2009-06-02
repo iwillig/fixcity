@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 45
-/!svn/ver/9129/trunk/openlayers/tests/Control
+/!svn/ver/9300/trunk/openlayers/tests/Control
 END
 DragPan.html
 K 25
@@ -19,7 +19,7 @@ Snapping.html
 K 25
 svn:wc:ra_dav:version-url
 V 59
-/!svn/ver/8951/trunk/openlayers/tests/Control/Snapping.html
+/!svn/ver/9270/trunk/openlayers/tests/Control/Snapping.html
 END
 NavigationHistory.html
 K 25
@@ -61,25 +61,31 @@ DragFeature.html
 K 25
 svn:wc:ra_dav:version-url
 V 62
-/!svn/ver/8284/trunk/openlayers/tests/Control/DragFeature.html
+/!svn/ver/9258/trunk/openlayers/tests/Control/DragFeature.html
 END
 GetFeature.html
 K 25
 svn:wc:ra_dav:version-url
 V 61
-/!svn/ver/9003/trunk/openlayers/tests/Control/GetFeature.html
+/!svn/ver/9165/trunk/openlayers/tests/Control/GetFeature.html
 END
 SelectFeature.html
 K 25
 svn:wc:ra_dav:version-url
 V 64
-/!svn/ver/9116/trunk/openlayers/tests/Control/SelectFeature.html
+/!svn/ver/9275/trunk/openlayers/tests/Control/SelectFeature.html
 END
 Split.html
 K 25
 svn:wc:ra_dav:version-url
 V 56
 /!svn/ver/8998/trunk/openlayers/tests/Control/Split.html
+END
+WMSGetFeatureInfo.html
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/!svn/ver/9300/trunk/openlayers/tests/Control/WMSGetFeatureInfo.html
 END
 Navigation.html
 K 25
@@ -99,11 +105,17 @@ svn:wc:ra_dav:version-url
 V 60
 /!svn/ver/8950/trunk/openlayers/tests/Control/ScaleLine.html
 END
+Measure.html
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/!svn/ver/9225/trunk/openlayers/tests/Control/Measure.html
+END
 ModifyFeature.html
 K 25
 svn:wc:ra_dav:version-url
 V 64
-/!svn/ver/8835/trunk/openlayers/tests/Control/ModifyFeature.html
+/!svn/ver/9273/trunk/openlayers/tests/Control/ModifyFeature.html
 END
 OverviewMap.html
 K 25
@@ -133,7 +145,7 @@ DrawFeature.html
 K 25
 svn:wc:ra_dav:version-url
 V 62
-/!svn/ver/8835/trunk/openlayers/tests/Control/DrawFeature.html
+/!svn/ver/9269/trunk/openlayers/tests/Control/DrawFeature.html
 END
 MouseToolbar.html
 K 25

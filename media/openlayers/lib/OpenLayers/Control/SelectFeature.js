@@ -19,6 +19,16 @@
  *  - <OpenLayers.Control>
  */
 OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
+
+    /**
+     * Constant: EVENT_TYPES
+     *
+     * Supported event types:
+     *  - *beforefeaturehighlighted* Triggered before a feature is highlighted
+     *  - *featurehighlighted* Triggered when a feature is highlighted
+     *  - *featureunhighlighted* Triggered when a feature is unhighlighted
+     */
+    EVENT_TYPES: ["beforefeaturehighlighted", "featurehighlighted", "featureunhighlighted"],
     
     /**
      * Property: multipleKey
@@ -60,6 +70,14 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
      * ignores clicks and only listens to mouse moves.
      */
     hover: false,
+
+    /**
+     * APIProperty: highlightOnly
+     * {Boolean} If true do not actually select features (i.e. place them in the
+     * layer's selected features array), just highlight them. This property has
+     * no effect if hover is false. Defaults to false.
+     */
+    highlightOnly: false,
     
     /**
      * APIProperty: box
@@ -105,13 +123,16 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
     /**
      * Property: layer
      * {<OpenLayers.Layer.Vector>} The vector layer with a common renderer
-     * root for all layers this control is configured with.
+     * root for all layers this control is configured with (if an array of
+     * layers was passed to the constructor), or the vector layer the control
+     * was configured with (if a single layer was passed to the constructor).
      */
     layer: null,
     
     /**
      * Property: layers
-     * {Array(<OpenLayers.Layer.Vector>} The layers this control will work on.
+     * {Array(<OpenLayers.Layer.Vector>} The layers this control will work on,
+     * or null if the control was configured with a single layer
      */
     layers: null,
     
@@ -142,23 +163,31 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
     handlers: null,
 
     /**
-     * Constructor: <OpenLayers.Control.SelectFeature>
+     * Constructor: OpenLayers.Control.SelectFeature
+     * Create a new control for selecting features.
      *
      * Parameters:
-     * layers - {<OpenLayers.Layer.Vector>}, or an array of vector layers
+     * layers - {<OpenLayers.Layer.Vector>}, or an array of vector layers. The
+     *     layer(s) this control will select features from.
      * options - {Object} 
      */
     initialize: function(layers, options) {
-        OpenLayers.Control.prototype.initialize.apply(this, [options]);
-        if(!(layers instanceof Array)) {
-            layers = [layers];
-        }
-        this.layers = layers;
-        this.layer = new OpenLayers.Layer.Vector.RootContainer(
-            this.id + "_container", {
-                layers: layers
-            }
+        // concatenate events specific to this control with those from the base
+        this.EVENT_TYPES =
+            OpenLayers.Control.SelectFeature.prototype.EVENT_TYPES.concat(
+            OpenLayers.Control.prototype.EVENT_TYPES
         );
+        OpenLayers.Control.prototype.initialize.apply(this, [options]);
+        if(layers instanceof Array) {
+            this.layers = layers;
+            this.layer = new OpenLayers.Layer.Vector.RootContainer(
+                this.id + "_container", {
+                    layers: layers
+                }
+            );
+        } else {
+            this.layer = layers;
+        }
         var callbacks = {
             click: this.clickFeature,
             clickout: this.clickoutFeature
@@ -189,7 +218,9 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     destroy: function() {
         OpenLayers.Control.prototype.destroy.apply(this, arguments);
-        this.layer.destroy();
+        if(this.layers) {
+            this.layer.destroy();
+        }
     },
 
     /**
@@ -201,7 +232,9 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     activate: function () {
         if (!this.active) {
-            this.map.addLayer(this.layer);
+            if(this.layers) {
+                this.map.addLayer(this.layer);
+            }
             this.handlers.feature.activate();
             if(this.box && this.handlers.box) {
                 this.handlers.box.activate();
@@ -225,9 +258,9 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
             if(this.handlers.box) {
                 this.handlers.box.deactivate();
             }
-            this.map.events.unregister("changelayer", this.layer,
-                this.layer.handleChangeLayer);
-            this.map.removeLayer(this.layer);
+            if(this.layers) {
+                this.map.removeLayer(this.layer);
+            }
         }
         return OpenLayers.Control.prototype.deactivate.apply(
             this, arguments
@@ -244,9 +277,10 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     unselectAll: function(options) {
         // we'll want an option to supress notification here
+        var layers = this.layers || [this.layer];
         var layer, feature;
-        for(var l=0; l<this.layers.length; ++l) {
-            layer = this.layers[l];
+        for(var l=0; l<layers.length; ++l) {
+            layer = layers[l];
             for(var i=layer.selectedFeatures.length-1; i>=0; --i) {
                 feature = layer.selectedFeatures[i];
                 if(!options || options.except != feature) {
@@ -332,9 +366,14 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
      * feature - {<OpenLayers.Feature.Vector>} 
      */
     overFeature: function(feature) {
-        if(this.hover &&
-           (OpenLayers.Util.indexOf(feature.layer.selectedFeatures, feature) == -1)) {
-            this.select(feature);
+        var layer = feature.layer;
+        if(this.hover) {
+            if(this.highlightOnly) {
+                this.highlight(feature);
+            } else if(OpenLayers.Util.indexOf(
+                layer.selectedFeatures, feature) == -1) {
+                this.select(feature);
+            }
         }
     },
 
@@ -348,8 +387,67 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     outFeature: function(feature) {
         if(this.hover) {
-            this.unselect(feature);
+            if(this.highlightOnly) {
+                // we do nothing if we're not the last highlighter of the
+                // feature
+                if(feature._lastHighlighter == this.id) {
+                    // if another select control had highlighted the feature before
+                    // we did it ourself then we use that control to highlight the
+                    // feature as it was before we highlighted it, else we just
+                    // unhighlight it
+                    if(feature._prevHighlighter &&
+                       feature._prevHighlighter != this.id) {
+                        delete feature._lastHighlighter;
+                        var control = this.map.getControl(
+                            feature._prevHighlighter);
+                        if(control) {
+                            control.highlight(feature);
+                        }
+                    } else {
+                        this.unhighlight(feature);
+                    }
+                }
+            } else {
+                this.unselect(feature);
+            }
         }
+    },
+
+    /**
+     * Method: highlight
+     * Redraw feature with the select style.
+     *
+     * Parameters:
+     * feature - {<OpenLayers.Feature.Vector>} 
+     */
+    highlight: function(feature) {
+        var layer = feature.layer;
+        var cont = this.events.triggerEvent("beforefeaturehighlighted", {
+            feature : feature
+        });
+        if(cont !== false) {
+            feature._prevHighlighter = feature._lastHighlighter;
+            feature._lastHighlighter = this.id;
+            var style = this.selectStyle || this.renderIntent;
+            layer.drawFeature(feature, style);
+            this.events.triggerEvent("featurehighlighted", {feature : feature});
+        }
+    },
+
+    /**
+     * Method: unhighlight
+     * Redraw feature with the "default" style
+     *
+     * Parameters:
+     * feature - {<OpenLayers.Feature.Vector>} 
+     */
+    unhighlight: function(feature) {
+        var layer = feature.layer;
+        feature._lastHighlighter = feature._prevHighlighter;
+        delete feature._prevHighlighter;
+        layer.drawFeature(feature, feature.style || feature.layer.style ||
+            "default");
+        this.events.triggerEvent("featureunhighlighted", {feature : feature});
     },
     
     /**
@@ -369,11 +467,7 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
             });
             if(cont !== false) {
                 layer.selectedFeatures.push(feature);
-                this.layerData = {};
-
-                var selectStyle = this.selectStyle || this.renderIntent;
-                
-                layer.drawFeature(feature, selectStyle);
+                this.highlight(feature);
                 layer.events.triggerEvent("featureselected", {feature: feature});
                 this.onSelect.call(this.scope, feature);
             }
@@ -391,7 +485,7 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
     unselect: function(feature) {
         var layer = feature.layer;
         // Store feature style for restoration later
-        layer.drawFeature(feature, "default");
+        this.unhighlight(feature);
         OpenLayers.Util.removeItem(layer.selectedFeatures, feature);
         layer.events.triggerEvent("featureunselected", {feature: feature});
         this.onUnselect.call(this.scope, feature);
@@ -425,9 +519,10 @@ OpenLayers.Control.SelectFeature = OpenLayers.Class(OpenLayers.Control, {
             // because we're using a box, we consider we want multiple selection
             var prevMultiple = this.multiple;
             this.multiple = true;
+            var layers = this.layers || [this.layer];
             var layer;
-            for(var l=0; l<this.layers.length; ++l) {
-                layer = this.layers[l];
+            for(var l=0; l<layers.length; ++l) {
+                layer = layers[l];
                 for(var i=0, len = layer.features.length; i<len; ++i) {
                     var feature = layer.features[i];
                     if (this.geometryTypes == null || OpenLayers.Util.indexOf(

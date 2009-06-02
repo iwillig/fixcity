@@ -137,8 +137,9 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                 );
             },
             "UserStyle": function(node, layer) {
-                var style = new OpenLayers.Style(this.defaultSymbolizer);
-                this.readChildNodes(node, style);
+                var obj = {defaultsPerSymbolizer: true, rules: []};
+                this.readChildNodes(node, obj);
+                var style = new OpenLayers.Style(this.defaultSymbolizer, obj);
                 layer.userStyles.push(style);
             },
             "IsDefault": function(node, style) {
@@ -231,9 +232,11 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                 rule.symbolizer["Point"] = symbolizer;
             },
             "Stroke": function(node, symbolizer) {
+                symbolizer.stroke = true;
                 this.readChildNodes(node, symbolizer);
             },
             "Fill": function(node, symbolizer) {
+                symbolizer.fill = true;
                 this.readChildNodes(node, symbolizer);
             },
             "CssParameter": function(node, symbolizer) {
@@ -249,6 +252,7 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                 }
             },
             "Graphic": function(node, symbolizer) {
+                symbolizer.graphic = true;
                 var graphic = {};
                 // painter's order not respected here, clobber previous with next
                 this.readChildNodes(node, graphic);

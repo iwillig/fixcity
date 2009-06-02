@@ -41,6 +41,13 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
     },
 
     /**
+     * Property: gmlFormat
+     * {<OpenLayers.Format.GML>} internal GML format for parsing geometries
+     *     in msGMLOutput
+     */
+    gmlFormat: null,
+
+    /**
      * Constructor: OpenLayers.Format.WMSGetFeatureInfo
      * Create a new parser for WMS GetFeatureInfo responses
      *
@@ -70,14 +77,18 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
             data = OpenLayers.Format.XML.prototype.read.apply(this, [data]);
         }
         var root = data.documentElement;
-        var scope = this;
-        var read = this["read_" + root.nodeName];
-        if(read) {
-            result = read.call(this, root);
+        if(root) {
+            var scope = this;
+            var read = this["read_" + root.nodeName];
+            if(read) {
+                result = read.call(this, root);
+            } else {
+                // fall-back to GML since this is a common output format for WMS
+                // GetFeatureInfo responses
+                result = new OpenLayers.Format.GML((this.options ? this.options : {})).read(data);
+            }
         } else {
-            // fall-back to GML since this is a common output format for WMS
-            // GetFeatureInfo responses
-            result = new OpenLayers.Format.GML((this.options ? this.options : {})).read(data);
+            result = data;
         }
         return result;
     },
@@ -95,12 +106,10 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
      */
     read_msGMLOutput: function(data) {
         var response = [];
-        var layerNodes, n;
-        layerNodes = this.getSiblingNodesByTagCriteria(data, 
+        var layerNodes = this.getSiblingNodesByTagCriteria(data,
             this.layerIdentifier);
         if (layerNodes) {
-            n = layerNodes.length;
-            for (var i = 0; i < n; i++) {
+            for (var i=0, len=layerNodes.length; i<len; ++i) {
                 var node = layerNodes[i];
                 var layerName = node.nodeName;
                 if (node.prefix) {
@@ -112,7 +121,7 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
                 if (featureNodes) {
                     for (var j = 0; j < featureNodes.length; j++) {
                         var featureNode = featureNodes[j];
-                        var geom = null;
+                        var geom = this.parseGeometry(featureNode);
                         var attributes = this.parseAttributes(featureNode);
                         var feature = new OpenLayers.Feature.Vector(geom, 
                             attributes, null);
@@ -239,6 +248,31 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
             }
         }
         return attributes;
+    },
+
+    /**
+     * Method: parseGeometry
+     * Parse the geometry out of the node using Format.GML
+     *
+     * Parameters:
+     * node - {<DOMElement>}
+     *
+     * Returns:
+     * {<OpenLayers.Geometry>} the geometry object
+    */
+    parseGeometry: function(node) {
+        // we need to use the old Format.GML parser since we do not know the 
+        // geometry name
+        if (!this.gmlFormat) {
+            this.gmlFormat = new OpenLayers.Format.GML();
+        }
+        var feature = this.gmlFormat.parseFeature(node);
+        var geometry = null;
+        if (feature && feature.geometry) {
+            geometry = feature.geometry.clone();
+            feature.destroy();
+        }
+        return geometry;
     },
 
     CLASS_NAME: "OpenLayers.Format.WMSGetFeatureInfo"

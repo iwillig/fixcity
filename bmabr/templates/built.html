@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %} built {% endblock %}
+
+{% block header %} 
+<script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
+<script defer="defer" type="text/javascript">
+    var map, layer, select;
+    var options = {
+            projection: new OpenLayers.Projection("EPSG:900913"),
+	    displayProjection: new OpenLayers.Projection("EPSG:4326"),
+	    units: "m",
+	    numZoomLevels:19,
+            maxResolution: 156543.03390625,
+	    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+					     20037508.34, 20037508.34)
+	   };
+
+        function loadMap(){
+	map = new OpenLayers.Map('built-map',options);
+
+	var osm = new OpenLayers.Layer.WMS(
+                 "OpenStreetMap",
+                 "http://maps.opengeo.org/geoserver/gwc/service/wms",   
+       {
+            layers: "openstreetmap", 
+            format: "image/png",
+            bgcolor: '#A1BDC4'
+            }, 
+            {wrapDateLine: true} 
+        );
+    
+	var style = new OpenLayers.Style({
+                    pointRadius: "${radius}",
+		    fillColor: "#DFABAB",
+                    strokeColor: "#8147ad",
+                    strokeWidth: 2,
+                    strokeOpacity: 0.8
+		    
+                }, {
+                    context: {
+                        radius: function(feature) {
+                            return Math.min(feature.attributes.count, 7) + 5;
+                        }
+                    }
+                });
+
+
+	var racks = new OpenLayers.Layer.Vector("Suggested racks", {
+		    projection: map.displayProjection,
+                    strategies: [
+                        new OpenLayers.Strategy.Fixed(),
+                        new OpenLayers.Strategy.Cluster()
+                    ],		  
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: "./rack/requested.kml",
+                        params: {		     
+				
+                        },
+                        format: new OpenLayers.Format.KML()
+                    }),
+                    styleMap: new OpenLayers.StyleMap({
+                        "default": style,
+                        "select": {
+                            fillColor: "#8aeeef",
+                            strokeColor: "#32a8a9"
+                        }
+                    })
+
+                });
+
+    
+	var style_built = new OpenLayers.Style({
+                    pointRadius: "${radius}",
+		    fillColor: "#9a97d4",
+                    strokeColor: "#3c34b4",
+                    strokeWidth: 2,
+                    strokeOpacity: 0.8
+		    
+                }, {
+                    context: {
+                        radius: function(feature) {
+                            return Math.min(feature.attributes.count, 7) + 5;
+                        }
+                    }
+                });
+
+	var racks_built = new OpenLayers.Layer.Vector("Built racks", {
+		    projection: map.displayProjection,
+                    strategies: [
+                        new OpenLayers.Strategy.Fixed(),
+                        new OpenLayers.Strategy.Cluster()
+                    ],		  
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: "./rack/built.kml",
+                        params: {		     
+				
+                        },
+                        format: new OpenLayers.Format.KML()
+                    }),
+                    styleMap: new OpenLayers.StyleMap({
+                        "default": style_built,
+                        "select": {
+                            fillColor: "#8aeeef",
+                            strokeColor: "#32a8a9"
+                        }
+                    })
+
+                });
+
+
+    
+                var cb_style = new OpenLayers.Style({
+                               label: "Community Board ${cb_name}",
+			       fontWeight: "bold",
+                               fillColor: "#e8f5d5",
+                               fillOpacity: .7,
+                               strokeColor: "#7e8573",
+                               strokeWidth: 4,
+                               strokeDashstyle: "dash"
+		    },  { 
+			context : { 
+			    cb_name: function(feature) { 
+				return feature.attributes.name ; 
+			    }
+			} 
+			
+		    })
+
+
+
+
+
+	var communityboard = new OpenLayers.Layer.Vector("Community Board 1", {
+                   projection: map.displayProjection,
+                   strategies: [
+                        new OpenLayers.Strategy.Fixed(),
+                    ],
+                    protocol: new OpenLayers.Protocol.HTTP({
+                          url: "./communityboards.kml",
+                    params: {
+                        },
+                        format: new OpenLayers.Format.KML()
+                    }),
+                   styleMap: new OpenLayers.StyleMap({
+                           "default": cb_style, 
+		       })		   
+                });
+    
+    
+        map.addLayers([osm,communityboard,racks,racks_built]);
+
+
+        var bounds = new OpenLayers.Bounds{{rack_extent}} ; 
+	bounds.transform(map.displayProjection, map.projection); 
+	map.addControl( new OpenLayers.Control.LayerSwitcher());
+        map.zoomToExtent(bounds); 
+        }
+
+
+</script>
+
+<script defer="defer" type="text/javascript"> 
+  window.onload = function() { 
+    loadMap() ; 
+   }
+</script> 
+
+
+{% endblock %}
+
+
+
+{% block menu %} 
+<ul id="menu">
+  <li class="suggest">
+    <a href="/">(1) REQUEST</a>
+    <p> Request a bike rack </p>
+  </li>
+
+  <li class="assess">
+    <a href="/assess/">(2) ASSESS</a>
+    <p> Assess current requested locations </p>
+  </li>
+
+  <li class="submit">
+    <a href="/submit/">(3) SUBMIT</a>
+    <p> Submit your request to the DOT </p>
+  </li>
+  <li class="built">
+    <a href="/built/"> (4) BUILD</a>
+    <p> See racks aready built </p>
+  </li>
+</ul>
+{% endblock %}
+
+
+{% block content %}
+<div class="built">
+  <br />
+<div id="built-map"> </div>
+  <br />
+</div>
+{% endblock %}
+
+
+
+
+
+
+

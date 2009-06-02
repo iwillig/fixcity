@@ -66,19 +66,19 @@ OpenLayers.Layer = OpenLayers.Class({
      *     properties of this event depends on exactly what happened.
      *
      * All event objects have at least the following properties:
-     *  - *object* {Object} A reference to layer.events.object.
-     *  - *element* {DOMElement} A reference to layer.events.element.
+     * object - {Object} A reference to layer.events.object.
+     * element - {DOMElement} A reference to layer.events.element.
      *
      * Supported map event types:
-     *  - *loadstart* Triggered when layer loading starts.
-     *  - *loadend* Triggered when layer loading ends.
-     *  - *loadcancel* Triggered when layer loading is canceled.
-     *  - *visibilitychanged* Triggered when layer visibility is changed.
-     *  - *move* Triggered when layer moves (triggered with every mousemove
-     *      during a drag).
-     *  - *moveend* Triggered when layer is done moving, object passed as
-     *      argument has a zoomChanged boolean property which tells that the
-     *      zoom has changed.
+     * loadstart - Triggered when layer loading starts.
+     * loadend - Triggered when layer loading ends.
+     * loadcancel - Triggered when layer loading is canceled.
+     * visibilitychanged - Triggered when layer visibility is changed.
+     * move - Triggered when layer moves (triggered with every mousemove
+     *     during a drag).
+     * moveend - Triggered when layer is done moving, object passed as
+     *     argument has a zoomChanged boolean property which tells that the
+     *     zoom has changed.
      */
     EVENT_TYPES: ["loadstart", "loadend", "loadcancel", "visibilitychanged",
                   "move", "moveend"],
@@ -458,7 +458,10 @@ OpenLayers.Layer = OpenLayers.Class({
             var extent = this.getExtent();
 
             if (extent && this.inRange && this.visibility) {
-                this.moveTo(extent, true, false);
+                var zoomChanged = true;
+                this.moveTo(extent, zoomChanged, false);
+                this.events.triggerEvent("moveend",
+                    {"zoomChanged": zoomChanged});
                 redrawn = true;
             }
         }
@@ -524,6 +527,14 @@ OpenLayers.Layer = OpenLayers.Class({
             // deal with gutters
             this.setTileSize();
         }
+    },
+    
+    /**
+     * Method: afterAdd
+     * Called at the end of the map.addLayer sequence.  At this point, the map
+     *     will have a base layer.  To be overridden by subclasses.
+     */
+    afterAdd: function() {
     },
     
     /**

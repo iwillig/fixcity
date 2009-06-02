@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 55
-/!svn/ver/9119/trunk/openlayers/lib/OpenLayers/Strategy
+/!svn/ver/9253/trunk/openlayers/lib/OpenLayers/Strategy
 END
 Paging.js
 K 25
@@ -19,13 +19,13 @@ Save.js
 K 25
 svn:wc:ra_dav:version-url
 V 63
-/!svn/ver/8818/trunk/openlayers/lib/OpenLayers/Strategy/Save.js
+/!svn/ver/9253/trunk/openlayers/lib/OpenLayers/Strategy/Save.js
 END
 Fixed.js
 K 25
 svn:wc:ra_dav:version-url
 V 64
-/!svn/ver/8973/trunk/openlayers/lib/OpenLayers/Strategy/Fixed.js
+/!svn/ver/9164/trunk/openlayers/lib/OpenLayers/Strategy/Fixed.js
 END
 Cluster.js
 K 25

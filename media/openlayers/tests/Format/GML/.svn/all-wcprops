@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 48
-/!svn/ver/8824/trunk/openlayers/tests/Format/GML
+/!svn/ver/9149/trunk/openlayers/tests/Format/GML
 END
 cases.js
 K 25
@@ -13,7 +13,7 @@ v2.html
 K 25
 svn:wc:ra_dav:version-url
 V 56
-/!svn/ver/8809/trunk/openlayers/tests/Format/GML/v2.html
+/!svn/ver/9149/trunk/openlayers/tests/Format/GML/v2.html
 END
 v3.html
 K 25

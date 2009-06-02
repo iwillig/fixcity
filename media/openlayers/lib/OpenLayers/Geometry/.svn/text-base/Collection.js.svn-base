@@ -231,6 +231,73 @@ OpenLayers.Geometry.Collection = OpenLayers.Class(OpenLayers.Geometry, {
         return area;
     },
 
+    /** 
+     * APIMethod: getGeodesicArea
+     * Calculate the approximate area of the polygon were it projected onto
+     *     the earth.
+     *
+     * Parameters:
+     * projection - {<OpenLayers.Projection>} The spatial reference system
+     *     for the geometry coordinates.  If not provided, Geographic/WGS84 is
+     *     assumed.
+     * 
+     * Reference:
+     * Robert. G. Chamberlain and William H. Duquette, "Some Algorithms for
+     *     Polygons on a Sphere", JPL Publication 07-03, Jet Propulsion
+     *     Laboratory, Pasadena, CA, June 2007 http://trs-new.jpl.nasa.gov/dspace/handle/2014/40409
+     *
+     * Returns:
+     * {float} The approximate geodesic area of the geometry in square meters.
+     */
+    getGeodesicArea: function(projection) {
+        var area = 0.0;
+        for(var i=0, len=this.components.length; i<len; i++) {
+            area += this.components[i].getGeodesicArea(projection);
+        }
+        return area;
+    },
+    
+    /**
+     * APIMethod: getCentroid
+     *
+     * Returns:
+     * {<OpenLayers.Geometry.Point>} The centroid of the collection
+     */
+    getCentroid: function() {
+        return this.components.length && this.components[0].getCentroid();
+        /*
+        var centroid;
+        for (var i=0, len=this.components.length; i<len; i++) {
+            if (!centroid) {
+                centroid = this.components[i].getCentroid();
+            } else {
+                centroid.resize(this.components[i].getCentroid(), 0.5);
+            }
+        }
+        return centroid;
+        */
+    },
+
+    /**
+     * APIMethod: getGeodesicLength
+     * Calculate the approximate length of the geometry were it projected onto
+     *     the earth.
+     *
+     * projection - {<OpenLayers.Projection>} The spatial reference system
+     *     for the geometry coordinates.  If not provided, Geographic/WGS84 is
+     *     assumed.
+     * 
+     * Returns:
+     * {Float} The appoximate geodesic length of the geometry in meters.
+     */
+    getGeodesicLength: function(projection) {
+        var length = 0.0;
+        for(var i=0, len=this.components.length; i<len; i++) {
+            length += this.components[i].getGeodesicLength(projection);
+        }
+        return length;
+    },
+
     /**
      * APIMethod: move
      * Moves a geometry by the given displacement along positive x and y axes.

@@ -4,8 +4,9 @@
 {% for rack in racks %}
   <Placemark>
 
-    <name>{{rack.id}}</name>
-    <description>{{rack.meta}}}</description>
+    <id>{{rack.id}}</id>
+    <name>{{rack.address}}</name>
+    <description>{{rack.description}}</description>	
 
     {% autoescape off %}
     {{rack.location.kml}}    

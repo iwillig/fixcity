@@ -77,9 +77,9 @@ OpenLayers.Map = OpenLayers.Class({
      *  - *mouseover* triggered after mouseover the map
      *  - *mouseout* triggered after mouseout the map
      *  - *mousemove* triggered after mousemove the map
-     *  - *dragstart* triggered after the start of a drag
-     *  - *drag* triggered after a drag
-     *  - *dragend* triggered after the end of a drag
+     *  - *dragstart* Does not work.  Register for movestart instead.
+     *  - *drag* Does not work.  Register for move instead.
+     *  - *dragend* Does not work.  Register for moveend instead.
      *  - *changebaselayer* triggered after the base layer changes
      */
     EVENT_TYPES: [ 
@@ -120,6 +120,22 @@ OpenLayers.Map = OpenLayers.Class({
      *                       events on the map
      */
     events: null,
+    
+    /**
+     * APIProperty: allOverlays
+     * {Boolean} Allow the map to function with "overlays" only.  Defaults to
+     *     false.  If true, the lowest layer in the draw order will act as
+     *     the base layer.  In addition, if set to true, all layers will
+     *     have isBaseLayer set to false when they are added to the map.
+     *
+     * Note:
+     * If you set map.allOverlays to true, then you *cannot* use
+     *     map.setBaseLayer or layer.setIsBaseLayer.  With allOverlays true,
+     *     the lowest layer in the draw layer is the base layer.  So, to change
+     *     the base layer, use <setLayerIndex> or <raiseLayer> to set the layer
+     *     index to 0.
+     */
+    allOverlays: false,
 
     /**
      * APIProperty: div
@@ -253,7 +269,7 @@ OpenLayers.Map = OpenLayers.Class({
      * APIProperty: projection
      * {String} Set in the map options to override the default projection 
      *          string this map - also set maxExtent, maxResolution, and 
-     *          units if appropriate.
+     *          units if appropriate.  Default is "EPSG:4326".
      */
     projection: "EPSG:4326",    
         
@@ -585,6 +601,7 @@ OpenLayers.Map = OpenLayers.Class({
      */
     render: function(div) {
         this.div = OpenLayers.Util.getElement(div);
+        OpenLayers.Element.addClass(this.div, 'olMap');
         this.events.attachToElement(this.div);
         this.viewPortDiv.parentNode.removeChild(this.viewPortDiv);
         this.div.appendChild(this.viewPortDiv);
@@ -878,7 +895,10 @@ OpenLayers.Map = OpenLayers.Class({
                 OpenLayers.Console.warn(msg);
                 return false;
             }
-        }    
+        }
+        if(this.allOverlays) {
+            layer.isBaseLayer = false;
+        }
 
         this.events.triggerEvent("preaddlayer", {layer: layer});
         
@@ -894,7 +914,7 @@ OpenLayers.Map = OpenLayers.Class({
         this.layers.push(layer);
         layer.setMap(this);
 
-        if (layer.isBaseLayer)  {
+        if (layer.isBaseLayer || (this.allOverlays && !this.baseLayer))  {
             if (this.baseLayer == null) {
                 // set the first baselaye we add as the baselayer
                 this.setBaseLayer(layer);
@@ -906,6 +926,7 @@ OpenLayers.Map = OpenLayers.Class({
         }
 
         this.events.triggerEvent("addlayer", {layer: layer});
+        layer.afterAdd();
     },
 
     /**
@@ -968,7 +989,7 @@ OpenLayers.Map = OpenLayers.Class({
             if(setNewBaseLayer) {
                 for(var i=0, len=this.layers.length; i<len; i++) {
                     var iLayer = this.layers[i];
-                    if (iLayer.isBaseLayer) {
+                    if (iLayer.isBaseLayer || this.allOverlays) {
                         this.setBaseLayer(iLayer);
                         break;
                     }
@@ -1033,6 +1054,13 @@ OpenLayers.Map = OpenLayers.Class({
             this.events.triggerEvent("changelayer", {
                 layer: layer, property: "order"
             });
+            if(this.allOverlays) {
+                if(idx === 0) {
+                    this.setBaseLayer(layer);
+                } else if(this.baseLayer !== this.layers[0]) {
+                    this.setBaseLayer(this.layers[0]);
+                }
+            }
         }
     },
 
@@ -1072,7 +1100,7 @@ OpenLayers.Map = OpenLayers.Class({
             if (OpenLayers.Util.indexOf(this.layers, newBaseLayer) != -1) {
 
                 // make the old base layer invisible 
-                if (this.baseLayer != null) {
+                if (this.baseLayer != null && !this.allOverlays) {
                     this.baseLayer.setVisibility(false);
                 }
 
@@ -1083,7 +1111,9 @@ OpenLayers.Map = OpenLayers.Class({
                 // changing. This is used by tiles to check if they should 
                 // draw themselves.
                 this.viewRequestID++;
-                this.baseLayer.visibility = true;
+                if(!this.allOverlays) {
+                    this.baseLayer.visibility = true;
+                }
 
                 //redraw all layers
                 var center = this.getCenter();
@@ -1631,20 +1661,23 @@ OpenLayers.Map = OpenLayers.Class({
             var bounds = this.getExtent();
             
             //send the move call to the baselayer and all the overlays    
-            this.baseLayer.moveTo(bounds, zoomChanged, dragging);
-            if(dragging) {
-                this.baseLayer.events.triggerEvent("move");
-            } else {
-                this.baseLayer.events.triggerEvent("moveend",
-                    {"zoomChanged": zoomChanged}
-                );
+
+            if(this.baseLayer.visibility) {
+                this.baseLayer.moveTo(bounds, zoomChanged, dragging);
+                if(dragging) {
+                    this.baseLayer.events.triggerEvent("move");
+                } else {
+                    this.baseLayer.events.triggerEvent("moveend",
+                        {"zoomChanged": zoomChanged}
+                    );
+                }
             }
             
             bounds = this.baseLayer.getExtent();
             
             for (var i=0, len=this.layers.length; i<len; i++) {
                 var layer = this.layers[i];
-                if (!layer.isBaseLayer) {
+                if (layer !== this.baseLayer && !layer.isBaseLayer) {
                     var inRange = layer.calculateInRange();
                     if (layer.inRange != inRange) {
                         // the inRange property has changed. If the layer is

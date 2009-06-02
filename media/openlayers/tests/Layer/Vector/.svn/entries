@@ -1,14 +1,14 @@
 9
 
 dir
-9142
+9399
 http://svn.openlayers.org/trunk/openlayers/tests/Layer/Vector
 http://svn.openlayers.org
 
 
 
-2009-03-22T14:25:18.878902Z
-9116
+2009-04-10T16:05:26.554226Z
+9262
 ahocevar
 
 
@@ -32,10 +32,10 @@ file
 
 
 
-2009-03-29T18:22:20.000000Z
-186d2f14d40b359feb2f67c61154034d
-2009-03-22T14:25:18.878902Z
-9116
+2009-05-20T02:07:08.000000Z
+b12ed0043eecc90cd57ce430ffe656b6
+2009-04-10T16:05:26.554226Z
+9262
 ahocevar
 has-props
 
@@ -58,5 +58,5 @@ has-props
 
 
 
-2183
+2482
 

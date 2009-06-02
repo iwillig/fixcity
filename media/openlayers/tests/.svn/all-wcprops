@@ -1,13 +1,13 @@
 K 25
 svn:wc:ra_dav:version-url
 V 37
-/!svn/ver/9140/trunk/openlayers/tests
+/!svn/ver/9384/trunk/openlayers/tests
 END
 Map.html
 K 25
 svn:wc:ra_dav:version-url
 V 46
-/!svn/ver/9068/trunk/openlayers/tests/Map.html
+/!svn/ver/9370/trunk/openlayers/tests/Map.html
 END
 Handler.html
 K 25
@@ -67,7 +67,7 @@ BaseTypes.html
 K 25
 svn:wc:ra_dav:version-url
 V 52
-/!svn/ver/8927/trunk/openlayers/tests/BaseTypes.html
+/!svn/ver/9255/trunk/openlayers/tests/BaseTypes.html
 END
 Popup.html
 K 25
@@ -121,7 +121,7 @@ Layer.html
 K 25
 svn:wc:ra_dav:version-url
 V 48
-/!svn/ver/8516/trunk/openlayers/tests/Layer.html
+/!svn/ver/9266/trunk/openlayers/tests/Layer.html
 END
 Projection.html
 K 25
@@ -133,7 +133,7 @@ Util.html
 K 25
 svn:wc:ra_dav:version-url
 V 47
-/!svn/ver/9022/trunk/openlayers/tests/Util.html
+/!svn/ver/9320/trunk/openlayers/tests/Util.html
 END
 OpenLayers.html
 K 25
@@ -169,7 +169,7 @@ Request.html
 K 25
 svn:wc:ra_dav:version-url
 V 50
-/!svn/ver/8816/trunk/openlayers/tests/Request.html
+/!svn/ver/9151/trunk/openlayers/tests/Request.html
 END
 Format.html
 K 25
@@ -217,7 +217,7 @@ Style.html
 K 25
 svn:wc:ra_dav:version-url
 V 48
-/!svn/ver/8975/trunk/openlayers/tests/Style.html
+/!svn/ver/9278/trunk/openlayers/tests/Style.html
 END
 Protocol.html
 K 25
@@ -271,5 +271,5 @@ list-tests.html
 K 25
 svn:wc:ra_dav:version-url
 V 53
-/!svn/ver/9116/trunk/openlayers/tests/list-tests.html
+/!svn/ver/9271/trunk/openlayers/tests/list-tests.html
 END

@@ -108,13 +108,19 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
             left = left - this.offset.x;
             top = top - this.offset.y;
         }
+
         
         var org = left + " " + top;
         this.root.setAttribute("coordorigin", org);
+        var roots = [this.root, this.vectorRoot, this.textRoot];
+        var root;
+        for(var i=0, len=roots.length; i<len; ++i) {
+            root = roots[i];
 
-        var size = this.size.w + " " + this.size.h;
-        this.root.setAttribute("coordsize", size);
-        
+            var size = this.size.w + " " + this.size.h;
+            root.setAttribute("coordsize", size);
+            
+        }
         // flip the VML display Y axis upside down so it 
         // matches the display Y axis of the map
         this.root.style.flip = "y";
@@ -132,12 +138,23 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
      */
     setSize: function(size) {
         OpenLayers.Renderer.prototype.setSize.apply(this, arguments);
-
-        this.rendererRoot.style.width = this.size.w + "px";
-        this.rendererRoot.style.height = this.size.h + "px";
-
-        this.root.style.width = this.size.w + "px";
-        this.root.style.height = this.size.h + "px";
+        
+        // setting width and height on all roots to avoid flicker which we
+        // would get with 100% width and height on child roots
+        var roots = [
+            this.rendererRoot,
+            this.root,
+            this.vectorRoot,
+            this.textRoot
+        ];
+        var w = this.size.w + "px";
+        var h = this.size.h + "px";
+        var root;
+        for(var i=0, len=roots.length; i<len; ++i) {
+            root = roots[i];
+            root.style.width = w;
+            root.style.height = h;
+        }
     },
 
     /**
@@ -198,24 +215,38 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         
         if (node._geometryClass == "OpenLayers.Geometry.Point") {
             if (style.externalGraphic) {
-                this.drawGraphic(node, geometry, style);
         		if (style.graphicTitle) {
                     node.title=style.graphicTitle;
                 } 
+                var width = style.graphicWidth || style.graphicHeight;
+                var height = style.graphicHeight || style.graphicWidth;
+                width = width ? width : style.pointRadius*2;
+                height = height ? height : style.pointRadius*2;
+
+                var resolution = this.getResolution();
+                var xOffset = (style.graphicXOffset != undefined) ?
+                    style.graphicXOffset : -(0.5 * width);
+                var yOffset = (style.graphicYOffset != undefined) ?
+                    style.graphicYOffset : -(0.5 * height);
+                
+                node.style.left = ((geometry.x/resolution - this.offset.x)+xOffset).toFixed();
+                node.style.top = ((geometry.y/resolution - this.offset.y)-(yOffset+height)).toFixed();
+                node.style.width = width + "px";
+                node.style.height = height + "px";
+                node.style.flip = "y";
+                
                 // modify style/options for fill and stroke styling below
                 style.fillColor = "none";
                 options.isStroked = false;
             } else if (this.isComplexSymbol(style.graphicName)) {
                 var cache = this.importSymbol(style.graphicName);
-                var symbolExtent = cache.extent;
-                var width = symbolExtent.getWidth();
-                var height = symbolExtent.getHeight();
                 node.setAttribute("path", cache.path);
-                node.setAttribute("coordorigin", symbolExtent.left + "," +
-                                                                symbolExtent.bottom);
-                node.setAttribute("coordsize", width + "," + height);
-                var ratio = width / height;
-                this.drawGraphic(node, geometry, style, ratio);
+                node.setAttribute("coordorigin", cache.left + "," +
+                                                                cache.bottom);
+                var size = cache.size;
+                node.setAttribute("coordsize", size + "," + size);        
+                this.drawCircle(node, geometry, style.pointRadius);
+                node.style.flip = "y";
             } else {
                 this.drawCircle(node, geometry, style.pointRadius);
             }
@@ -568,12 +599,15 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
     /**
      * Method: createRoot
      * Create the main root element
+     * 
+     * Parameters:
+     * suffix - {String} suffix to append to the id
      *
      * Returns:
-     * {DOMElement} The main root element to which we'll add vectors
+     * {DOMElement}
      */
-    createRoot: function() {
-        return this.nodeFactory(this.container.id + "_root", "olv:group");
+    createRoot: function(suffix) {
+        return this.nodeFactory(this.container.id + suffix, "olv:group");
     },
     
     /**************************************
@@ -626,33 +660,7 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         return false;
     },
 
-    /**
-     * Method: drawGraphic
-     * 
-     * Parameters:
-     * node - {DOMElement}
-     * geometry - {<OpenLayers.Geometry>}
-     * style - {Object}
-     * ratio - {Number}
-     */
-    drawGraphic: function(node, geometry, style, ratio) {
-        var diameter = style.pointRadius * 2;
-        var width = style.graphicWidth || diameter;
-        var height = style.graphicHeight || (ratio ? diameter / ratio : diameter);
 
-        var resolution = this.getResolution();
-        var xOffset = (style.graphicXOffset != undefined) ?
-            style.graphicXOffset : -(0.5 * width);
-        var yOffset = (style.graphicYOffset != undefined) ?
-            style.graphicYOffset : -(0.5 * height);
-        
-        node.style.left = ((geometry.x/resolution - this.offset.x)+xOffset).toFixed();
-        node.style.top = ((geometry.y/resolution - this.offset.y)-(yOffset+height)).toFixed();
-        node.style.width = width + "px";
-        node.style.height = height + "px";
-        node.style.flip = "y";
-    },
-    
     /**
      * Method: drawLineString
      * Render a linestring.
@@ -774,6 +782,55 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         
         return node;
     },
+    
+    /**
+     * Method: drawText
+     * This method is only called by the renderer itself.
+     * 
+     * Parameters: 
+     * featureId - {String}
+     * style -
+     * location - {<OpenLayers.Geometry.Point>}
+     */
+    drawText: function(featureId, style, location) {
+        var label = this.nodeFactory(featureId + this.LABEL_ID_SUFFIX, "olv:rect");
+        var textbox = this.nodeFactory(featureId + this.LABEL_ID_SUFFIX + "_textbox", "olv:textbox");
+        
+        var resolution = this.getResolution();
+        label.style.left = (location.x/resolution - this.offset.x).toFixed() + "px";
+        label.style.top = (location.y/resolution - this.offset.y).toFixed() + "px";
+        label.style.flip = "y";
+
+        textbox.innerText = style.label;
+
+        if (style.fillColor) {
+            textbox.style.color = style.fontColor;
+        }
+        if (style.fontFamily) {
+            textbox.style.fontFamily = style.fontFamily;
+        }
+        if (style.fontSize) {
+            textbox.style.fontSize = style.fontSize;
+        }
+        if (style.fontWeight) {
+            textbox.style.fontWeight = style.fontWeight;
+        }
+        textbox.style.whiteSpace = "nowrap";
+        textbox.inset = "0px,0px,0px,0px";
+
+        if(!label.parentNode) {
+            label.appendChild(textbox);
+            this.textRoot.appendChild(label);
+        }
+
+        var align = style.labelAlign || "cm";
+        var xshift = textbox.clientWidth *
+            (OpenLayers.Renderer.VML.LABEL_SHIFT[align.substr(0,1)]);
+        var yshift = textbox.clientHeight *
+            (OpenLayers.Renderer.VML.LABEL_SHIFT[align.substr(1,1)]);
+        label.style.left = parseInt(label.style.left)-xshift+"px";
+        label.style.top = parseInt(label.style.top)+yshift+"px";
+    },
 
     /**
      * Method: drawSurface
@@ -824,8 +881,11 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
      * {Boolean} true if successful, false otherwise
      */
     moveRoot: function(renderer) {
-        var layer = this.map.getLayer(this.container.id);
-        layer && this.clear();
+        var layer = this.map.getLayer(renderer.container.id);
+        if(layer instanceof OpenLayers.Layer.Vector.RootContainer) {
+            layer = this.map.getLayer(this.container.id);
+        }
+        layer && layer.renderer.clear();
         OpenLayers.Renderer.Elements.prototype.moveRoot.apply(this, arguments);
         layer && layer.redraw();
     },
@@ -875,10 +935,21 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         }
         pathitems.push("x e");
         var path = pathitems.join(" ");
+
+        var diff = (symbolExtent.getWidth() - symbolExtent.getHeight()) / 2;
+        if(diff > 0) {
+            symbolExtent.bottom = symbolExtent.bottom - diff;
+            symbolExtent.top = symbolExtent.top + diff;
+        } else {
+            symbolExtent.left = symbolExtent.left - diff;
+            symbolExtent.right = symbolExtent.right + diff;
+        }
         
         cache = {
             path: path,
-            extent: symbolExtent
+            size: symbolExtent.getWidth(), // equals getHeight() now
+            left: symbolExtent.left,
+            bottom: symbolExtent.bottom
         };
         this.symbolCache[id] = cache;
         
@@ -887,3 +958,16 @@ OpenLayers.Renderer.VML = OpenLayers.Class(OpenLayers.Renderer.Elements, {
     
     CLASS_NAME: "OpenLayers.Renderer.VML"
 });
+
+/**
+ * Constant: OpenLayers.Renderer.VML.LABEL_SHIFT
+ * {Object}
+ */
+OpenLayers.Renderer.VML.LABEL_SHIFT = {
+    "l": 0,
+    "c": .5,
+    "r": 1,
+    "t": 0,
+    "m": .5,
+    "b": 1
+};

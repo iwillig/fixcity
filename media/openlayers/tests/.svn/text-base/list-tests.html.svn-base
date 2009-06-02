@@ -17,6 +17,7 @@
     <li>Control/GetFeature.html</li>
     <li>Control/KeyboardDefaults.html</li>
     <li>Control/LayerSwitcher.html</li>
+    <li>Control/Measure.html</li>
     <li>Control/ModifyFeature.html</li>
     <li>Control/MousePosition.html</li>
     <li>Control/MouseToolbar.html</li>
@@ -33,6 +34,7 @@
     <li>Control/SelectFeature.html</li>
     <li>Control/Snapping.html</li>
     <li>Control/Split.html</li>
+    <li>Control/WMSGetFeatureInfo.html</li>
     <li>Events.html</li>
     <li>Extras.html</li>
     <li>Feature.html</li>
@@ -43,6 +45,8 @@
     <li>Filter/Logical.html</li>
     <li>Filter/Spatial.html</li>
     <li>Format.html</li>
+    <li>Format/ArcXML.html</li>
+    <li>Format/ArcXML/Features.html</li>
     <li>Format/GeoJSON.html</li>
     <li>Format/GeoRSS.html</li>
     <li>Format/GML.html</li>
@@ -52,14 +56,17 @@
     <li>Format/JSON.html</li>
     <li>Format/KML.html</li>
     <li>Format/OSM.html</li>
+    <li>Format/Text.html</li>
     <li>Format/SLD.html</li>
     <li>Format/SLD/v1_0_0.html</li>
     <li>Format/Filter.html</li>
     <li>Format/Filter/v1.html</li>
     <li>Format/Filter/v1_0_0.html</li>
     <li>Format/Filter/v1_1_0.html</li>
-    <li>Format/WFSDescribeFeatureType.html</li>
     <li>Format/WFS.html</li>
+    <li>Format/WFSCapabilities.html</li>
+    <li>Format/WFSCapabilities/v1.html</li>
+    <li>Format/WFSDescribeFeatureType.html</li>
     <li>Format/WFST.html</li>
     <li>Format/WFST/v1.html</li>
     <li>Format/WFST/v1_0_0.html</li>
@@ -68,6 +75,9 @@
     <li>Format/WMC.html</li>
     <li>Format/WMC/v1_1_0.html</li>
     <li>Format/WMC/v1.html</li>
+    <li>Format/WMSCapabilities.html</li>
+    <li>Format/WMSCapabilities/v1_1_1.html</li>
+    <li>Format/WMSDescribeLayer.html</li>
     <li>Format/WMSGetFeatureInfo.html</li>
     <li>Format/XML.html</li>
     <li>Geometry.html</li>
@@ -96,6 +106,7 @@
     <li>Icon.html</li>
     <li>Lang.html</li>
     <li>Layer.html</li>
+    <li>Layer/ArcIMS.html</li> 
     <li>Layer/ArcGIS93Rest.html</li>
     <li>Layer/EventPane.html</li>
     <li>Layer/FixedZoomLevels.html</li>
@@ -119,6 +130,7 @@
     <li>Layer/WFS.html</li>
     <li>Layer/WMS.html</li>
     <li>Layer/WrapDateLine.html</li>
+    <li>Layer/XYZ.html</li>
     <li>Layer/Yahoo.html</li>
     <li>Map.html</li>
     <li>Marker.html</li>

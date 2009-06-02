@@ -1,9 +1,9 @@
-{% extends "base.html" %} 
-{% block title %} fixcity.org {% endblock %} 
+{% extends "base.html" %}
+{% block title %} fixcity.org {% endblock %}
 
-{% block header %} 
+{% block header %}
 
-<script src="/site_media/openlayers/OpenLayers.js"></script>
+<script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
 <script defer="defer" type="text/javascript">
     var map, layer, select;
     var options = {
@@ -17,30 +17,52 @@
 	   };
 
         function loadMap(){
-	map = new OpenLayers.Map('map',options);
+	map = new OpenLayers.Map('home-map',options);
 
 	var osm = new OpenLayers.Layer.WMS(
                  "OpenStreetMap",
-                 "http://maps.opengeo.org/geoserver/gwc/service/wms",   
+                 "http://maps.opengeo.org/geowebcache/service/wms",
        {
-            layers: "openstreetmap", 
+            layers: "openstreetmap",
             format: "image/png",
             bgcolor: '#A1BDC4'
-            }, 
-            {wrapDateLine: true} 
+            },
+            {wrapDateLine: true}
         );
-    
+
 	var style = new OpenLayers.Style({
-                    pointRadius: "${radius}",
-		    fillColor: "#DFABAB",
-                    strokeColor: "#8147ad",
+      		    label: "${count}",
+		    fontColor: "#eee",
+                    pointRadius: "10",
+		    fillColor: "#30c09b",
+                    strokeColor: "#1e7861",
                     strokeWidth: 2,
                     strokeOpacity: 0.8
-		    
+
                 }, {
                     context: {
                         radius: function(feature) {
-                            return Math.min(feature.attributes.count, 7) + 5;
+                            return Math.min(feature.attributes.count, 10) + 10;
+		    },
+			count: function(feature) {
+			return feature.attributes.id ;
+		    }
+
+                    }
+                });
+
+
+	var style_built = new OpenLayers.Style({
+                    pointRadius: "${radius}",
+		    fillColor: "#9a97d4",
+                    strokeColor: "#3c34b4",
+                    strokeWidth: 2,
+                    strokeOpacity: 0.8
+
+                }, {
+                    context: {
+                        radius: function(feature) {
+                            return Math.min(feature.attributes.count, 7) + 3;
                         }
                     }
                 });
@@ -48,19 +70,41 @@
 
 	var racks = new OpenLayers.Layer.Vector("Racks", {
 		    projection: map.displayProjection,
+		    extractFeatures: true,
                     strategies: [
-                        new OpenLayers.Strategy.Fixed(),
-                        new OpenLayers.Strategy.Cluster()
-                    ],		  
+			new OpenLayers.Strategy.Fixed(),
+                    ],
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: "./rack/requested.kml",
-                        params: {		     
-				
+                        params: {
                         },
                         format: new OpenLayers.Format.KML()
                     }),
                     styleMap: new OpenLayers.StyleMap({
                         "default": style,
+                        "select": {
+                            fillColor: "#ff9e73",
+                            strokeColor: "#925438"
+                        }
+                    })
+
+                });
+
+
+	var racks_built = new OpenLayers.Layer.Vector("Racks", {
+		    projection: map.displayProjection,
+                    strategies: [
+                        new OpenLayers.Strategy.Fixed(),
+                    ],
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: "./rack/built.kml",
+                        params: {
+
+                        },
+                        format: new OpenLayers.Format.KML()
+                    }),
+                    styleMap: new OpenLayers.StyleMap({
+                        "default": style_built,
                         "select": {
                             fillColor: "#8aeeef",
                             strokeColor: "#32a8a9"
@@ -68,97 +112,94 @@
                     })
 
                 });
-    
+
+
         map.addLayers([osm,racks]);
 
+        selectControl = new OpenLayers.Control.SelectFeature(
+           [racks],
+          {
+	      clickout:true, toggle: false,
+	      multiple: false, hover: false
+          });
 
-        var bounds = new OpenLayers.Bounds{{rack_extent}} ; 
-	bounds.transform(map.displayProjection, map.projection); 
-        map.zoomToExtent(bounds); 
+	map.addControl(selectControl);
+	selectControl.activate();
+
+	racks.events.on({
+		"featureselected": function(e) {
+                    content = "<div><h3> <a href='/rack/" + e.feature.attributes.id + "'>" + e.feature.attributes.name +"</a> </h3> <p> " +  e.feature.attributes.description  +" </div>",
+		    popup = new OpenLayers.Popup.FramedCloud("chicken",
+				 e.feature.geometry.getBounds().getCenterLonLat(),
+				 null,
+				 content,
+				 null, true );
+		               e.feature.popup = popup;
+               		    map.addPopup(popup);
+		},
+		  "featureunselected": function(e) {
+		      map.removePopup(e.feature.popup);
+		      e.feature.popup.destroy();
+		      e.feature.popup = null;
+		 }
+
+
+	    });
+
+
+        var bounds = new OpenLayers.Bounds(-73.9703369140625, 40.698036193847699, -73.920738220214801, 40.739128112792997) ;
+        bounds.transform(map.displayProjection, map.projection);
+        map.zoomToExtent(bounds);
         }
 
 
 </script>
 
-<script type="text/javascript" src="/site_media/jquery.js"></script>
-<script type="text/javascript" src="/site_media/corner/jquery.corners.js"></script>
-<script type="text/javascript">
- $(document).ready(function() {
-       $("#tip-control").click(function () {
-      $("#tip").toggle();
-    });
-    $('#menu li').corners('top','10px');
-    $('#tip-con').corners('top','10px');
-
-    loadMap();
-
- });
+<script defer="defer" type="text/javascript">
+  window.onload = function() {
+    loadMap() ;
+   }
 </script>
 
 {% endblock %}
-
-{% block menu %} 
+{% block menu %}
 <ul id="menu">
-  <li class="active">
-    <a href="/">(1) REQUEST</a>
-    <p> Request a bike rack </p>
+  <li class="active suggest">
+    <a href="/">(1) SUGGEST</a>
+    <p> Suggest a bike rack location</p>
   </li>
-  <li class="arrow"> </li>
-  <li>
+  <li class="assess">
     <a href="/assess/">(2) ASSESS</a>
     <p> Assess current requested locations </p>
   </li>
-  <li class="arrow"> </li>
-  <li>
+  <li class="submit">
     <a href="/submit/">(3) SUBMIT</a>
     <p> Submit your request to the DOT </p>
   </li>
-  <li class="arrow"> </li>
-  <li>
-    <a href="/built/"> (4) BUILT</a>
+  <li class="built">
+    <a href="/built/"> (4) BUILD</a>
     <p> See racks aready built </p>
   </li>
 </ul>
 {% endblock %}
 
 
-{% block content %} 
-  <div id="page-title">
-    <h2 class="title">Home Page</h2>
-    <div id="tip-con"> 
-      <h3 id="tip-control">Tips and help click to view</h3>
-      <div id="tip">
-	<h4>Lily, we need some tips</h4>
-	<p> Vivamus tincidunt tristique urna. Ut id justo quis nulla gravida feugiat. In hac habitasse platea dictumst. Nam dictum molestie orci. Suspendisse potenti. Nam a odio in nulla ultricies venenatis. Pellentesque ac tellus. Sed dignissim quam vel orci. Proin nulla orci, auctor nec, tempus euismod, consectetur cursus, metus. Curabitur sagittis pellentesque felis. </p>
-      </div> 
-    </div>
+{% block content %}
+<div class="suggest">
+  <br />
+    <div id="home-map"> </div>
+    <div id="introduction-text">
+  <div id="index-form">
+    <h2>Collaborate with your community and the DOT to get better bike parking faster!</h2>
+    <form action="rack/new/" method="GET">
+      <button>Suggest a rack location </button>
+    </form>
+    <h4>Read this success story from the <a href="http://www.livablestreets.com/streetswiki/request-bike-racks-for-your-neighborhood"> Park Slope Civic Council</a></h4>
   </div>
-  <div id="map-con">
-    <h4>Find location by community board</h4>
-    <a href="#">Select by Community Board </a>
-    <div id="cbmenu">
-      {% for comunityboard in communityboard_list %}
-      <a href="#">{{comunityboard.name}}</a>
-      {% endfor %}
-    </div>
-    <div id="map"> 
-    </div>
+  <br />
   </div>
-  
-  <div id="activity-con">
-    <hr />
-    <div id="search-con"> 
-      <h4> Find request location by text search </h4>
-      <div class="search"> 
-	<form action="rack/new/" method="get"> 
-	  <p> Search for location <strong><a href="rack/new/?address=Brooklyn%2C+NY%2C+11238">Brooklyn, NY, 11238</a></strong></p>
-	  <input type="text" id="address" name="address" /> 
-	  <input type="submit" value="Search for location"> 
-	</form>
-      </div> 
-    </div>
-  </div>
-{% endblock %} 
+</div>
+{% endblock %}
 
 
 

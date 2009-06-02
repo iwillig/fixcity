@@ -28,11 +28,42 @@ class Rack(models.Model):
 
 
 
+class Rack_Document(models.Model): 
+    file = models.FileField(upload_to='documents/', blank=True, null=True)
+    contact_email = models.EmailField()
+    doc_rack = models.ForeignKey(Rack)
+        
+    class Meta: 
+        ordering = ['doc_rack']
+
+    def __unicode__(self):
+        return self.contact_email
+
+
+class Rack_Photo(models.Model): 
+    image = models.ImageField(upload_to='images/racks/', blank=True, null=True)
+    contact_email = models.EmailField()
+    ph_rack = models.ForeignKey(Rack)
+        
+    class Meta: 
+        ordering = ['ph_rack']
+
+    def __unicode__(self):
+        return self.contact_email
+
+
 
 class Comment(models.Model):
-      text = models.TextField()
-      contact_email = models.EmailField()
-      rack = models.ForeignKey(Rack)
+    text = models.TextField()
+    contact_email = models.EmailField()
+    rack = models.ForeignKey(Rack)
+    
+    class Meta: 
+        ordering = ['rack']
+
+    def __unicode__(self):
+        return self.contact_email
+
 
 
 class Neighborhoods(models.Model):
@@ -41,7 +72,7 @@ class Neighborhoods(models.Model):
     county = models.CharField(max_length=43)
     city = models.CharField(max_length=64)
     name = models.CharField(max_length=64)
-    regionid = models.DecimalField(max_digits=65535, decimal_places=65535)
+    regionid = models.IntegerField()
     the_geom = models.MultiPolygonField() 
     objects = models.GeoManager()
 
@@ -57,15 +88,10 @@ class  CommunityBoard(models.Model):
     borocd = models.IntegerField()
     the_geom = models.MultiPolygonField()
     name = models.IntegerField()
-    neighborhoods = models.CharField(max_length=100)
-    population_1980 = models.IntegerField(blank=True, null=True)
-    population_1990 = models.IntegerField(blank=True, null=True)
-    population_2000 = models.IntegerField(blank=True, null=True)
-    borough = models.CharField(max_length=20)
     objects = models.GeoManager()
 
     class Meta:
-        db_table = u'gis_comunity_board'
+        db_table = u'gis_community_board'
         ordering = ['name']
 
 
@@ -73,7 +99,7 @@ class  CommunityBoard(models.Model):
 class SubwayStations(models.Model):
     gid = models.IntegerField(primary_key=True)
     objectid = models.TextField() # This field type is a guess.
-    id = models.DecimalField(max_digits=65535, decimal_places=65535)
+    id = models.IntegerField()
     name = models.CharField(max_length=31)
     alt_name = models.CharField(max_length=38)
     cross_st = models.CharField(max_length=27)
@@ -102,3 +128,4 @@ class CommentForm(ModelForm):
     class Meta: 
         model = Comment
         
+

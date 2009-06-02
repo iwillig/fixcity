@@ -1,15 +1,15 @@
 9
 
 dir
-9142
+9399
 http://svn.openlayers.org/trunk/openlayers/lib
 http://svn.openlayers.org
 
 
 
-2009-03-28T16:17:54.270998Z
-9142
-elemoine
+2009-05-18T19:49:10.267253Z
+9386
+tschaub
 
 
 svn:special svn:externals svn:needs-lock
@@ -44,11 +44,11 @@ file
 
 
 
-2009-03-29T18:22:29.000000Z
-d23524bc8e68deae6472150d9ee07db1
-2009-03-22T14:25:18.878902Z
-9116
-ahocevar
+2009-05-20T02:07:28.000000Z
+e26d6eecd472bd525939186111663099
+2009-04-20T15:24:35.815189Z
+9309
+crschmidt
 has-props
 
 
@@ -70,5 +70,5 @@ has-props
 
 
 
-11500
+12294
 

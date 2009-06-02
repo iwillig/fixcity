@@ -1,9 +1,11 @@
 {% extends "base.html" %} 
+{% load thumbnail %}
+
 {% block title %} fixcity - overview page  {% endblock %} 
 
 {% block header %} 
 
-<script src="http://localhost/openlayers/OpenLayers.js"></script>
+<script src="/site_media/openlayers/OpenLayers.js"></script>
 <script defer="defer" type="text/javascript">
     var map, layer, select;
     var options = {
@@ -21,7 +23,7 @@
 
 	var osm = new OpenLayers.Layer.WMS(
                  "OpenStreetMap",
-                 "http://maps.opengeo.org/geoserver/gwc/service/wms",   
+                 "http://maps.opengeo.org/geowebcache/service/wms",   
        {
             layers: "openstreetmap", 
             format: "image/png",
@@ -33,7 +35,6 @@
     {% for rack in rack_query %} 
         var rack = new OpenLayers.Layer.Vector("Racks", {
                     projection: map.displayProjection,
-
                     strategies: [
                         new OpenLayers.Strategy.Fixed(),
                     ],  
@@ -58,41 +59,30 @@
 
 </script>    
 
-<script type="text/javascript" src="/site_media/jquery.js"></script>
-<script type="text/javascript" src="/site_media/corner/jquery.corners.js"></script>
-<script type="text/javascript">
- $(document).ready(function() {
-       $("#tip-control").click(function () {
-      $("#tip").toggle();
-    });
-    $('#menu li').corners('top','10px');
-    $('#tip-con').corners('top','10px');
+<script defer="defer" type="text/javascript"> 
+  window.onload = function() { 
+    loadMap() ; 
+   }
+</script> 
 
-    loadMap();
-
- });
-</script>
 
 {% endblock %}
 
 {% block menu %} 
 <ul id="menu">
-  <li>
-    <a href="/">(1) REQUEST</a>
-    <p> Request a bike rack </p>
+  <li class="suggest">
+    <a href="/">(1) SUGGEST</a>
+    <p> Suggest a bike rack location</p>
   </li>
-  <li class="arrow"> </li>
-  <li class="active">
+  <li class="assess">
     <a href="/assess/">(2) ASSESS</a>
     <p> Assess current requested locations </p>
   </li>
-  <li class="arrow"> </li>
-  <li>
+  <li class="submit">
     <a href="/submit/">(3) SUBMIT</a>
     <p> Submit your request to the DOT </p>
   </li>
-  <li class="arrow"> </li>
-  <li>
+  <li class="built">
     <a href="/built/"> (4) BUILT</a>
     <p> See racks already built </p>
   </li>
@@ -101,95 +91,32 @@
 {% endblock %} 
 
 {% block content %} 
-  <div id="page-title">
-    <h2 class="title">Rack overview page</h2>
-    <div id="tip-con"> 
-      <h3 id="tip-control">Tips and help click to view</h3>
-      <div id="tip">
-	<h4>Lily, we need some tips</h4>
-	<p> Vivamus tincidunt tristique urna. Ut id justo quis nulla gravida feugiat. In hac habitasse platea dictumst. Nam dictum molestie orci. Suspendisse potenti. Nam a odio in nulla ultricies venenatis. Pellentesque ac tellus. Sed dignissim quam vel orci. Proin nulla orci, auctor nec, tempus euismod, consectetur cursus, metus. Curabitur sagittis pellentesque felis. </p>
-      </div> 
-    </div>
-  </div>
-
-
-
 {% for rack in rack_query %} 
-<div id="map-con"> 
-  <div id="overview-map"> </div>
-</div>
-<div id="overview-about">
-  <div id="rack-status"><p>This rack request is under <strong>assessment</strong><br /><a href="#">(What does this mean?)</a> </p></div>
-  <h2>{{rack.address}}</h2>
-  <p> <a href="/rack/{{rack.id}}.kml">Download rack request as kml</a></p>
-  <p>{{rack.date}}</p>
-  <p> {{rack.meta}} </p> <br />
-  <img src="http://localhost/media/{{rack.photo.url}}" />
+<div class="assess">
+  <div id="page-title">
+    <h2 class="title">{{rack.address}}</h2>
   </div>
-<!-- a place for meta data about each rack request -->
-<div id="overview-meta">
-  <hr />
-  <h3> Important planning information </h3>
-  <p> Please upload the necessary information for processing this rack request </p>
-  <ul>
-    <li>
-    <span>
-       <form action="." method="post">
-         <input type="file" name="photo" />
-         <input type="text" name="email" /> <br />
-        <button>Upload photos</button>
-       </form>
-    </span>
-    <h4> Photos </h4>
-       <p> Please upload your photos about this racks. <a href="#">(How to take a photo?) </a></p>
-
-    <hr /> 
-    {% for rack_photo in photo_query %}
-       asdasd
-    {% endfor %} 
-
-    </li>
-    <li>
-       <form action="." method="post">
-         <input type="file" name="photo" />
-         <input type="text" name="email" /> <br />
-         <button>Upload documents</button>
-       </form>    
-      <h4> Planning documents </h4>
-      <p> Please upload any planning documents about this. <a href="#">(How to find the information?)</a> </p>
-      {% for 
-    </li>
-  </ul>
-  <hr />
+<div id="overview-top">
+  <div id="map-con"> 
+    <div id="overview-map"> </div>
+  </div>
+  <div id="overview-photo">
+       {% if rack.photo %}
+              <img src="{{rack.photo.url}}" />
+       {% else %} 
+	   <div class="error error-photo">
+	     <h2> No photos about this request </h2>
+	     <form  enctype="multipart/form-data" action="/rack/{{rack.id}}/updatephoto" method="POST">
+	     <input type="file" name="photo" />
+	     <input type="submit" value="Upload a photo about this"/>
+	     </form> 
+	   </div>
+	   {% endif %}
+	</div>
 </div>
-<div id="overview-comment">
-<h3>Comments</h3>
 
-<form action="/comment/add/" method="post"> 
-  <p> Leave a comment about this rack request </p>
-  <textarea name="text"> </textarea> <br />
-  <p>Contact email </p>
-  <input type="text" name="contact_email" />
-  <select name="rack" id="id_rack">
-    <option value="{{rack.id}}"></option>
-  </select>
-  <input type="submit" value="Add a comment"/>
-</form>
-  
-<hr />
 {% endfor %} 
-<a name="comments"> </a>
-  <ul class="comments"> 
-    {% for comment in comment_query %} 
-    <li>
-    <p> {{comment.text}}</p>
-    <p>{{comment.contact_email}}</p>
-    </li>
-    
-    {% endfor %} 
-  </ul>
 </div>
-
 {% endblock %} 
 
 

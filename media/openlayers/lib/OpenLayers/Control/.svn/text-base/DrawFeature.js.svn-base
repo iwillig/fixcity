@@ -34,7 +34,7 @@ OpenLayers.Control.DrawFeature = OpenLayers.Class(OpenLayers.Control, {
      * Constant: EVENT_TYPES
      *
      * Supported event types:
-     *  - *featureadded* Triggered when a feature is added
+     * featureadded - Triggered when a feature is added
      */
     EVENT_TYPES: ["featureadded"],
     
@@ -73,6 +73,11 @@ OpenLayers.Control.DrawFeature = OpenLayers.Class(OpenLayers.Control, {
                 modify: function(vertex, feature) {
                     this.layer.events.triggerEvent(
                         "sketchmodified", {vertex: vertex, feature: feature}
+                    );
+                },
+                create: function(vertex, feature) {
+                    this.layer.events.triggerEvent(
+                        "sketchstarted", {vertex: vertex, feature: feature}
                     );
                 }
             },

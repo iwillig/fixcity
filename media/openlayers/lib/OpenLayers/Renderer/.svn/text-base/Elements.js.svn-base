@@ -43,7 +43,7 @@ OpenLayers.ElementsIndexer = OpenLayers.Class({
      *     the Z_ORDER_DRAWING_ORDER comparison method.
      */
     compare: null,
-   
+    
     /**
      * APIMethod: initialize
      * Create a new indexer with 
@@ -109,9 +109,7 @@ OpenLayers.ElementsIndexer = OpenLayers.Class({
         // If the new node should be before another in the index
         // order, return the node before which we have to insert the new one;
         // else, return null to indicate that the new node can be appended.
-        var nextIndex = rightIndex + 1;
-        return nextIndex < this.order.length ?
-                OpenLayers.Util.getElement(this.order[nextIndex]) : null;
+	return this.getNextElement(rightIndex);
     },
     
     /**
@@ -200,6 +198,30 @@ OpenLayers.ElementsIndexer = OpenLayers.Class({
             this.maxZIndex = zIndex;
         }
     },
+	
+    /**
+     * APIMethod: getNextElement
+     * Get the next element in the order stack.
+     * 
+     * Parameters:
+     * index - {Integer} The index of the current node in this.order.
+     * 
+     * Returns:
+     * {DOMElement} the node following the index passed in, or
+     *     null.
+     */
+    getNextElement: function(index) {
+		var nextIndex = index + 1;
+        if (nextIndex < this.order.length){
+			var nextElement = OpenLayers.Util.getElement(this.order[nextIndex]);
+			if (nextElement == undefined){
+			  nextElement = this.getNextElement(nextIndex);
+			}
+			return nextElement;
+		} else {
+			return null;
+		} 
+    },	
     
     CLASS_NAME: "OpenLayers.ElementsIndexer"
 });
@@ -332,6 +354,24 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
     rendererRoot: null,
     
     /**
+     * Property: root
+     * {DOMElement}
+     */
+    root: null,
+    
+    /**
+     * Property: vectorRoot
+     * {DOMElement}
+     */
+    vectorRoot: null,
+
+    /**
+     * Property: textRoot
+     * {DOMElement}
+     */
+    textRoot: null,
+
+    /**
      * Property: xmlns
      * {String}
      */    
@@ -350,6 +390,12 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
      * {String}
      */
     BACKGROUND_ID_SUFFIX: "_background",
+    
+    /**
+     * Constant: BACKGROUND_ID_SUFFIX
+     * {String}
+     */
+    LABEL_ID_SUFFIX: "_label",
     
     /**
      * Property: minimumSymbolizer
@@ -377,7 +423,12 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
         OpenLayers.Renderer.prototype.initialize.apply(this, arguments);
 
         this.rendererRoot = this.createRenderRoot();
-        this.root = this.createRoot();
+        this.root = this.createRoot("_root");
+        this.vectorRoot = this.createRoot("_vroot");
+        this.textRoot = this.createRoot("_troot");
+        
+        this.root.appendChild(this.vectorRoot);
+        this.root.appendChild(this.textRoot);
         
         this.rendererRoot.appendChild(this.root);
         this.container.appendChild(this.rendererRoot);
@@ -406,9 +457,14 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
      * Remove all the elements from the root
      */    
     clear: function() {
-        if (this.root) {
-            while (this.root.childNodes.length > 0) {
-                this.root.removeChild(this.root.firstChild);
+        if (this.vectorRoot) {
+            while (this.vectorRoot.childNodes.length > 0) {
+                this.vectorRoot.removeChild(this.vectorRoot.firstChild);
+            }
+        }
+        if (this.textRoot) {
+            while (this.textRoot.childNodes.length > 0) {
+                this.textRoot.removeChild(this.textRoot.firstChild);
             }
         }
         if (this.indexer) {
@@ -522,15 +578,15 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
         if (this.indexer) {
             var insert = this.indexer.insert(node);
             if (insert) {
-                this.root.insertBefore(node, insert);
+                this.vectorRoot.insertBefore(node, insert);
             } else {
-                this.root.appendChild(node);
+                this.vectorRoot.appendChild(node);
             }
         } else {
             // if there's no indexer, simply append the node to root,
             // but only if the node is a new one
-            if (node.parentNode !== this.root){ 
-                this.root.appendChild(node);
+            if (node.parentNode !== this.vectorRoot){ 
+                this.vectorRoot.appendChild(node);
             }
         }
         
@@ -605,12 +661,20 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
         OpenLayers.Util.applyDefaults(style, this.minimumSymbolizer);
 
         var options = {
-            'isFilled': true,
-            'isStroked': !!style.strokeWidth
+            'isFilled': style.fill === undefined ?
+                true :
+                style.fill,
+            'isStroked': style.stroke === undefined ?
+                !!style.strokeWidth :
+                style.stroke
         };
         var drawn;
         switch (geometry.CLASS_NAME) {
             case "OpenLayers.Geometry.Point":
+                if(style.graphic === false) {
+                    options.isFilled = false;
+                    options.isStroked = false;
+                }
                 drawn = this.drawPoint(node, geometry);
                 break;
             case "OpenLayers.Geometry.LineString":
@@ -767,6 +831,20 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
     drawSurface: function(node, geometry) {},
 
     /**
+     * Method: removeText
+     * Removes a label
+     * 
+     * Parameters:
+     * featureId - {String}
+     */
+    removeText: function(featureId) {
+        var label = document.getElementById(featureId + this.LABEL_ID_SUFFIX);
+        if (label) {
+            this.textRoot.removeChild(label);
+        }
+    },
+
+    /**
      * Method: getFeatureIdFromEvent
      * 
      * Parameters:
@@ -898,17 +976,16 @@ OpenLayers.Renderer.Elements = OpenLayers.Class(OpenLayers.Renderer, {
     },
     
     /**
-     * Method: getRenderLayer
+     * Method: getRenderLayerId
      * Gets the layer that this renderer's output appears on. If moveRoot was
-     * used, this will be different from the layer containing the features
-     * rendered by this renderer.
+     * used, this will be different from the id of the layer containing the
+     * features rendered by this renderer.
      * 
      * Returns:
-     * {<OpenLayers.Layer.Vector>} the output layer, if any (i.e. this method
-     * will not return a layer if it is not added to a map).
+     * {String} the id of the output layer.
      */
-    getRenderLayer: function() {
-        return this.map.getLayer(this.root.parentNode.parentNode.id);
+    getRenderLayerId: function() {
+        return this.root.parentNode.parentNode.id;
     },
     
     /**

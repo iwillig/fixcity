@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 43
-/!svn/ver/9116/trunk/openlayers/tests/Layer
+/!svn/ver/9265/trunk/openlayers/tests/Layer
 END
 Google.html
 K 25
@@ -14,6 +14,12 @@ K 25
 svn:wc:ra_dav:version-url
 V 54
 /!svn/ver/9038/trunk/openlayers/tests/Layer/georss.txt
+END
+ArcIMS.html
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/!svn/ver/9249/trunk/openlayers/tests/Layer/ArcIMS.html
 END
 Yahoo.html
 K 25
@@ -75,6 +81,12 @@ svn:wc:ra_dav:version-url
 V 54
 /!svn/ver/6724/trunk/openlayers/tests/Layer/KaMap.html
 END
+XYZ.html
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/!svn/ver/9247/trunk/openlayers/tests/Layer/XYZ.html
+END
 MapGuide.html
 K 25
 svn:wc:ra_dav:version-url
@@ -85,7 +97,7 @@ Vector.html
 K 25
 svn:wc:ra_dav:version-url
 V 55
-/!svn/ver/8956/trunk/openlayers/tests/Layer/Vector.html
+/!svn/ver/9265/trunk/openlayers/tests/Layer/Vector.html
 END
 GeoRSS.html
 K 25
@@ -175,7 +187,7 @@ Markers.html
 K 25
 svn:wc:ra_dav:version-url
 V 56
-/!svn/ver/8230/trunk/openlayers/tests/Layer/Markers.html
+/!svn/ver/9233/trunk/openlayers/tests/Layer/Markers.html
 END
 WMS.html
 K 25

@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 37
-/!svn/ver/9038/trunk/openlayers/tools
+/!svn/ver/9170/trunk/openlayers/tools
 END
 exampleparser.py
 K 25
@@ -25,7 +25,7 @@ mergejs.py
 K 25
 svn:wc:ra_dav:version-url
 V 48
-/!svn/ver/8979/trunk/openlayers/tools/mergejs.py
+/!svn/ver/9170/trunk/openlayers/tools/mergejs.py
 END
 shrinksafe.py
 K 25

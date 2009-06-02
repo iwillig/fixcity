@@ -2,27 +2,32 @@
           "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
-`  <title>{% block title %} {% endblock %}</title> 
+  <title>{% block title %} {% endblock %}</title> 
      <!-- Framework CSS -->
      <link rel="stylesheet" href="/site_media/blueprint/screen.css" type="text/css" media="screen, projection">
      <link rel="stylesheet" href="/site_media/bmabr.css" type="text/css" media=" screen, projection">
      <!--[if IE]><link rel="stylesheet" href="site_media/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
-
      {% block header %} 
      {% endblock %}
-
   </head>
   <body>
-   <div class="login-con"> </div>
    <div class="container">
-     <h1><a class="title" href="/">BUILD A BIKE RACK</a></h1>
+        <div id="login-con">
+     {% if user.is_authenticated %}
+	  <h4> {{user.first_name}} {{user.last_name}}</h4>
+	  <a href="/logout">Logout</a>
+     {% else %}
+        <a class="admin" href="accounts/login"> Login</a>
+     {% endif %}        
+   </div>
+
+     <h1><a class="title" href="/">BUILD ME A BIKE RACK</a></h1>
      <div id="header">
      {% block menu %}
      {% endblock %}
      </div>
      <div class="content">
        {% block content %}{% endblock %}
-     </div>
    </div>
   </body>
 </html> 

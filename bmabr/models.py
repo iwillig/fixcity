@@ -2,26 +2,44 @@ from django.contrib.gis.db import models
 from django.forms import ModelForm
 
 
-
-class Rack(models.Model): 
-    location = models.PointField(srid=4326)
-    date = models.DateTimeField()    
-    address = models.CharField(max_length=200)
-    meta = models.TextField()
-    contact_email = models.EmailField()
-    STATUS_STATE  = ( 
-        ('r', 'requested'),
-        ('a', 'undering assessment'),
-        ('b','built'),
-        ('n','not built')
-                      
-    )
-    photo = models.ImageField(upload_to='images/racks/', blank=True, null=True)
-    status = models.CharField(max_length=1, choices=STATUS_STATE)
+class  CommunityBoard(models.Model):
+    gid = models.IntegerField(primary_key=True)
+    borocd = models.IntegerField()
+    name = models.CharField(max_length=10)
+    the_geom = models.MultiPolygonField()
     objects = models.GeoManager()
 
     class Meta:
-        ordering = ['date']
+        db_table = u'gis_community_board'
+        ordering = ['name']
+
+    def __unicode__(self):
+        return "Brooklyn Communtiy Board %s " % self.name
+
+
+
+
+class Rack(models.Model): 
+    address = models.CharField(max_length=200)
+    title = models.CharField(max_length=50)
+    date = models.DateTimeField()    
+    description = models.TextField(blank=True)
+    email = models.EmailField()
+    STATUS_STATE  = ( 
+        ('suggest', 'suggest'),
+        ('assessing', 'assessing'),
+        ('assessed', 'assessed'),
+        ('built','built'),
+        ('rejected','rejected')                      
+    )
+    communityboard = models.ForeignKey(CommunityBoard)
+    photo = models.ImageField(upload_to='images/racks/', blank=True, null=True)
+    status = models.CharField(max_length=10, choices=STATUS_STATE)
+    location = models.PointField(srid=4326)
+    objects = models.GeoManager()
+
+    class Meta:
+        ordering = ['communityboard']
 
     def __unicode__(self):
         return self.address
@@ -72,7 +90,7 @@ class Neighborhoods(models.Model):
     county = models.CharField(max_length=43)
     city = models.CharField(max_length=64)
     name = models.CharField(max_length=64)
-    regionid = models.DecimalField(max_digits=65535, decimal_places=65535)
+    regionid = models.IntegerField()
     the_geom = models.MultiPolygonField() 
     objects = models.GeoManager()
 
@@ -83,28 +101,10 @@ class Neighborhoods(models.Model):
         return self.name
 
 
-class  CommunityBoard(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    borocd = models.IntegerField()
-    the_geom = models.MultiPolygonField()
-    name = models.IntegerField()
-    neighborhoods = models.CharField(max_length=100)
-    population_1980 = models.IntegerField(blank=True, null=True)
-    population_1990 = models.IntegerField(blank=True, null=True)
-    population_2000 = models.IntegerField(blank=True, null=True)
-    borough = models.CharField(max_length=20)
-    objects = models.GeoManager()
-
-    class Meta:
-        db_table = u'gis_community_board'
-        ordering = ['name']
-
-
-
 class SubwayStations(models.Model):
     gid = models.IntegerField(primary_key=True)
     objectid = models.TextField() # This field type is a guess.
-    id = models.DecimalField(max_digits=65535, decimal_places=65535)
+    id = models.IntegerField()
     name = models.CharField(max_length=31)
     alt_name = models.CharField(max_length=38)
     cross_st = models.CharField(max_length=27)
@@ -133,3 +133,4 @@ class CommentForm(ModelForm):
     class Meta: 
         model = Comment
         
+

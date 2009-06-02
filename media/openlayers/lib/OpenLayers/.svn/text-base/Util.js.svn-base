@@ -1356,7 +1356,10 @@ OpenLayers.Util.createUrlObject = function(url, options) {
     a.href = url;
     
   //host (without port)
-    urlObject.host = a.host;
+    // if we don't have a host (which is the case with URLs starting with "/"
+    // in IE), take the window location's host to match other browsers that
+    // fill in the window's location host automatically
+    urlObject.host = a.host || window.location.host;
     var port = a.port;
     if (port.length <= 0) {
         var newHostLength = urlObject.host.length - (port.length);
@@ -1379,7 +1382,6 @@ OpenLayers.Util.createUrlObject = function(url, options) {
         queryString = (qMark != -1) ? url.substr(qMark) : "";
     }
     urlObject.args = OpenLayers.Util.getParameters(queryString);
-
 
   //pathname (this part allows for relative <-> absolute comparison)
     if ( ((urlObject.protocol == "file:") && (url.indexOf("file:") != -1)) || 
@@ -1538,9 +1540,7 @@ OpenLayers.Util.getRenderedDimensions = function(contentHTML, size, options) {
     
     // create temp container div with restricted size
     var container = document.createElement("div");
-    container.style.overflow= "";
-    container.style.position = "absolute";
-    container.style.left = "-9999px";
+    container.style.visibility = "hidden";
         
     var containerElement = (options && options.containerElement) 
     	? options.containerElement : document.body;
@@ -1565,11 +1565,39 @@ OpenLayers.Util.getRenderedDimensions = function(contentHTML, size, options) {
     var content = document.createElement("div");
     content.innerHTML = contentHTML;
     
+    // we need overflow visible when calculating the size
+    content.style.overflow = "visible";
+    if (content.childNodes) {
+        for (var i=0, l=content.childNodes.length; i<l; i++) {
+            if (!content.childNodes[i].style) continue;
+            content.childNodes[i].style.overflow = "visible";
+        }
+    }
+    
     // add content to restricted container 
     container.appendChild(content);
     
     // append container to body for rendering
     containerElement.appendChild(container);
+    
+    // Opera and IE7 can't handle a node with position:aboslute if it inherits
+    // position:absolute from a parent.
+    var parentHasPositionAbsolute = false;
+    var parent = container.parentNode;
+    while (parent && parent.tagName.toLowerCase()!="body") {
+        var parentPosition = OpenLayers.Element.getStyle(parent, "position");
+        if(parentPosition == "absolute") {
+            parentHasPositionAbsolute = true;
+            break;
+        } else if (parentPosition && parentPosition != "static") {
+            break;
+        }
+        parent = parent.parentNode;
+    }
+
+    if(!parentHasPositionAbsolute) {
+        container.style.position = "absolute";
+    }
     
     // calculate scroll width of content and add corners and shadow width
     if (!w) {

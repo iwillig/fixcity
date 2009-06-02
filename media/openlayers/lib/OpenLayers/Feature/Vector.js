@@ -313,13 +313,16 @@ OpenLayers.Feature.Vector = OpenLayers.Class(OpenLayers.Feature, {
  *     Information on stroke properties: http://www.w3.org/TR/SVG/painting.html#StrokeProperties
  *
  * Symbolizer properties:
+ * fill - {Boolean} Set to false if no fill is desired.
  * fillColor - {String} Hex fill color.  Default is "#ee9900".
  * fillOpacity - {Number} Fill opacity (0-1).  Default is 0.4 
+ * stroke - {Boolean} Set to false if no stroke is desired.
  * strokeColor - {String} Hex stroke color.  Default is "#ee9900".
  * strokeOpacity - {Number} Stroke opacity (0-1).  Default is 1.
  * strokeWidth - {Number} Pixel stroke width.  Default is 1.
  * strokeLinecap - {String} Stroke cap type.  Default is "round".  [butt | round | square]
  * strokeDashstyle - {String} Stroke dash style.  Default is "solid". [dot | dash | dashdot | longdash | longdashdot | solid]
+ * graphic - {Boolean} Set to false if no graphic is desired.
  * pointRadius - {Number} Pixel point radius.  Default is 6.
  * pointerEvents - {String}  Default is "visiblePainted".
  * cursor - {String} Default is "".
@@ -339,6 +342,17 @@ OpenLayers.Feature.Vector = OpenLayers.Class(OpenLayers.Feature, {
  * backgroundYOffset - {Number} The y offset (in pixels) for the background graphic.
  * backgroundHeight - {Number} The height of the background graphic.  If not provided, the graphicHeight will be used.
  * backgroundWidth - {Number} The width of the background width.  If not provided, the graphicWidth will be used.
+ * label - {String} The text for an optional label. For browsers that use the canvas renderer, this requires either
+ *     fillText or mozDrawText to be available.
+ * labelAlign - {String} Label alignment. This specifies the insertion point relative to the text. It is a string
+ *     composed of two characters. The first character is for the horizontal alignment, the second for the vertical
+ *     alignment. Valid values for horizontal alignment: "l"=left, "c"=center, "r"=right. Valid values for vertical
+ *     alignment: "t"=top, "m"=middle, "b"=bottom. Example values: "lt", "cm", "rb". The canvas renderer does not
+ *     support vertical alignment, it will always use "b".
+ * fontColor - {String} The font color for the label, to be provided like CSS.
+ * fontFamily - {String} The font family for the label, to be provided like in CSS.
+ * fontSize - {String} The font size for the label, to be provided like in CSS.
+ * fontWeight - {String} The font weight for the label, to be provided like in CSS.
  * display - {String} Symbolizers will have no effect if display is set to "none".  All other values have no effect.
  */ 
 OpenLayers.Feature.Vector.style = {
@@ -381,14 +395,14 @@ OpenLayers.Feature.Vector.style = {
         cursor: "pointer"
     },
     'temporary': {
-        fillColor: "yellow",
+        fillColor: "#66cccc",
         fillOpacity: 0.2, 
         hoverFillColor: "white",
         hoverFillOpacity: 0.8,
-        strokeColor: "yellow",
+        strokeColor: "#66cccc",
         strokeOpacity: 1,
         strokeLinecap: "round",
-        strokeWidth: 4,
+        strokeWidth: 2,
         strokeDashstyle: "solid",
         hoverStrokeColor: "red",
         hoverStrokeOpacity: 1,

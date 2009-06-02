@@ -1,13 +1,19 @@
 K 25
 svn:wc:ra_dav:version-url
 V 40
-/!svn/ver/9135/trunk/openlayers/examples
+/!svn/ver/9328/trunk/openlayers/examples
+END
+arcims.html
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/!svn/ver/9249/trunk/openlayers/examples/arcims.html
 END
 proxy.cgi
 K 25
 svn:wc:ra_dav:version-url
 V 50
-/!svn/ver/8895/trunk/openlayers/examples/proxy.cgi
+/!svn/ver/9249/trunk/openlayers/examples/proxy.cgi
 END
 tilecache.html
 K 25
@@ -19,7 +25,7 @@ sundials.html
 K 25
 svn:wc:ra_dav:version-url
 V 54
-/!svn/ver/8905/trunk/openlayers/examples/sundials.html
+/!svn/ver/9254/trunk/openlayers/examples/sundials.html
 END
 animator.js
 K 25
@@ -45,12 +51,6 @@ svn:wc:ra_dav:version-url
 V 63
 /!svn/ver/7095/trunk/openlayers/examples/mapserver_untiled.html
 END
-teleportation.html
-K 25
-svn:wc:ra_dav:version-url
-V 59
-/!svn/ver/9069/trunk/openlayers/examples/teleportation.html
-END
 gml-layer.html
 K 25
 svn:wc:ra_dav:version-url
@@ -62,6 +62,18 @@ K 25
 svn:wc:ra_dav:version-url
 V 51
 /!svn/ver/7095/trunk/openlayers/examples/kamap.html
+END
+teleportation.html
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/!svn/ver/9069/trunk/openlayers/examples/teleportation.html
+END
+xyz-esri.html
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/!svn/ver/9283/trunk/openlayers/examples/xyz-esri.html
 END
 image-layer.html
 K 25
@@ -85,7 +97,7 @@ controls.html
 K 25
 svn:wc:ra_dav:version-url
 V 54
-/!svn/ver/7382/trunk/openlayers/examples/controls.html
+/!svn/ver/9236/trunk/openlayers/examples/controls.html
 END
 georss-markers.html
 K 25
@@ -116,6 +128,12 @@ K 25
 svn:wc:ra_dav:version-url
 V 58
 /!svn/ver/7095/trunk/openlayers/examples/boxes-vector.html
+END
+WMSDescribeLayerParser.html
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/!svn/ver/9146/trunk/openlayers/examples/WMSDescribeLayerParser.html
 END
 filter.html
 K 25
@@ -165,11 +183,11 @@ svn:wc:ra_dav:version-url
 V 57
 /!svn/ver/7095/trunk/openlayers/examples/overviewmap.html
 END
-example-list.html
+marker-shadow.html
 K 25
 svn:wc:ra_dav:version-url
-V 58
-/!svn/ver/7154/trunk/openlayers/examples/example-list.html
+V 59
+/!svn/ver/8251/trunk/openlayers/examples/marker-shadow.html
 END
 events.html
 K 25
@@ -177,11 +195,11 @@ svn:wc:ra_dav:version-url
 V 52
 /!svn/ver/7095/trunk/openlayers/examples/events.html
 END
-marker-shadow.html
+example-list.html
 K 25
 svn:wc:ra_dav:version-url
-V 59
-/!svn/ver/8251/trunk/openlayers/examples/marker-shadow.html
+V 58
+/!svn/ver/7154/trunk/openlayers/examples/example-list.html
 END
 markersTextLayer.html
 K 25
@@ -189,17 +207,17 @@ svn:wc:ra_dav:version-url
 V 62
 /!svn/ver/7095/trunk/openlayers/examples/markersTextLayer.html
 END
-drag-feature.html
-K 25
-svn:wc:ra_dav:version-url
-V 58
-/!svn/ver/7095/trunk/openlayers/examples/drag-feature.html
-END
 marker_shadow.png
 K 25
 svn:wc:ra_dav:version-url
 V 58
 /!svn/ver/7652/trunk/openlayers/examples/marker_shadow.png
+END
+drag-feature.html
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/!svn/ver/7095/trunk/openlayers/examples/drag-feature.html
 END
 mm.html
 K 25
@@ -224,6 +242,12 @@ K 25
 svn:wc:ra_dav:version-url
 V 50
 /!svn/ver/7095/trunk/openlayers/examples/style.css
+END
+getfeatureinfo-control.html
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/!svn/ver/9302/trunk/openlayers/examples/getfeatureinfo-control.html
 END
 layerswitcher.html
 K 25
@@ -319,7 +343,7 @@ modify-feature.html
 K 25
 svn:wc:ra_dav:version-url
 V 60
-/!svn/ver/8958/trunk/openlayers/examples/modify-feature.html
+/!svn/ver/9269/trunk/openlayers/examples/modify-feature.html
 END
 styles-unique.html
 K 25
@@ -361,7 +385,7 @@ wfs-protocol.html
 K 25
 svn:wc:ra_dav:version-url
 V 58
-/!svn/ver/9009/trunk/openlayers/examples/wfs-protocol.html
+/!svn/ver/9328/trunk/openlayers/examples/wfs-protocol.html
 END
 protocol-gears.html
 K 25
@@ -387,17 +411,17 @@ svn:wc:ra_dav:version-url
 V 60
 /!svn/ver/7100/trunk/openlayers/examples/editingtoolbar.html
 END
-urban.html
-K 25
-svn:wc:ra_dav:version-url
-V 51
-/!svn/ver/7095/trunk/openlayers/examples/urban.html
-END
 getfeatureinfo.html
 K 25
 svn:wc:ra_dav:version-url
 V 60
 /!svn/ver/7095/trunk/openlayers/examples/getfeatureinfo.html
+END
+urban.html
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/!svn/ver/7095/trunk/openlayers/examples/urban.html
 END
 osm-layer.html
 K 25
@@ -409,7 +433,19 @@ ordering.html
 K 25
 svn:wc:ra_dav:version-url
 V 54
-/!svn/ver/8251/trunk/openlayers/examples/ordering.html
+/!svn/ver/9307/trunk/openlayers/examples/ordering.html
+END
+vector-features-with-text.html
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/!svn/ver/9276/trunk/openlayers/examples/vector-features-with-text.html
+END
+arcims-thematic.html
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/!svn/ver/9249/trunk/openlayers/examples/arcims-thematic.html
 END
 strategy-cluster-threshold.html
 K 25
@@ -453,17 +489,17 @@ svn:wc:ra_dav:version-url
 V 56
 /!svn/ver/7095/trunk/openlayers/examples/transition.html
 END
-example.html
-K 25
-svn:wc:ra_dav:version-url
-V 53
-/!svn/ver/7095/trunk/openlayers/examples/example.html
-END
 mapguide.html
 K 25
 svn:wc:ra_dav:version-url
 V 54
 /!svn/ver/9006/trunk/openlayers/examples/mapguide.html
+END
+example.html
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/!svn/ver/7095/trunk/openlayers/examples/example.html
 END
 accessible.html
 K 25
@@ -513,17 +549,17 @@ svn:wc:ra_dav:version-url
 V 53
 /!svn/ver/7095/trunk/openlayers/examples/markers.html
 END
-fractional-zoom.html
-K 25
-svn:wc:ra_dav:version-url
-V 61
-/!svn/ver/7095/trunk/openlayers/examples/fractional-zoom.html
-END
 mapserver.html
 K 25
 svn:wc:ra_dav:version-url
 V 55
 /!svn/ver/7095/trunk/openlayers/examples/mapserver.html
+END
+fractional-zoom.html
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/!svn/ver/7095/trunk/openlayers/examples/fractional-zoom.html
 END
 wfs-protocol-transactions.html
 K 25
@@ -565,7 +601,7 @@ openmnnd.html
 K 25
 svn:wc:ra_dav:version-url
 V 54
-/!svn/ver/8251/trunk/openlayers/examples/openmnnd.html
+/!svn/ver/9285/trunk/openlayers/examples/openmnnd.html
 END
 snapping.html
 K 25
@@ -591,11 +627,17 @@ svn:wc:ra_dav:version-url
 V 62
 /!svn/ver/8639/trunk/openlayers/examples/animated_panning.html
 END
+highlight-feature.html
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/!svn/ver/9176/trunk/openlayers/examples/highlight-feature.html
+END
 measure.html
 K 25
 svn:wc:ra_dav:version-url
 V 53
-/!svn/ver/8960/trunk/openlayers/examples/measure.html
+/!svn/ver/9268/trunk/openlayers/examples/measure.html
 END
 fullScreen.html
 K 25
@@ -627,6 +669,12 @@ svn:wc:ra_dav:version-url
 V 67
 /!svn/ver/8977/trunk/openlayers/examples/navtoolbar-alwaysZoom.html
 END
+all-overlays.html
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/!svn/ver/9211/trunk/openlayers/examples/all-overlays.html
+END
 navigation-control.html
 K 25
 svn:wc:ra_dav:version-url
@@ -643,7 +691,7 @@ spherical-mercator.html
 K 25
 svn:wc:ra_dav:version-url
 V 64
-/!svn/ver/9057/trunk/openlayers/examples/spherical-mercator.html
+/!svn/ver/9240/trunk/openlayers/examples/spherical-mercator.html
 END
 wfs-snap-split.html
 K 25
@@ -715,7 +763,7 @@ google.html
 K 25
 svn:wc:ra_dav:version-url
 V 52
-/!svn/ver/8414/trunk/openlayers/examples/google.html
+/!svn/ver/9272/trunk/openlayers/examples/google.html
 END
 restricted-extent.html
 K 25
@@ -735,18 +783,6 @@ svn:wc:ra_dav:version-url
 V 57
 /!svn/ver/8251/trunk/openlayers/examples/multiserver.html
 END
-layerLoadMonitoring.html
-K 25
-svn:wc:ra_dav:version-url
-V 65
-/!svn/ver/7095/trunk/openlayers/examples/layerLoadMonitoring.html
-END
-layer-opacity.html
-K 25
-svn:wc:ra_dav:version-url
-V 59
-/!svn/ver/7095/trunk/openlayers/examples/layer-opacity.html
-END
 sld.html
 K 25
 svn:wc:ra_dav:version-url
@@ -758,6 +794,18 @@ K 25
 svn:wc:ra_dav:version-url
 V 58
 /!svn/ver/8917/trunk/openlayers/examples/arcgis93rest.html
+END
+layer-opacity.html
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/!svn/ver/7095/trunk/openlayers/examples/layer-opacity.html
+END
+layerLoadMonitoring.html
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/!svn/ver/7095/trunk/openlayers/examples/layerLoadMonitoring.html
 END
 setextent.html
 K 25
@@ -783,6 +831,12 @@ svn:wc:ra_dav:version-url
 V 51
 /!svn/ver/7095/trunk/openlayers/examples/click.html
 END
+symbolizers-fill-stroke-graphic.html
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/!svn/ver/9278/trunk/openlayers/examples/symbolizers-fill-stroke-graphic.html
+END
 debug.html
 K 25
 svn:wc:ra_dav:version-url
@@ -805,7 +859,7 @@ select-feature-multilayer.html
 K 25
 svn:wc:ra_dav:version-url
 V 71
-/!svn/ver/9116/trunk/openlayers/examples/select-feature-multilayer.html
+/!svn/ver/9301/trunk/openlayers/examples/select-feature-multilayer.html
 END
 hover-handler.html
 K 25
@@ -847,7 +901,7 @@ sundials-spherical-mercator.html
 K 25
 svn:wc:ra_dav:version-url
 V 73
-/!svn/ver/9101/trunk/openlayers/examples/sundials-spherical-mercator.html
+/!svn/ver/9252/trunk/openlayers/examples/sundials-spherical-mercator.html
 END
 attribution.html
 K 25

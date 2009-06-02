@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 54
-/!svn/ver/9129/trunk/openlayers/lib/OpenLayers/Control
+/!svn/ver/9305/trunk/openlayers/lib/OpenLayers/Control
 END
 OverviewMap.js
 K 25
@@ -13,7 +13,7 @@ ZoomPanel.js
 K 25
 svn:wc:ra_dav:version-url
 V 67
-/!svn/ver/9038/trunk/openlayers/lib/OpenLayers/Control/ZoomPanel.js
+/!svn/ver/9155/trunk/openlayers/lib/OpenLayers/Control/ZoomPanel.js
 END
 EditingToolbar.js
 K 25
@@ -43,7 +43,7 @@ Snapping.js
 K 25
 svn:wc:ra_dav:version-url
 V 66
-/!svn/ver/8967/trunk/openlayers/lib/OpenLayers/Control/Snapping.js
+/!svn/ver/9270/trunk/openlayers/lib/OpenLayers/Control/Snapping.js
 END
 MouseDefaults.js
 K 25
@@ -91,13 +91,19 @@ DragFeature.js
 K 25
 svn:wc:ra_dav:version-url
 V 69
-/!svn/ver/9090/trunk/openlayers/lib/OpenLayers/Control/DragFeature.js
+/!svn/ver/9258/trunk/openlayers/lib/OpenLayers/Control/DragFeature.js
 END
 SelectFeature.js
 K 25
 svn:wc:ra_dav:version-url
 V 71
-/!svn/ver/9116/trunk/openlayers/lib/OpenLayers/Control/SelectFeature.js
+/!svn/ver/9275/trunk/openlayers/lib/OpenLayers/Control/SelectFeature.js
+END
+WMSGetFeatureInfo.js
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/!svn/ver/9305/trunk/openlayers/lib/OpenLayers/Control/WMSGetFeatureInfo.js
 END
 ScaleLine.js
 K 25
@@ -109,13 +115,13 @@ Navigation.js
 K 25
 svn:wc:ra_dav:version-url
 V 68
-/!svn/ver/8285/trunk/openlayers/lib/OpenLayers/Control/Navigation.js
+/!svn/ver/9259/trunk/openlayers/lib/OpenLayers/Control/Navigation.js
 END
 Measure.js
 K 25
 svn:wc:ra_dav:version-url
 V 65
-/!svn/ver/7965/trunk/openlayers/lib/OpenLayers/Control/Measure.js
+/!svn/ver/9263/trunk/openlayers/lib/OpenLayers/Control/Measure.js
 END
 Attribution.js
 K 25
@@ -133,19 +139,19 @@ DrawFeature.js
 K 25
 svn:wc:ra_dav:version-url
 V 69
-/!svn/ver/8942/trunk/openlayers/lib/OpenLayers/Control/DrawFeature.js
-END
-ZoomIn.js
-K 25
-svn:wc:ra_dav:version-url
-V 64
-/!svn/ver/9038/trunk/openlayers/lib/OpenLayers/Control/ZoomIn.js
+/!svn/ver/9269/trunk/openlayers/lib/OpenLayers/Control/DrawFeature.js
 END
 Button.js
 K 25
 svn:wc:ra_dav:version-url
 V 64
 /!svn/ver/8942/trunk/openlayers/lib/OpenLayers/Control/Button.js
+END
+ZoomIn.js
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/!svn/ver/9038/trunk/openlayers/lib/OpenLayers/Control/ZoomIn.js
 END
 ZoomOut.js
 K 25
@@ -187,7 +193,7 @@ GetFeature.js
 K 25
 svn:wc:ra_dav:version-url
 V 68
-/!svn/ver/9003/trunk/openlayers/lib/OpenLayers/Control/GetFeature.js
+/!svn/ver/9258/trunk/openlayers/lib/OpenLayers/Control/GetFeature.js
 END
 ZoomBox.js
 K 25
@@ -199,17 +205,17 @@ PanPanel.js
 K 25
 svn:wc:ra_dav:version-url
 V 66
-/!svn/ver/9038/trunk/openlayers/lib/OpenLayers/Control/PanPanel.js
+/!svn/ver/9156/trunk/openlayers/lib/OpenLayers/Control/PanPanel.js
 END
 Panel.js
 K 25
 svn:wc:ra_dav:version-url
 V 63
-/!svn/ver/8942/trunk/openlayers/lib/OpenLayers/Control/Panel.js
+/!svn/ver/9156/trunk/openlayers/lib/OpenLayers/Control/Panel.js
 END
 ModifyFeature.js
 K 25
 svn:wc:ra_dav:version-url
 V 71
-/!svn/ver/8899/trunk/openlayers/lib/OpenLayers/Control/ModifyFeature.js
+/!svn/ver/9150/trunk/openlayers/lib/OpenLayers/Control/ModifyFeature.js
 END

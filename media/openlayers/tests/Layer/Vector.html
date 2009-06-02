@@ -22,38 +22,46 @@
     }
 
     function test_Layer_Vector_refresh(t) {
-        t.plan(1);
+        t.plan(4);
 
         var obj = {"an": "object"};
 
+        var log;
         var layer = new OpenLayers.Layer.Vector(name, {
             eventListeners: {
                 refresh: function(o) {
-                    t.ok(o == obj,
-                         "refresh listener called with correct arg");
+                    log.obj = o;
                 }
             }
         });
+        inRange = false;
+        layer.calculateInRange = function() {
+            return inRange;
+        };
 
-        // 0 test
-        layer.inRange = false;
+        log = {};
+        inRange = false;
         layer.visibility = false;
         layer.refresh(obj);
+        t.eq(log.obj, undefined, "[false, false] refresh not triggered");
 
-        // 0 test
-        layer.inRange = true;
+        log = {};
+        inRange = true;
         layer.visibility = false;
         layer.refresh(obj);
+        t.eq(log.obj, undefined, "[true, false] refresh not triggered");
 
-        // 0 test
-        layer.inRange = false;
+        log = {};
+        inRange = false;
         layer.visibility = true;
         layer.refresh(obj);
-      
-        // 1 test
-        layer.inRange = true;
+        t.eq(log.obj, undefined, "[false, true] refresh not triggered");
+
+        log = {};
+        inRange = true;
         layer.visibility = true;
         layer.refresh(obj);
+        t.ok(log.obj === obj, "[true, true] refresh triggered with correct arg");
     }
     
     function test_Layer_Vector_addFeatures(t) {
@@ -122,7 +130,7 @@
     }
 
     function test_Layer_Vector_removeFeatures(t) {
-        t.plan(6);
+        t.plan(9);
     
         var layer = new OpenLayers.Layer.Vector(name);
 
@@ -144,7 +152,7 @@
         t.ok(layer.features.length == 0,
              "OpenLayers.Layer.Vector.removeFeatures(layer.features) removes all feature from the features array");
 
-        // 3 tests
+        // 6 tests
         layer.events.register('beforefeatureremoved', null, function(obj) {
             t.ok(pointFeature1 == obj.feature,
                  "OpenLayers.Layer.Vector.removeFeatures triggers beforefeatureremoved with correct feature passed to callback");
@@ -159,6 +167,8 @@
         });
         layer.addFeatures([pointFeature1]);
         layer.removeFeatures([pointFeature1]);
+        layer.addFeatures([pointFeature1]);
+        layer.removeFeatures(layer.features);
 
         // 0 test
         layer.events.register('beforefeatureremoved', null, function(obj) {
@@ -261,7 +271,8 @@
                     feature: f,
                     style: s
                 };
-            }
+            },
+            destroy: function() {}
         };
         
         // draw feature with no state
@@ -417,7 +428,7 @@
                 graphicYOffset: -16
         });
                
-        var root = renderer.root;
+        var root = renderer.vectorRoot;
         if (layer.renderer.CLASS_NAME == 'OpenLayers.Renderer.SVG') {
                 feature.style = customStyle1;
                 layer.drawFeature(feature);

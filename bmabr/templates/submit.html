@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %} submit {% endblock %}
+
+{% block header %} 
+
+<script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
+
+<script defer="defer" type="text/javascript">
+    var map, layer, select;
+    var options = {
+            projection: new OpenLayers.Projection("EPSG:900913"),
+        displayProjection: new OpenLayers.Projection("EPSG:4326"),
+        units: "m",
+        numZoomLevels:19,
+            maxResolution: 156543.03390625,
+        maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+         20037508.34, 20037508.34)
+       };
+
+        function loadMap(){
+    map = new OpenLayers.Map('map',options);
+
+    var osm = new OpenLayers.Layer.WMS(
+                 "OpenStreetMap",
+                 "http://maps.opengeo.org/geoserver/gwc/service/wms",   
+       {
+            layers: "openstreetmap", 
+            format: "image/png",
+            bgcolor: '#A1BDC4'
+            }, 
+            {wrapDateLine: true} 
+        );
+    
+    var style = new OpenLayers.Style({
+                    pointRadius: "${radius}",
+                    fillColor: "#DFABAB",
+                    strokeColor: "#8147ad",
+                    strokeWidth: 2,
+                    strokeOpacity: 0.8
+        
+                }, {
+                    context: {
+                        radius: function(feature) {
+                            return Math.min(feature.attributes.count, 7) + 5;
+                        }
+                    }
+                });
+
+
+    var racks = new OpenLayers.Layer.Vector("Racks", {
+        projection: map.displayProjection,
+                    strategies: [
+                        new OpenLayers.Strategy.Fixed(),
+                        new OpenLayers.Strategy.Cluster()
+                  ],  
+                protocol: new OpenLayers.Protocol.HTTP({
+                        url: "./rack/requested.kml",
+                params: {     
+    
+                        },
+                        format: new OpenLayers.Format.KML()
+                    }),
+                    styleMap: new OpenLayers.StyleMap({
+                        "default": style,
+                        "select": {
+                            fillColor: "#8aeeef",
+                            strokeColor: "#32a8a9"
+                        }
+                    })
+
+                });
+
+            var communityboard = new OpenLayers.Layer.Vector("Community Board 1", {
+                   projection: map.displayProjection,
+                   strategies: [
+                        new OpenLayers.Strategy.Fixed(),
+                    ],
+                    protocol: new OpenLayers.Protocol.HTTP({
+                     {% for communityboard in community_board_query %}
+                          url: "./communityboard/{{communityboard.name}}.kml",
+                     {% endfor %}
+           
+                   params: {
+                        },
+                        format: new OpenLayers.Format.KML()
+                    }),
+		   styleMap: new OpenLayers.StyleMap({
+			   "default": { 
+                               label: "Community Board One",
+			       fillColor: "#e8f5d5",
+			       fillOpacity: .7, 
+			       strokeColor: "#808080",
+			       strokeWidth: 3,
+			       strokeDashstyle: "dash"
+			   }
+		       })
+
+                });
+	
+        map.addLayers([osm,communityboard,racks]);
+        var bounds = new OpenLayers.Bounds{{community_board_query_extent}} ; 
+        bounds.transform(map.displayProjection, map.projection); 
+	map.addControl( new OpenLayers.Control.LayerSwitcher());
+        map.zoomToExtent(bounds); 
+        }
+
+
+</script>
+
+<script defer="defer" type="text/javascript"> 
+  window.onload = function() { 
+    loadMap() ; 
+   }
+</script> 
+
+
+
+
+
+{% endblock %}
+
+
+
+{% block menu %} 
+<ul id="menu">
+  <li class="suggest">
+    <a href="/">(1) SUGGEST</a>
+    <p> Suggest a bike rack location</p>
+  </li>
+  <li class="assess">
+    <a href="/assess/">(2) ASSESS</a>
+    <p> Assess current requested locations </p>
+  </li>
+  <li class="submit">
+    <a href="/submit/">(3) SUBMIT</a>
+    <p> Submit your request to the DOT </p>
+  </li>
+  <li class="built">
+    <a href="/built/"> (4) BUILD</a>
+    <p> See racks aready built </p>
+  </li>
+</ul>
+{% endblock %}
+
+
+{% block content %}
+<div class="submit">
+<div id="page-title">
+  <h2 class="title">Submit</h2>
+</div>
+  <div id="map-con">
+    <div id="map">
+    </div>
+  </div>
+
+<div id="activity-con">
+  {% for communityboard in community_board_query %} 
+     <h3>Community Board {{communityboard.name}}</h3>
+     <div id="metric-con"> 
+       <div id="metric-info">{{cb_metric_percent}}% complete</div>
+       <div id="metric" style="width:{{cb_metric_percent}}%"></div>
+     </div> 
+
+     <ol id="submit">
+     {% for rack in racks_query %}
+     <div class="metrics-vertical-con">      
+       {% ifequal rack.status "r" %}
+       <div class="metrics-vertical" style="height: 70%"> </div>
+       {% endifequal %}
+       {% ifequal rack.status "a" %}
+       <div class="metrics-vertical" style="height: 20%"> </div>
+       {% endifequal %}
+     </div>
+       <li><h4><a href="/rack/{{rack.id}}">{{rack.address}}</a></h4></strong>
+	 <p>{{rack.description|truncatewords:30}}...</p></li>
+     {% endfor %}
+      </ol>
+  {% endfor %}
+</div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+

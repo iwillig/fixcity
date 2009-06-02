@@ -1,0 +1,16 @@
+{% extends "base.kml" %}
+{% block placemarks %}
+
+{% for communityboard in community_boards %}
+  <Placemark>
+
+    <name>{{communityboard.name}}</name>
+    <description>community board {{communityboard.name}}</description>
+
+    {% autoescape off %}
+    {{communityboard.the_geom.kml}}    
+    {% endautoescape %}	
+
+  </Placemark>
+{% endfor %}{% endblock %}
+

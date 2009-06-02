@@ -133,13 +133,13 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
      *     instances.
      */
     handlers: null,
-    
+
     /**
-     * Property: hoverRequest
-     * {<OpenLayers.Request>} contains the currently running hover request
-     *     (if any).
+     * Property: hoverResponse
+     * {<OpenLayers.Protocol.Response>} The response object associated with
+     *     the currently running hover request (if any).
      */
-    hoverRequest: null,
+    hoverResponse: null,
     
     /**
      * Constant: EVENT_TYPES
@@ -165,7 +165,8 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
         "beforefeatureselected", "hoverfeature", "outfeature"],
 
     /**
-     * Constructor: <OpenLayers.Control.SelectFeature>
+     * Constructor: OpenLayers.Control.GetFeature
+     * Create a new control for fetching remote features.
      *
      * Parameters:
      * options - {Object} A configuration object which at least has to contain
@@ -274,7 +275,7 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
      */
     selectSingle: function(evt) {
         // Set the cursor to "wait" to tell the user we're working on their click.
-        OpenLayers.Element.addClass(this.map.div, "olCursorWait");
+        OpenLayers.Element.addClass(this.map.viewPortDiv, "olCursorWait");
         
         var bounds = this.pixelToBounds(evt.xy);
         
@@ -323,9 +324,9 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
      * Callback from the handlers.hover set up when <hover> selection is on
      */
     cancelHover: function() {
-        if (this.hoverRequest) {
-            this.hoverRequest.abort();
-            this.hoverRequest = null;
+        if (this.hoverResponse) {
+            this.protocol.abort(this.hoverResponse);
+            this.hoverResponse = null;
         }
     },
 
@@ -372,12 +373,12 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
                     }
                 }
                 // Reset the cursor.
-                OpenLayers.Element.removeClass(this.map.div, "olCursorWait");
+                OpenLayers.Element.removeClass(this.map.viewPortDiv, "olCursorWait");
             },
             scope: this
         });
         if(options.hover == true) {
-            this.hoverRequest = response.priv;
+            this.hoverResponse = response;
         }
     },
 

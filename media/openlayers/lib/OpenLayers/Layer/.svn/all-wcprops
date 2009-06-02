@@ -1,13 +1,13 @@
 K 25
 svn:wc:ra_dav:version-url
 V 52
-/!svn/ver/9117/trunk/openlayers/lib/OpenLayers/Layer
+/!svn/ver/9362/trunk/openlayers/lib/OpenLayers/Layer
 END
 Markers.js
 K 25
 svn:wc:ra_dav:version-url
 V 63
-/!svn/ver/8764/trunk/openlayers/lib/OpenLayers/Layer/Markers.js
+/!svn/ver/9233/trunk/openlayers/lib/OpenLayers/Layer/Markers.js
 END
 MapServer.js
 K 25
@@ -43,13 +43,19 @@ Google.js
 K 25
 svn:wc:ra_dav:version-url
 V 62
-/!svn/ver/8990/trunk/openlayers/lib/OpenLayers/Layer/Google.js
+/!svn/ver/9362/trunk/openlayers/lib/OpenLayers/Layer/Google.js
 END
 KaMapCache.js
 K 25
 svn:wc:ra_dav:version-url
 V 66
 /!svn/ver/9038/trunk/openlayers/lib/OpenLayers/Layer/KaMapCache.js
+END
+ArcIMS.js
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/!svn/ver/9249/trunk/openlayers/lib/OpenLayers/Layer/ArcIMS.js
 END
 PointTrack.js
 K 25
@@ -63,17 +69,17 @@ svn:wc:ra_dav:version-url
 V 59
 /!svn/ver/9050/trunk/openlayers/lib/OpenLayers/Layer/GML.js
 END
-FixedZoomLevels.js
-K 25
-svn:wc:ra_dav:version-url
-V 71
-/!svn/ver/8237/trunk/openlayers/lib/OpenLayers/Layer/FixedZoomLevels.js
-END
 Yahoo.js
 K 25
 svn:wc:ra_dav:version-url
 V 61
 /!svn/ver/8864/trunk/openlayers/lib/OpenLayers/Layer/Yahoo.js
+END
+FixedZoomLevels.js
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/!svn/ver/8237/trunk/openlayers/lib/OpenLayers/Layer/FixedZoomLevels.js
 END
 Boxes.js
 K 25
@@ -135,6 +141,12 @@ svn:wc:ra_dav:version-url
 V 61
 /!svn/ver/7311/trunk/openlayers/lib/OpenLayers/Layer/KaMap.js
 END
+XYZ.js
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/!svn/ver/9247/trunk/openlayers/lib/OpenLayers/Layer/XYZ.js
+END
 MapGuide.js
 K 25
 svn:wc:ra_dav:version-url
@@ -157,7 +169,7 @@ Vector.js
 K 25
 svn:wc:ra_dav:version-url
 V 62
-/!svn/ver/9116/trunk/openlayers/lib/OpenLayers/Layer/Vector.js
+/!svn/ver/9269/trunk/openlayers/lib/OpenLayers/Layer/Vector.js
 END
 TMS.js
 K 25

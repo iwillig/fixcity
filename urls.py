@@ -4,32 +4,39 @@ from fixcity.bmabr import views
 from django.conf import settings
 
 # Uncomment the next two lines to enable the admin:
-
 from django.contrib import admin
 admin.autodiscover()
 
-
 urlpatterns = patterns('',
     # Example:
-    (r'^$', 'fixcity.bmabr.views.index'), 
+    (r'^$', 'fixcity.bmabr.views.index'),
+
+    (r'^geocode/$', 'fixcity.bmabr.views.geocode'),
+    (r'^reverse/$', 'fixcity.bmabr.views.reverse_geocode'),
+
     (r'assess/$','fixcity.bmabr.views.assess'),
+    (r'assess/communityboard/(?P<cb_id>\d+)/$', 'fixcity.bmabr.views.assess_by_communityboard'),
+    (r'submit/all/$','fixcity.bmabr.views.submit_all'),
+    (r'submit/$','fixcity.bmabr.views.submit'),
+
+    (r'submit/pdf/$','fixcity.bmabr.views.submit_pdf'),
+    (r'built/$','fixcity.bmabr.views.built'),   
     (r'^rack/(?P<rack_id>\d+)/$', 'fixcity.bmabr.views.rack'),                        
-   
+    (r'^rack/(?P<rack_id>\d+)/updatephoto$', 'fixcity.bmabr.views.updatephoto'),         
 
      # KML URL 
 
     (r'rack/all.kml$', 'fixcity.bmabr.views.rack_all_kml'),
     (r'rack/requested.kml$', 'fixcity.bmabr.views.rack_requested_kml'),
-    (r'rack/requested.json$', 'fixcity.bmabr.views.rack_json'),
     (r'rack/pendding.kml$', 'fixcity.bmabr.views.rack_pendding_kml'),
     (r'rack/built.kml$', 'fixcity.bmabr.views.rack_pendding_kml'),
     (r'rack/(?P<rack_id>\d+).kml', 'fixcity.bmabr.views.rack_by_id_kml'),
-
+    (r'communityboards.kml','fixcity.bmabr.views.community_board_kml'),
+    (r'communityboard/(?P<cb_id>\d+).kml','fixcity.bmabr.views.community_board_kml_by_id'),
 
     # different views for adding infomation, rack, comments. 
 
     (r'^rack/new/$', 'fixcity.bmabr.views.newrack_form'), # view for rack request form. 
-    (r'^rack/add/$', 'fixcity.bmabr.views.add_rack'), 
     (r'^comment/add/$', 'fixcity.bmabr.views.add_comment'), 
                        
     # different ways of viewing information                   
@@ -37,15 +44,14 @@ urlpatterns = patterns('',
     (r'^neighborhoods/$', 'fixcity.bmabr.views.neighborhoods'), 
     (r'^communityboard/$', 'fixcity.bmabr.views.communityboard'),
 
-
+                                                                                                                                                                                
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': settings.STATIC_DOC_ROOT,'show_indexes': True}),
-
-
+      {'document_root': settings.STATIC_DOC_ROOT,'show_indexes': True}),                                        
+                                                                              
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
- #    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
      (r'^admin/(.*)', admin.site.root),

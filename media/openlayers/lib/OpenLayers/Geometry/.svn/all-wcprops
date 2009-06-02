@@ -1,13 +1,13 @@
 K 25
 svn:wc:ra_dav:version-url
 V 55
-/!svn/ver/9074/trunk/openlayers/lib/OpenLayers/Geometry
+/!svn/ver/9262/trunk/openlayers/lib/OpenLayers/Geometry
 END
 Curve.js
 K 25
 svn:wc:ra_dav:version-url
 V 64
-/!svn/ver/7627/trunk/openlayers/lib/OpenLayers/Geometry/Curve.js
+/!svn/ver/9248/trunk/openlayers/lib/OpenLayers/Geometry/Curve.js
 END
 MultiPoint.js
 K 25
@@ -25,7 +25,7 @@ Polygon.js
 K 25
 svn:wc:ra_dav:version-url
 V 66
-/!svn/ver/9015/trunk/openlayers/lib/OpenLayers/Geometry/Polygon.js
+/!svn/ver/9248/trunk/openlayers/lib/OpenLayers/Geometry/Polygon.js
 END
 Surface.js
 K 25
@@ -43,19 +43,19 @@ Point.js
 K 25
 svn:wc:ra_dav:version-url
 V 64
-/!svn/ver/9074/trunk/openlayers/lib/OpenLayers/Geometry/Point.js
+/!svn/ver/9262/trunk/openlayers/lib/OpenLayers/Geometry/Point.js
 END
 LinearRing.js
 K 25
 svn:wc:ra_dav:version-url
 V 69
-/!svn/ver/9072/trunk/openlayers/lib/OpenLayers/Geometry/LinearRing.js
+/!svn/ver/9262/trunk/openlayers/lib/OpenLayers/Geometry/LinearRing.js
 END
 Collection.js
 K 25
 svn:wc:ra_dav:version-url
 V 69
-/!svn/ver/9074/trunk/openlayers/lib/OpenLayers/Geometry/Collection.js
+/!svn/ver/9262/trunk/openlayers/lib/OpenLayers/Geometry/Collection.js
 END
 LineString.js
 K 25

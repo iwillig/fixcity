@@ -1,7 +1,7 @@
 K 25
 svn:wc:ra_dav:version-url
 V 51
-/!svn/ver/9115/trunk/openlayers/lib/OpenLayers/Tile
+/!svn/ver/9334/trunk/openlayers/lib/OpenLayers/Tile
 END
 WFS.js
 K 25
@@ -13,5 +13,5 @@ Image.js
 K 25
 svn:wc:ra_dav:version-url
 V 60
-/!svn/ver/9115/trunk/openlayers/lib/OpenLayers/Tile/Image.js
+/!svn/ver/9334/trunk/openlayers/lib/OpenLayers/Tile/Image.js
 END
