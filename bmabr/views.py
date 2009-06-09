@@ -1,3 +1,4 @@
+
 # Create your views here.
 
 from django.http import HttpResponse, HttpResponseRedirect
@@ -6,7 +7,6 @@ from django.template import RequestContext
 from django.contrib import auth
 from django.contrib.auth.forms import UserCreationForm
 from django.template import Context
-
 
 
 from django.contrib.gis.geos import GEOSGeometry, fromstr
@@ -22,13 +22,15 @@ from fixcity.bmabr.models import Rack_Document, Rack_Photo
 
 from django.contrib.gis.geos import fromstr
 
+from django.contrib import auth
+
 from reportlab.pdfgen import canvas 
 from geopy import geocoders
 
 cb_metric = 50.00 
 GKEY="ABQIAAAApLR-B_RMiEN2UBRoEWYPlhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRzLpaA-QUSeKPxm0Vj9Bgee3eRDg"
 g = geocoders.Google(GKEY)
-
+SRID=4326
 
 def user_context(request):
     return {
@@ -37,8 +39,31 @@ def user_context(request):
 
 def index(request):
     return render_to_response('index.html',
+       {'request':request},
        context_instance=RequestContext(request, processors=[user_context])
                               ) 
+
+def login(request): 
+#    ref_url = request.GET['ref_url'] 
+    if request.method == 'POST': 
+        username = request.POST.get('username')
+        password = request.POST.get('password') 
+        user = auth.authenticate(username=username,password=password)
+        if user is not None and user.is_active: 
+            auth.login(request, user)
+            return HttpResponseRedirect("/")
+        else: 
+            return HttpResponseRedirect("/user/error/")
+    else: 
+        pass 
+    return render_to_response('login.html', 
+       context_instance=RequestContext(request, processors=[user_context])
+                              )
+
+def logout(request): 
+        auth.logout(request)
+        return HttpResponseRedirect("/")
+
 
 def built(request): 
     rack = Rack.objects.all()
@@ -47,6 +72,15 @@ def built(request):
             'rack_extent': rack_extent},
             context_instance=RequestContext(request, processors=[user_context])
             )
+
+
+def get_communityboard(request):
+    lat = request.POST['lat'] 
+    lon = request.POST['lon'] 
+    point = 'POINT(%s %s)' % (lon,lat)
+    pnt = fromstr(point,srid=4326)
+    cb = CommunityBoard.objects.get(the_geom__contains=pnt)  
+    return HttpResponse(cb.gid)
 
 def geocode(request): 
     location = request.POST['geocode_text']

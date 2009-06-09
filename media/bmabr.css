@@ -1,7 +1,6 @@
 body { background: #eee; font-family:Helvetica,Arial,sans-serif important !; color: #4c4c4c ; } 
-#login-con { 
-float: right ; 
- }
+#login-con { float: right ;  }
+#login-con h4 {margin: 0px; }
 .container { min-height: 650px; }
 .container h1 {margin-top: 20px; } 
 .content {  min-height: 550px;}
@@ -52,14 +51,17 @@ div.metrics-vertical-con {width: 10px; height: 50px; background: #96d0f6 ; borde
 div.metrics-vertical { background: #fff ; } 
 
 /* overview page for rack request */ 
-#overview-meta { margin: 5px;  }
+#overview-assess { margin: 5px;  }
 #overview-meta li {  list-style: none ;  margin-top: 5px; margin-bottom: 5px; padding: 5px; min-height: 100px; }
 #overview-meta form { margin: 3px;width: 400px; float: right ; padding: 10px; }
 div#overview-comment { margin: 10px; padding: 10px; }
 
-#overview-about { margin: 10px; width: 500px;min-height: 300px; }
+#overview-assess { margin: 10px; width: 500px;min-height: 300px; }
+#overview-assess input {  }
 
-
+.overview-title { padding-left: 10px; border-bottom: 2px dashed #eee ;  }
+.overview-title span { float: right ; padding: 5px; background: #eee ; height: 20px; width: 200px; }
+.overview-title span h3 { margin: 0px; font-weight: bold ; font-size: 150% ;  }
 /* top of rack suggestion over view page */
 #overview-top {width:1100px; min-height: 330px; }
 #overview-map { height: 300px;width: 540px;background: #A1BDC4  }
@@ -97,6 +99,7 @@ div.built { min-height: 500px; }
 #newrack button { font-size: 200% ;  margin: 10px;}
 div.form-input-newrack {background: #29a686 ; margin: 10px; padding: 10px;}
 input#id_address {width: 450px; } 
+input#cb_show {width: 450px; }
 #form-input-date { float: right ; } 
 #form-tips { height: 400px; width: 550px;padding: 10px; ; float: right; margin: 10px;} 
 .mandatory input { border: 3px solid #cc0033}
@@ -121,3 +124,7 @@ a.title { color: #672258; text-decoration:none;}
 #print { margin-bottom: 30px;padding-bottom: 10px;}
 #id_rack { display: none; }
 #address {  font-size: 250% ; border: 3px solid #cccccc;}
+
+ul#login { width:500px; margin:150px auto; padding:15px; background: #fff ; }
+ul#login li { list-style: none ; font-size: 130%;margin-top: 10px;}
+ul#login input {  font-size: 130% ;  }

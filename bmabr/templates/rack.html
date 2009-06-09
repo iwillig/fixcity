@@ -100,19 +100,18 @@
   <div id="map-con"> 
     <div id="overview-map"> </div>
   </div>
-  <div id="overview-photo">
-       {% if rack.photo %}
-              <img src="{{rack.photo.url}}" />
-       {% else %} 
-	   <div class="error error-photo">
-	     <h2> No photos about this request </h2>
-	     <form  enctype="multipart/form-data" action="/rack/{{rack.id}}/updatephoto" method="POST">
-	     <input type="file" name="photo" />
-	     <input type="submit" value="Upload a photo about this"/>
-	     </form> 
-	   </div>
-	   {% endif %}
-	</div>
+<div id="overview-assess" >
+    <input type="checkbox" /> <span> Location Assessment finished?</span>
+     <div class="overview-title">
+       <span> <h3> Help </h3></span>
+       <h2> Asesss</h2>
+     </div> 
+    <form>
+        <textarea rows="4" cols="55"> </textarea>
+        <input type="submit" value="Add your Comment" />
+  </form>
+  
+  </div>
 </div>
 
 {% endfor %} 

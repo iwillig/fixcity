@@ -90,17 +90,15 @@
 	    var xy = address_point.geometry.getBounds().getCenterLonLat();
 	    xy.transform(map.projection, map.displayProjection) ;
 	    getAddress(xy);
+	    getCommunityBoard(xy); 
+	    console.log(xy); 
 	    var location_wkt = "POINT("+ xy.lon + " " + xy.lat +")"; 
 	    $("#location").text(location_wkt); 
 	    console.log(location_wkt); 	    
 	};
-	var changeStyle = function(address_point,pixel) {
-	    
-	};
 	var point_control =  new OpenLayers.Control.DragFeature(
 	    address_point,
 	    {
-		onStart: changeStyle,
 		onComplete: dropHandler
 	    });
 	    
@@ -116,10 +114,20 @@
                     $("#location_log").text(data) ;
 		    $("#id_address").effect("highlight", {}, 3000);
 
-		}
-	     );
+		});
 	  }
-
+       function getCommunityBoard(lonlat) {
+	   var lat = lonlat.lat ;
+	   var lon = lonlat.lon ;
+           $.post("/getcommunityboard/",{lat:lat,lon:lon}, 
+		  function(data) { 
+		      var location = "Brooklyn Community Board " + data ; 
+		      $("#id_communityboard").val(data); 		    
+		      $("#cb_show").val(location); 
+		      $("#cb_show").effect("highlight", {}, 3000);
+		  }); 
+        } 
+  
 	$("#geocode_button").click(function () {
 		var geocode_text = $('gecode_text').val() ;
 		$.post("/geocode/", {geocode_text: geocode_text});
@@ -163,9 +171,11 @@
 {% block content %}
       <div class="suggest">
        <br />
-  <form id="newrack" enctype="multipart/form-data" action="." method="post">
     <div class="form-header">
-	  <div id="request-map">
+
+  <form id="newrack" enctype="multipart/form-data" action="." method="post">
+      <div class="form-input-newrack mandatory">
+    <div id="request-map">
 	  </div>
 	  {{form.location.errors}}
 	  <textarea id="location" name="location"></textarea>
@@ -196,9 +206,9 @@
       </div>
     
       <div class="form-input-newrack mandatory"> 
-         <h3> Select your community board </h3> 
-         <p> This will be updated in the future </p> 
-	{{ form.communityboard }}
+         <h3> Community Board</h3>
+         <input type="text" id="cb_show" />
+         <input type="text" id="id_communityboard" name="communityboard" />
       </div>
 
       <div class="form-input-newrack mandatory">
@@ -212,7 +222,7 @@
 	<p> Why should there be bike parking here? Please include any useful details and available contact information for property or business owners. </p>
 	    <h3><strong id="description">300</strong></h3>
 	{{ form.description.errors }}
-	<textarea id="id_description" rows="6" cols="60" name="description"></textarea>
+	<textarea id="id_description" rows="6" cols="55" name="description"></textarea>
       </div>
 
       <div class="form-body">

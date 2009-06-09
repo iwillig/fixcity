@@ -11,8 +11,14 @@ urlpatterns = patterns('',
     # Example:
     (r'^$', 'fixcity.bmabr.views.index'),
 
+    # Accounts URLs
+    (r'^login/$','fixcity.bmabr.views.login'),
+    (r'^logout/$','fixcity.bmabr.views.logout'),
+     
+
     (r'^geocode/$', 'fixcity.bmabr.views.geocode'),
     (r'^reverse/$', 'fixcity.bmabr.views.reverse_geocode'),
+    (r'^getcommunityboard/$', 'fixcity.bmabr.views.get_communityboard'),
 
     (r'assess/$','fixcity.bmabr.views.assess'),
     (r'assess/communityboard/(?P<cb_id>\d+)/$', 'fixcity.bmabr.views.assess_by_communityboard'),
@@ -24,7 +30,7 @@ urlpatterns = patterns('',
     (r'^rack/(?P<rack_id>\d+)/$', 'fixcity.bmabr.views.rack'),                        
     (r'^rack/(?P<rack_id>\d+)/updatephoto$', 'fixcity.bmabr.views.updatephoto'),         
 
-     # KML URL 
+     # KML URLs
 
     (r'rack/all.kml$', 'fixcity.bmabr.views.rack_all_kml'),
     (r'rack/requested.kml$', 'fixcity.bmabr.views.rack_requested_kml'),
