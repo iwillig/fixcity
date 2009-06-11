@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from django.forms import ModelForm
+from django.contrib.auth.models import User
 
 
 class  CommunityBoard(models.Model):
@@ -32,9 +33,11 @@ class Rack(models.Model):
         ('built','built'),
         ('rejected','rejected')                      
     )
+    
     communityboard = models.ForeignKey(CommunityBoard)
     photo = models.ImageField(upload_to='images/racks/', blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_STATE)
+    user = models.CharField(max_length=20)
     location = models.PointField(srid=4326)
     objects = models.GeoManager()
 

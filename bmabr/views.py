@@ -44,6 +44,7 @@ def index(request):
                               ) 
 
 def login(request): 
+#    attempted to ref 
 #    ref_url = request.GET['ref_url'] 
     if request.method == 'POST': 
         username = request.POST.get('username')
@@ -123,26 +124,6 @@ def submit(request):
              context_instance=RequestContext(request, processors=[user_context])            
              )
 
-def submit_pdf(request): 
-    response = HttpResponse(mimetype='application/pdf')
-    response['Content-Disposition'] = 'attachment; racks.pdf'    
-    p = canvas.Canvas(response)
-    p.setFont("Helvetica", 18)
-    p.setTitle("BUILD ME A BIKE RACK")
-    p.drawString(10,800,"BUILD ME A BIKE RACK")
-    p.line(0,0,0,0)
-    p.setFont("Helvetica", 12)
-    rack_query = Rack.objects.all()
-    positionY = 700
-    positionX = 10
-    for rack in rack_query:         
-        p.drawString(positionX,positionY,rack.address)
-        positionMeta = positionY - 10 
-        p.drawString(positionX,positionMeta,rack.meta)
-        positionY = positionY - 100 
-    p.showPage()
-    p.save()
-    return response
 
 
 def assess(request): 
@@ -174,13 +155,28 @@ def newrack_form(request):
            context_instance=RequestContext(request, processors=[user_context])) 
 
 
+
+def rack_edit(request,rack_id):
+    rack = Rack.objects.get(id=rack_id)
+    if request.method == 'POST': 
+        form = RackForm(request.POST,request.FILES)
+        if form.is_valid(): 
+            new_rack = form.save()
+            return HttpResponseRedirect('/rack/%s' % rack.id)
+    else: 
+        form = RackForm()
+    return render_to_response('update_rack.html', 
+          {"rack": rack,
+           "form": form },
+          context_instance=RequestContext(request, processors=[user_context])) 
+
 def rack(request,rack_id): 
-    rack_query = Rack.objects.filter(id=rack_id)    
+    rack = Rack.objects.get(id=rack_id)    
     comment_query = Comment.objects.filter(rack=rack_id)
     photo_query = Rack_Photo.objects.filter(ph_rack=rack_id)
     document_query = Rack_Document.objects.filter(doc_rack=rack_id)
     return render_to_response('rack.html', { 
-            'rack_query': rack_query,            
+            'rack': rack,            
             'comment_query': comment_query,
             'photo_query': photo_query, 
             'document_query': document_query,

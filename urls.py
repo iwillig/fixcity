@@ -25,9 +25,9 @@ urlpatterns = patterns('',
     (r'submit/all/$','fixcity.bmabr.views.submit_all'),
     (r'submit/$','fixcity.bmabr.views.submit'),
 
-    (r'submit/pdf/$','fixcity.bmabr.views.submit_pdf'),
     (r'built/$','fixcity.bmabr.views.built'),   
-    (r'^rack/(?P<rack_id>\d+)/$', 'fixcity.bmabr.views.rack'),                        
+    (r'^rack/(?P<rack_id>\d+)/$', 'fixcity.bmabr.views.rack'),
+    (r'^rack/(?P<rack_id>\d+)/edit/$', 'fixcity.bmabr.views.rack_edit'),
     (r'^rack/(?P<rack_id>\d+)/updatephoto$', 'fixcity.bmabr.views.updatephoto'),         
 
      # KML URLs

@@ -208,6 +208,7 @@
       <div class="form-input-newrack mandatory"> 
          <h3> Community Board</h3>
          <input type="text" id="cb_show" />
+	{{form.communityboard.errors}}
          <input type="text" id="id_communityboard" name="communityboard" />
       </div>
 
@@ -239,10 +240,23 @@
 	    {{form.email}}
 	  </span>
 	</div>
+
+	<div class="form-input-newrack non-mandatory">
+
+	  {{form.user.errors}}
+	  {% if user.is_authenticated %}
+          	  <input id="id_user" type="text" name="user" value="{{user.username}}" maxlength="75" />
+          {% else %}
+        	  <input id="id_user" type="text" name="user" value="general-user" maxlength="75" />
+          {% endif %}        
+
+
+	</div>
+
 	<div class="form-input-newrack non-mandatory">
 	  <h3>Photo</h3>
 	  <p> A photo is not necessary at this stage. You can add one if you like, but it may be updated later on if it does not meet DOT requirements. </p>
-	  {{ form.photo.errors }}
+	  {{form.photo.errors}}
           {{form.photo}}
 	  <input type="submit" id="form-submit-newrack" value="Submit suggestion"/>
 	</div>

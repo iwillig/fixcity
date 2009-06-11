@@ -32,7 +32,19 @@
             {wrapDateLine: true} 
         );
 
-    {% for rack in rack_query %} 
+
+	var style = new OpenLayers.Style({
+      		    label: "",
+		    fontColor: "#eee",
+                    pointRadius: "10",
+		    fillColor: "#30c09b",
+                    strokeColor: "#1e7861",
+                    strokeWidth: 2,
+                    strokeOpacity: 0.8
+                });
+
+
+
         var rack = new OpenLayers.Layer.Vector("Racks", {
                     projection: map.displayProjection,
                     strategies: [
@@ -45,12 +57,18 @@
                         },
                         format: new OpenLayers.Format.KML()
                     }),
+                   styleMap: new OpenLayers.StyleMap({
+                       "default": style,
+                        "select": {
+                            fillColor: "#ff9e73",
+                            strokeColor: "#925438"
+                        }
+                    })
+
                 });
+
    var bounds = new OpenLayers.Bounds{{rack.location.extent}} ; 
    bounds.transform(map.displayProjection, map.projection); 
-{% endfor %} 
-
-
     map.addLayers([osm,rack]);
     var center = new OpenLayers.LonLat(-73.94,40.63);  
     center.transform(map.displayProjection, map.projection);
@@ -91,30 +109,29 @@
 {% endblock %} 
 
 {% block content %} 
-{% for rack in rack_query %} 
+
 <div class="assess">
   <div id="page-title">
     <h2 class="title">{{rack.address}}</h2>
   </div>
-<div id="overview-top">
+  <div id="overview-top">
   <div id="map-con"> 
     <div id="overview-map"> </div>
   </div>
 <div id="overview-assess" >
-    <input type="checkbox" /> <span> Location Assessment finished?</span>
-     <div class="overview-title">
-       <span> <h3> Help </h3></span>
-       <h2> Asesss</h2>
-     </div> 
-    <form>
-        <textarea rows="4" cols="55"> </textarea>
-        <input type="submit" value="Add your Comment" />
+
+  {% if user.is_authenticated %} 
+  <form method="GET" action="edit/">
+     <input type="submit" value="EDIT" />
   </form>
-  
+  {% else %}
+  {% endif %}
+
+  <p>{{rack.description}}</p>
   </div>
 </div>
 
-{% endfor %} 
+
 </div>
 {% endblock %} 
 
