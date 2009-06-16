@@ -12,8 +12,8 @@ urlpatterns = patterns('',
     (r'^$', 'fixcity.bmabr.views.index'),
 
     # Accounts URLs
-    (r'^login/$','fixcity.bmabr.views.login'),
-    (r'^logout/$','fixcity.bmabr.views.logout'),
+    (r'^accounts/login/$','fixcity.bmabr.views.login'),
+    (r'^accounts/logout/$','fixcity.bmabr.views.logout'),
      
 
     (r'^geocode/$', 'fixcity.bmabr.views.geocode'),

@@ -13,12 +13,11 @@
   <body>
    <div class="container">
         <div id="login-con">
-
     {% if user.is_authenticated %}
-	  <h4> {{user.first_name}} {{user.last_name}}</h4>
-	  <a href="/logout">Logout</a>
-     {% else %}
-        <a class="admin" href="/login/"> Login</a> 
+	  <h4> {{user.first_name}} {{user.last_name}} - ({{user.username}})</h4>
+	  <a href="/accounts/logout?next={{request.path}}">Logout</a>	
+	{% else %}
+        <a class="admin" href="/accounts/login/?next={{request.path}}"> Login</a> 
      {% endif %}        
 
 </div>

@@ -168,12 +168,15 @@
       <ul id="assess">
       {% for item in rack_query.list %}
 	<li>
+
         	<h4><a href="/rack/{{item.id}}"> <strong>{{item.id}}</strong> {{item.title}} </a></h4>
-	        <div class="mapevent" id="{{item.id}}">
+	       <!--
+        	<div class="mapevent" id="{{item.id}}">
 		  <code style="display:none">{{item.location}}</code>
 		  <a href="#">Show on map
 		  <img id="mapevent" src="/site_media/images/map.png" /> </a>
 		</div>
+		-->
 		<h5>{{item.address}}</h5>
 	        <p>{{item.description|truncatewords:10 }}</p>
 	</li>

@@ -128,3 +128,48 @@ a.title { color: #672258; text-decoration:none;}
 ul#login { width:500px; margin:150px auto; padding:15px; background: #fff ; }
 ul#login li { list-style: none ; font-size: 130%;margin-top: 10px;}
 ul#login input {  font-size: 130% ;  }
+
+#tab-container {  
+margin: 10px; 
+ }
+#tab-container ul {  
+width: 100px;
+margin:0px;
+position: absolute ; 
+ }
+#tab-container .tab-content { 
+margin-left: 100px;
+height: 300px;
+background: #eee ; 
+padding: 20px;
+ }
+
+#tab-container .active {  
+background: #eee ; 
+ }
+#tab-container li {  
+background: #fff ; 
+padding: 10px;
+list-style: none ; 
+ }
+#tab-container li:hover {  
+background: #eee ; 
+ }
+
+.tab-status li{  
+float: left ; 
+margin-left: 30px;
+list-style: none ; 
+ }
+.tab-status .active {  
+ }
+
+ul#update-rack {  
+list-style: none ; 
+ }
+
+ul#update-rack input {
+width: 100% ; 
+  }
+
+ul {list-style: none;}

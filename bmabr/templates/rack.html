@@ -108,31 +108,67 @@
 
 {% endblock %} 
 
-{% block content %} 
-
+{% block content %}
 <div class="assess">
-  <div id="page-title">
-    <h2 class="title">{{rack.address}}</h2>
-  </div>
+<div id="page-title">
+  <h2 class="title">{{rack.address}}</h2>
+  {% if user.is_authenticated %} 
+  <ul class="tab-status">
+    <li><h3><a href="#" class="active" >VIEW</a></h3></li>
+    <li><h3><a href="/admin/bmabr/rack/{{rack.id}}">EDIT RACK</a></h3></li>
+    <li><h3><a href="status/">EDIT STATUS</a></h3></li>
+  </ul> 
+  {% else %}
+  <ul class="tab-status">
+    <li><h3><a href="#"> View</a></h3></li> 
+  </ul>
+</div>
+ {% endif %}
   <div id="overview-top">
   <div id="map-con"> 
     <div id="overview-map"> </div>
   </div>
 <div id="overview-assess" >
-
-  {% if user.is_authenticated %} 
-  <form method="GET" action="edit/">
-     <input type="submit" value="EDIT" />
-  </form>
-  {% else %}
-  {% endif %}
-
+  <h4>Started by user: {{rack.user}}</h4>
   <p>{{rack.description}}</p>
   </div>
 </div>
-
-
+<div id="tab-container">
+  <ul>
+    <li id="photo-tab" class="active"><h4><a href="#">Photos</a></h4></h4></li>
+    <li id="support-tab"><h4><a href="#">Statment of Support</a></h4></li>
+    <li id="comment-tab"><h4><a href="#">Comments</a></li>
+  </ul>
+  <div class="tab-content">
+    <h3>Photos </h3>
+    {% if user.is_authenticated %}
+    <h4> Please up load any photos that you have this location</h4>  
+    <form method="POST" action="+add-photo">
+       <input value="Up load photo" type="submit" />
+    </form>
+  {% else %}
+    <h4>Please log in to upload a photo</h4>
+  {% endif %}    
+  </div>
+  <div style="display:none" class="tab-content">
+    <h3> Statment of support </h3>
+    {% if user.is_authenticated %}
+        <p> form </p>
+    {% else %}
+        <p> not form </p>
+    {% endif %}
+  </div>
+  <div style="display:none" class="tab-content">
+    <h3> Please leave your comments here </h3>
+    {% if user.is_authenticated %}
+       <p> form </p>
+    {% else %}
+       <p> not form </p>
+    {% endif %}    
+  </div>
 </div>
+</div>
+
 {% endblock %} 
 
 

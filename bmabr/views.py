@@ -1,14 +1,12 @@
-
 # Create your views here.
-
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.contrib import auth
 from django.contrib.auth.forms import UserCreationForm
 from django.template import Context
 
-
+from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import GEOSGeometry, fromstr
 from django.contrib.gis.shortcuts import render_to_kml
 from django.contrib.gis.geos import Point
@@ -34,6 +32,7 @@ SRID=4326
 
 def user_context(request):
     return {
+        'request': request, 
         'user': request.user
     }
 
@@ -44,15 +43,14 @@ def index(request):
                               ) 
 
 def login(request): 
-#    attempted to ref 
-#    ref_url = request.GET['ref_url'] 
+    next = request.GET.get('next')
     if request.method == 'POST': 
         username = request.POST.get('username')
         password = request.POST.get('password') 
         user = auth.authenticate(username=username,password=password)
         if user is not None and user.is_active: 
             auth.login(request, user)
-            return HttpResponseRedirect("/")
+            return HttpResponseRedirect(next)
         else: 
             return HttpResponseRedirect("/user/error/")
     else: 
@@ -62,8 +60,9 @@ def login(request):
                               )
 
 def logout(request): 
-        auth.logout(request)
-        return HttpResponseRedirect("/")
+    next = request.GET.get('next')
+    auth.logout(request)
+    return HttpResponseRedirect(next)
 
 
 def built(request): 
@@ -155,7 +154,7 @@ def newrack_form(request):
            context_instance=RequestContext(request, processors=[user_context])) 
 
 
-
+@login_required
 def rack_edit(request,rack_id):
     rack = Rack.objects.get(id=rack_id)
     if request.method == 'POST': 
@@ -172,6 +171,7 @@ def rack_edit(request,rack_id):
 
 def rack(request,rack_id): 
     rack = Rack.objects.get(id=rack_id)    
+#    user = 
     comment_query = Comment.objects.filter(rack=rack_id)
     photo_query = Rack_Photo.objects.filter(ph_rack=rack_id)
     document_query = Rack_Document.objects.filter(doc_rack=rack_id)

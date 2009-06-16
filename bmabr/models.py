@@ -29,7 +29,7 @@ class Rack(models.Model):
     STATUS_STATE  = ( 
         ('suggest', 'suggest'),
         ('assessing', 'assessing'),
-        ('assessed', 'assessed'),
+        ('assessed', 'assessed'),      
         ('built','built'),
         ('rejected','rejected')                      
     )
