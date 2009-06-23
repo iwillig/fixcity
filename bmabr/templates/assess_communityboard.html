@@ -74,8 +74,9 @@
 	var style = new OpenLayers.Style({
                     pointRadius: "10",
 		    label: "${id}",
-	            fontColor: "#eee",
-                    externalGraphic: "/site_media/images/marker.png"
+                    fontColor: "#eee",
+                    fillColor: "#ff9e73",
+                    strokeColor: "#80503b",
 		    
                 }, {
                     context: {
@@ -104,8 +105,8 @@
                     styleMap: new OpenLayers.StyleMap({
                         "default": style,
                         "select": {
-                            fillColor: "#8aeeef",
-                            strokeColor: "#32a8a9"
+                           fillColor: "#ff9e73",
+                           strokeColor: "#80503b",
                         }
                     })
 

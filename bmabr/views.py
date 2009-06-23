@@ -49,12 +49,12 @@ def about(request):
                               ) 
 
 @login_required
-def profile(request,user): 
-    user = User.objects.get(username=user)
+def profile(request): 
+    user = request.user
     racks = Rack.objects.filter(user=user.username)
     return render_to_response('profile.html',
        {'user': user,
-        'racks': racks
+       'racks': racks
         },
        context_instance=RequestContext(request, processors=[user_context])
                               ) 
@@ -161,10 +161,11 @@ def assess_by_communityboard(request,cb_id):
 
 def newrack_form(request): 
     if request.method == 'POST':
-        form = RackForm(request.POST,request.FILES)            
+        CommunityBoard = request.POST['communityboard'] 
+        form = RackForm(request.POST,request.FILES)        
         if form.is_valid(): 
             new_rack = form.save()
-            return HttpResponseRedirect('/assess/')  
+            return HttpResponseRedirect('/assess/communityboard/%s' % CommunityBoard)  
     else:
         form = RackForm()
     return render_to_response('newrack.html', { 

@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     # Accounts URLs
     (r'^accounts/login/$','fixcity.bmabr.views.login'),
     (r'^accounts/logout/$','fixcity.bmabr.views.logout'),
-    (r'^profile/(?P<user>\w+)/$', 'fixcity.bmabr.views.profile'),
+    (r'^profile/$', 'fixcity.bmabr.views.profile'),
 
     
 
