@@ -3,18 +3,23 @@ from django.conf.urls.defaults import *
 from fixcity.bmabr import views 
 from django.conf import settings
 
+from django.views.generic.create_update import update_object
+
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
+
     (r'^$', 'fixcity.bmabr.views.index'),
+    (r'^about/$', 'fixcity.bmabr.views.about'), 
 
     # Accounts URLs
     (r'^accounts/login/$','fixcity.bmabr.views.login'),
     (r'^accounts/logout/$','fixcity.bmabr.views.logout'),
-     
+    (r'^profile/(?P<user>\w+)/$', 'fixcity.bmabr.views.profile'),
+
+    
 
     (r'^geocode/$', 'fixcity.bmabr.views.geocode'),
     (r'^reverse/$', 'fixcity.bmabr.views.reverse_geocode'),
@@ -28,7 +33,10 @@ urlpatterns = patterns('',
     (r'built/$','fixcity.bmabr.views.built'),   
     (r'^rack/(?P<rack_id>\d+)/$', 'fixcity.bmabr.views.rack'),
     (r'^rack/(?P<rack_id>\d+)/edit/$', 'fixcity.bmabr.views.rack_edit'),
-    (r'^rack/(?P<rack_id>\d+)/updatephoto$', 'fixcity.bmabr.views.updatephoto'),         
+
+    (r'^rack/(?P<rack_id>\d+)/status/$', 'fixcity.bmabr.views.rack_status'),
+    (r'^rack/(?P<rack_id>\d+)/support/$', 'fixcity.bmabr.views.support'),
+
 
      # KML URLs
 

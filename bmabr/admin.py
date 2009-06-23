@@ -1,16 +1,21 @@
 from django.contrib.gis import admin
+from django.contrib import admin as oldAdmin 
 from fixcity.bmabr.models import Rack, Comment, Neighborhoods, CommunityBoard, SubwayStations
-from fixcity.bmabr.models import Rack_Photo, Rack_Document
+from fixcity.bmabr.models import  StatementOfSupport
 
 
-class Rack_PhotoAdmin(admin.GeoModelAdmin): 
-    list_display  = ('ph_rack','contact_email') 
-admin.site.register(Rack_Photo,Rack_PhotoAdmin)
+#class PhotoAdmin(admin.GeoModelAdmin): 
+#    list_display  = ('rack','email') 
+#admin.site.register(Photo,PhotoAdmin)
 
 
-class Rack_DocumentAdmin(admin.GeoModelAdmin): 
-    list_display = ('doc_rack','contact_email') 
-admin.site.register(Rack_Document,Rack_DocumentAdmin)
+class StatementOfSupportAdmin(admin.GeoModelAdmin): 
+    list_display = ('s_rack','email') 
+admin.site.register(StatementOfSupport,StatementOfSupportAdmin)
+
+
+class StatementInline(oldAdmin.StackedInline): 
+    model = StatementOfSupport
 
 class SubwayAdmin(admin.GeoModelAdmin): 
     list_display = ('name','borough')
@@ -18,11 +23,12 @@ class SubwayAdmin(admin.GeoModelAdmin):
 admin.site.register(SubwayStations,SubwayAdmin)
 
 class CommentAdmin(admin.GeoModelAdmin): 
-    list_display = ('rack','contact_email')
+    list_display = ('rack','email')
 admin.site.register(Comment,CommentAdmin)
 
 class RackAdmin(admin.GeoModelAdmin): 
     list_display = ('address','location')
+    inlines = [StatementInline]
 admin.site.register(Rack, RackAdmin)
 
 

@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from django.forms import ModelForm
-from django.contrib.auth.models import User
+from sorl.thumbnail.fields import ImageWithThumbnailsField 
 
 
 class  CommunityBoard(models.Model):
@@ -35,7 +35,13 @@ class Rack(models.Model):
     )
     
     communityboard = models.ForeignKey(CommunityBoard)
-    photo = models.ImageField(upload_to='images/racks/', blank=True, null=True)
+    photo = ImageWithThumbnailsField(
+                              upload_to='images/racks/', 
+                              thumbnail={'size': (100, 100)},
+                              extra_thumbnails = {
+                                   'large': {'size': (400,400)}, 
+                                },    
+                              blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_STATE)
     user = models.CharField(max_length=20)
     location = models.PointField(srid=4326)
@@ -49,34 +55,30 @@ class Rack(models.Model):
 
 
 
-class Rack_Document(models.Model): 
+class StatementOfSupport(models.Model): 
     file = models.FileField(upload_to='documents/', blank=True, null=True)
-    contact_email = models.EmailField()
-    doc_rack = models.ForeignKey(Rack)
-        
+    email = models.EmailField()
+    s_rack = models.ForeignKey(Rack)
+
     class Meta: 
-        ordering = ['doc_rack']
+        ordering = ['s_rack']
 
     def __unicode__(self):
-        return self.contact_email
+        return self.email
 
 
-class Rack_Photo(models.Model): 
-    image = models.ImageField(upload_to='images/racks/', blank=True, null=True)
-    contact_email = models.EmailField()
-    ph_rack = models.ForeignKey(Rack)
-        
-    class Meta: 
-        ordering = ['ph_rack']
-
-    def __unicode__(self):
-        return self.contact_email
+#class Photo(models.Model): 
+#    image = models.ImageField(upload_to='images/racks/', blank=True, null=True)
+#    email = models.EmailField()
+#    ph_rack = models.ForeignKey(Rack)        
+#    def __unicode__(self):
+#        return self.contact_email
 
 
 
 class Comment(models.Model):
     text = models.TextField()
-    contact_email = models.EmailField()
+    email = models.EmailField()
     rack = models.ForeignKey(Rack)
     
     class Meta: 
@@ -137,3 +139,6 @@ class CommentForm(ModelForm):
         model = Comment
         
 
+class SupportForm(ModelForm): 
+    class Meta: 
+        model = StatementOfSupport

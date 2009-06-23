@@ -15,7 +15,7 @@ div#map {background: #A1BDC4; height: 400px; width: 540px; margin: 10px; }
 div#location-rack-map { height: 200px; } 
 div#built-map { height: 500px; margin: 20px auto ; background: #A1BDC4 ;   }
 div#home-map { height: 350px; ; background: #A1BDC4 ;   }
-div#index-form { margin: 20px; }
+div#index-form { margin: 20px; float: right ;  }
 div#index-form button { font-size: 200% ; }
 #tip-con {margin-left:540px; width: 250px;background:#ba4747;height: 40px;color: white;text-algin: center; cursor: pointer;}
 #tip-control {text-align:center;}
@@ -26,6 +26,7 @@ div#index-form button { font-size: 200% ; }
 .help-location li {margin-left: 20px; }
 .help-dot {  } 
 
+#subtitle { float: right ;  margin-right: 300px; margin-top:15px;  }
 #cbmenu { display: none ; } 
 ul#assess { list-style: none;padding: 0;margin: 0;  }
 ul#assess li { margin: 8px; padding: 5px; background: #ffd4c2 ; } 
@@ -63,7 +64,7 @@ div#overview-comment { margin: 10px; padding: 10px; }
 .overview-title span { float: right ; padding: 5px; background: #eee ; height: 20px; width: 200px; }
 .overview-title span h3 { margin: 0px; font-weight: bold ; font-size: 150% ;  }
 /* top of rack suggestion over view page */
-#overview-top {width:1100px; min-height: 330px; }
+#overview-top { min-height: 330px; }
 #overview-map { height: 300px;width: 540px;background: #A1BDC4  }
 #overview-photo { width: 510px; margin: 10px;} 
 .error-photo { height: 250px; }
@@ -85,13 +86,20 @@ div.suggest { color: white }
 
 .suggest { background: #30c09b; }
 .assess { background: #ff9e73 } 
-/* .assess { background:  #f5804d;  } */
+.assess-text { float: right ; margin-right: 80px; width: 300px; }
+.assess li.list {  min-height: 80px;  }
 div.assess { min-height: 500px; }
 .submit { background: #dd7fe6;  } 
 div.submit { min-height: 500px; }
 .built { background: #d2dce7; } 
 div.built { min-height: 500px; } 
 
+.about {background: #c7a7c6 ;  }
+
+div.about {padding: 20px;  } 
+
+#chicken { color: #808080 } 
+ ;  }
 #chicken { color: #808080 } 
 
 /* styles for the form */
@@ -120,7 +128,7 @@ div.form-header {}
 a.title { color: #672258; text-decoration:none;}
 .request { }
 .pendding {  }
-#introduction-text { width: 700px;  margin: 30px; }
+#introduction-text {margin: 10px; }
 #print { margin-bottom: 30px;padding-bottom: 10px;}
 #id_rack { display: none; }
 #address {  font-size: 250% ; border: 3px solid #cccccc;}
@@ -129,47 +137,22 @@ ul#login { width:500px; margin:150px auto; padding:15px; background: #fff ; }
 ul#login li { list-style: none ; font-size: 130%;margin-top: 10px;}
 ul#login input {  font-size: 130% ;  }
 
-#tab-container {  
-margin: 10px; 
- }
-#tab-container ul {  
-width: 100px;
-margin:0px;
-position: absolute ; 
- }
-#tab-container .tab-content { 
-margin-left: 100px;
-height: 300px;
-background: #eee ; 
-padding: 20px;
- }
+.overview-tab {  }
+#tab-container {  margin-top: 30px;  }
+#tab-container ul {  width: 100px;margin:0px;position: absolute ;  }
+#tab-container .tab-content { margin-left: 100px; background: #eee ; padding: 20px; min-height: 200px;}
 
-#tab-container .active {  
-background: #eee ; 
- }
-#tab-container li {  
-background: #fff ; 
-padding: 10px;
-list-style: none ; 
- }
-#tab-container li:hover {  
-background: #eee ; 
- }
+#tab-container .active {  background: #eee ;  }
+#tab-container li {  background: #fff ; padding: 10px;list-style: none ;  }
 
-.tab-status li{  
-float: left ; 
-margin-left: 30px;
-list-style: none ; 
- }
+.tab-status li{  float: left ; margin-left: 30px;list-style: none ;  }
 .tab-status .active {  
  }
 
-ul#update-rack {  
-list-style: none ; 
- }
+ul#update-rack {  list-style: none ;  }
 
-ul#update-rack input {
-width: 100% ; 
-  }
+ul#update-rack input {width: 100% ;   }
 
 ul {list-style: none;}
+
+

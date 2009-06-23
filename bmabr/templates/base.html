@@ -14,14 +14,14 @@
    <div class="container">
         <div id="login-con">
     {% if user.is_authenticated %}
-	  <h4> {{user.first_name}} {{user.last_name}} - ({{user.username}})</h4>
+	  <h4> <a href="/profile/{{user.username}}/">{{user.first_name}} {{user.last_name}}</a></h4>
 	  <a href="/accounts/logout?next={{request.path}}">Logout</a>	
 	{% else %}
         <a class="admin" href="/accounts/login/?next={{request.path}}"> Login</a> 
      {% endif %}        
 
 </div>
-
+     <h3 id="subtitle" >Work together for better bike parking</h3>
      <h1><a class="title" href="/">BUILD ME A BIKE RACK</a></h1>
      <div id="header">
      {% block menu %}

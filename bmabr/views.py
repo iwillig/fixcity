@@ -15,12 +15,13 @@ from django.contrib.gis.measure import D
 from fixcity.bmabr.models import Rack, Comment
 from fixcity.bmabr.models import Neighborhoods
 from fixcity.bmabr.models import CommunityBoard
-from fixcity.bmabr.models import RackForm, CommentForm
-from fixcity.bmabr.models import Rack_Document, Rack_Photo
+from fixcity.bmabr.models import RackForm, CommentForm, SupportForm
+from fixcity.bmabr.models import StatementOfSupport
 
 from django.contrib.gis.geos import fromstr
-
 from django.contrib import auth
+
+from django.contrib.auth.models import User 
 
 from reportlab.pdfgen import canvas 
 from geopy import geocoders
@@ -41,6 +42,24 @@ def index(request):
        {'request':request},
        context_instance=RequestContext(request, processors=[user_context])
                               ) 
+def about(request):
+    return render_to_response('about.html',
+       {'request':request},
+       context_instance=RequestContext(request, processors=[user_context])
+                              ) 
+
+@login_required
+def profile(request,user): 
+    user = User.objects.get(username=user)
+    racks = Rack.objects.filter(user=user.username)
+    return render_to_response('profile.html',
+       {'user': user,
+        'racks': racks
+        },
+       context_instance=RequestContext(request, processors=[user_context])
+                              ) 
+
+    
 
 def login(request): 
     next = request.GET.get('next')
@@ -154,6 +173,30 @@ def newrack_form(request):
            context_instance=RequestContext(request, processors=[user_context])) 
 
 
+def support(request, rack_id): 
+    if request.method == "POST":
+        form_support = SupportForm(request.POST,request.FILES)
+        if form_support.is_valid(): 
+            new_support = form_support.save()
+            return HttpResponseRedirect('/rack/%s' % rack_id)              
+        else: 
+            return HttpResponse('something went wrong')              
+    else:         
+        return HttpResponse('not allowed')  
+
+
+
+
+@login_required
+def rack_status(request,rack_id):
+    rack = Rack.objects.get(id=rack_id) 
+    return render_to_response('rack_status.html', { 
+            'rack': rack,
+           },
+           context_instance=RequestContext(request, processors=[user_context])) 
+
+
+
 @login_required
 def rack_edit(request,rack_id):
     rack = Rack.objects.get(id=rack_id)
@@ -171,17 +214,14 @@ def rack_edit(request,rack_id):
 
 def rack(request,rack_id): 
     rack = Rack.objects.get(id=rack_id)    
-#    user = 
     comment_query = Comment.objects.filter(rack=rack_id)
-    photo_query = Rack_Photo.objects.filter(ph_rack=rack_id)
-    document_query = Rack_Document.objects.filter(doc_rack=rack_id)
+    statement_query = StatementOfSupport.objects.filter(s_rack=rack_id)
     return render_to_response('rack.html', { 
             'rack': rack,            
             'comment_query': comment_query,
-            'photo_query': photo_query, 
-            'document_query': document_query,
+            'statement_query': statement_query,
             },
-                              context_instance=RequestContext(request, processors=[user_context])) 
+             context_instance=RequestContext(request, processors=[user_context])) 
            
     
 

@@ -136,13 +136,9 @@
     <a href="/assess/">(2) ASSESS</a>
     <p> Assess current requested locations </p>
   </li>
-  <li class="submit">
-    <a href="/submit/">(3) SUBMIT</a>
-    <p> Submit your request to the DOT </p>
-  </li>
-  <li class="built">
-    <a href="/built/"> (4) BUILD</a>
-    <p> See racks aready built </p>
+  <li class="about">
+     <a href="/about/">About this projecet</a>    
+     <p> Find out more information</p>
   </li>
 </ul>
 
@@ -166,19 +162,19 @@
    {% for rack_query in rack_list %} 
       <h3>{{rack_query.grouper}}</h3>
       <ul id="assess">
-      {% for item in rack_query.list %}
-	<li>
-
-        	<h4><a href="/rack/{{item.id}}"> <strong>{{item.id}}</strong> {{item.title}} </a></h4>
-	       <!--
-        	<div class="mapevent" id="{{item.id}}">
-		  <code style="display:none">{{item.location}}</code>
-		  <a href="#">Show on map
-		  <img id="mapevent" src="/site_media/images/map.png" /> </a>
-		</div>
-		-->
-		<h5>{{item.address}}</h5>
-	        <p>{{item.description|truncatewords:10 }}</p>
+      {% for rack in rack_query.list %}
+	<li class="list">
+	<div class="assess-text">
+	<h4><a href="/rack/{{rack.id}}"> <strong>{{rack.id}}</strong> {{rack.title}} </a></h4>
+	<h5>{{rack.address}}</h5>
+	<p>{{rack.description|truncatewords:20 }}</p>
+	</div>
+	{% if rack.photo %}
+	<a href="/rack/{{rack.id}}">
+	  <img src="{{rack.photo.thumbnail}}" /> 
+	</a>
+	{% else %}
+	{% endif %}
 	</li>
       {% endfor %}
       </ul>
