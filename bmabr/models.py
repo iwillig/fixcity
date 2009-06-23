@@ -26,14 +26,6 @@ class Rack(models.Model):
     date = models.DateTimeField()    
     description = models.TextField(blank=True)
     email = models.EmailField()
-    STATUS_STATE  = ( 
-        ('suggest', 'suggest'),
-        ('assessing', 'assessing'),
-        ('assessed', 'assessed'),      
-        ('built','built'),
-        ('rejected','rejected')                      
-    )
-    
     communityboard = models.ForeignKey(CommunityBoard)
     photo = ImageWithThumbnailsField(
                               upload_to='images/racks/', 
@@ -42,7 +34,6 @@ class Rack(models.Model):
                                    'large': {'size': (400,400)}, 
                                 },    
                               blank=True, null=True)
-    status = models.CharField(max_length=10, choices=STATUS_STATE)
     user = models.CharField(max_length=20)
     location = models.PointField(srid=4326)
     objects = models.GeoManager()
@@ -53,6 +44,23 @@ class Rack(models.Model):
     def __unicode__(self):
         return self.address
 
+
+class Steps(models.Model): 
+    step_rack = models.ForeignKey(Rack)
+    STEP_TYPE = ( 
+        ('size-up' , 'Size Up'), 
+        ('photo' , 'Photo'),
+        ('statement','Statement of Support'),
+        )
+    name = models.CharField(max_length=10, choices=STEP_TYPE) 
+    STATUS = ( 
+        ('finished','finished'),
+        ('todo','todo'), 
+        )
+    status = models.CharField(max_length=10,choices=STATUS)
+
+    def __unicode__(self): 
+        return self.status
 
 
 class StatementOfSupport(models.Model): 
@@ -85,7 +93,7 @@ class Comment(models.Model):
         ordering = ['rack']
 
     def __unicode__(self):
-        return self.contact_email
+        return self.email
 
 
 

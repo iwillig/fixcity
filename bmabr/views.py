@@ -12,7 +12,7 @@ from django.contrib.gis.shortcuts import render_to_kml
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 
-from fixcity.bmabr.models import Rack, Comment
+from fixcity.bmabr.models import Rack, Comment, Steps
 from fixcity.bmabr.models import Neighborhoods
 from fixcity.bmabr.models import CommunityBoard
 from fixcity.bmabr.models import RackForm, CommentForm, SupportForm
@@ -165,7 +165,14 @@ def newrack_form(request):
         form = RackForm(request.POST,request.FILES)        
         if form.is_valid(): 
             new_rack = form.save()
-            return HttpResponseRedirect('/assess/communityboard/%s' % CommunityBoard)  
+            # create steps status for new rack suggestion
+            size_up = Steps(step_rack=new_rack,name="size-up",status="todo")
+            size_up.save()
+            photo_status = Steps(step_rack=new_rack,name="photo",status='todo')
+            photo_status.save()
+            statement = Steps(step_rack=new_rack,name="statement",status='todo')
+            statement.save()
+            return HttpResponseRedirect('/rack/%s' % new_rack.id)  
     else:
         form = RackForm()
     return render_to_response('newrack.html', { 
@@ -215,12 +222,14 @@ def rack_edit(request,rack_id):
 
 def rack(request,rack_id): 
     rack = Rack.objects.get(id=rack_id)    
+    steps_query = Steps.objects.filter(step_rack=rack_id)
     comment_query = Comment.objects.filter(rack=rack_id)
     statement_query = StatementOfSupport.objects.filter(s_rack=rack_id)
     return render_to_response('rack.html', { 
             'rack': rack,            
             'comment_query': comment_query,
             'statement_query': statement_query,
+            'steps_query': steps_query,
             },
              context_instance=RequestContext(request, processors=[user_context])) 
            
@@ -250,7 +259,7 @@ def rack_all_kml(request):
 
 
 def rack_requested_kml(requst): 
-    racks = Rack.objects.filter(status='suggest')
+    racks = Rack.objects.all()
     return render_to_kml("placemarkers.kml", {'racks' : racks}) 
 
 

@@ -236,13 +236,13 @@
 	  </span>
 	</div>
 
-	<div class="form-input-newrack non-mandatory">
-
+	<div class="form-input-newrack mandatory">
+	  <p> Username </p>
 	  {{form.user.errors}}
 	  {% if user.is_authenticated %}
-          	  <input id="id_user" type="text" name="user" value="{{user.username}}" maxlength="75" />
+          	  <input id="id_user" type="text" readonly  name="user" value="{{user.username}}" maxlength="75" />
           {% else %}
-        	  <input id="id_user" type="text" name="user" value="general-user" maxlength="75" />
+        	  <input id="id_user" readonly  type="text" name="user" value="general-user" maxlength="75" />
           {% endif %}        
 
 

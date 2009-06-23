@@ -14,36 +14,8 @@
 <script defer="defer" type="text/javascript">
 
 	 $(document).ready(function() {
-		 loadMap(); 
-		 $('#photo-tab').addClass('active') ; 
-
-                $('#photo-tab').click(function () {
-			$('#photo-content').show(); 
-			$('#photo-tab').addClass('active');
-			$('#support-tab').removeClass('active');
-			$('#comment-tab').removeClass('active'); 
-			$('#support-content').hide(); 
-			$('#comments-content').hide(); 
-		    }); 
-		 $('#support-tab').click(function () { 
-			 $('#support-content').show(); 
-			 $('#photo-tab').removeClass('active'); 
-			 $('#comment-tab').removeClass('active'); 
-			 $('#support-tab').addClass('active'); 
-			 $('#photo-content').hide(); 
-			 $('#comments-content').hide(); 
-		     }); 
-		 $('#comment-tab').click(function () { 
-			 $('#support-content').hide(); 
-			 $('#photo-tab').removeClass('active'); 
-			 $('#support-tab').removeClass('active'); 
-			 $('#comment-tab').addClass('active'); 
-			 $('#photo-content').hide(); 
-			 $('#comments-content').show(); 			 
-		     }); 
-		 
-		 
-
+		 loadMap();
+                 $('.tip').corners();
 	     }); 
 
 
@@ -78,8 +50,8 @@
       		    label: "",
 		    fontColor: "#eee",
                     pointRadius: "10",
-		    fillColor: "#30c09b",
-                    strokeColor: "#1e7861",
+                    fillColor: "#ff9e73",
+                    strokeColor: "#80503b",
                     strokeWidth: 2,
                     strokeOpacity: 0.8
                 });
@@ -144,38 +116,72 @@
 <div id="page-title">
   <h2 class="title">{{rack.address}}</h2>
   {% if user.is_authenticated %} 
-  <ul class="tab-status">
+ <ul class="tab-status">
+   <!--
     <li><h3><a href="#" class="active" >VIEW</a></h3></li>
     <li><h3><a href="/admin/bmabr/rack/{{rack.id}}">EDIT RACK</a></h3></li>
     <li><h3><a href="status/">EDIT STATUS</a></h3></li>
-  </ul> 
+    -->
+  </ul>
   {% else %}
   <ul class="tab-status">
     <li><h3><a href="#"> View</a></h3></li> 
   </ul>
  {% endif %}
-  <div id="overview-top">
-  <div id="map-con"> 
-    <div id="overview-map"> </div>
-  </div>
-
-<div id="overview-assess" >
-  <h4>Started by user: {{rack.user}}</h4>
-  <p>{{rack.description}}</p>
-  </div>
 </div>
-
-<a name="tabs">
+<div id="overview-top">
+  <h3 id="steps-message"> Here's what needs to be done</h3>
 <div id="tab-container">
+ <a name="tabs">
+   <ul>
+     <li class="" class="size-up">
+       <h2><a href="#tabs">(1) SIZE IT UP</a></h2>
+       <hr />
+       {% for step in steps_query %}
+          {% ifequal  step.name "size-up" %}
+             {% ifequal step.status "todo" %} 
+               <input disabled="disabled" type="checkbox" name="size-up"/>This needs doing</p> 
+             {% endifequal %}
+             {% ifequal step.status "finished" %} 
+               <input disabled="disabled" type="checkbox" name="size-up" checked/>This step is done.</p> 
+             {% endifequal %}     
+             {% endifequal %} 
+       {% endfor %} 
+     </li>
+     
+   </ul>  
+   <div class="tab-content">
+     <div class="tip">
+       <p> The first step is to visit the site and see if it’s appropriate for bike rack placement. Print out this diagram and watch the StreetFilm PSA to find out how. If the original address listed isn’t appropriate, try around the corner or across the street. If there’s something you’re unsure about or a very minor issue, go ahead and approve the spot, including your concerns in the comments. Click edit to adjust the address or name and add comments.</p>
+     </div>
+     <div id="overview-map"></div>
+     <div id="size-up-text">
+       <p>{{rack.description}}</p>
+     </div>
+    </div>
   <ul>
-    <li class="" id="photo-tab"><h4><a href="#tabs">Photos</a></h4></h4></li>
-    <li class="overview-tab" id="map-tab"><h4><a href="#tabs">Maps</a></li>
-    <li class="overview-tab" id="support-tab"><h4><a href="#tabs">Statment of Support</a></h4></li>
-    <li class="overview-tab" id="comment-tab"><h4><a href="#tabs">Comments</a></li>
-  </ul>
-  
+    <li class="" id="photo-tab">
+       <h2><a href="#tabs">(2) PHOTOGRAPH</a></h2>
+       <hr />
+       {% for step in steps_query %}
+          {% ifequal  step.name "photo" %}
+             {% ifequal step.status "todo" %} 
+               <input disabled="disabled" type="checkbox" name="size-up"/>This needs doing</p> 
+             {% endifequal %}
+             {% ifequal step.status "finished" %} 
+               <input disabled="disabled" type="checkbox" name="size-up" checked/>This step is done.</p> 
+             {% endifequal %}
+     
+             {% endifequal %} 
+       {% endfor %} 
+    </li>
+  </ul>  
   <div id="photo-content" class="tab-content">
-    <h3>Photos</h3>
+     <div class="tip">
+       <p> Second, you’ll need a photograph of the location. If the original suggester included an appropriate photo, that’s great. But if the location has been adjusted or doesn’t adequately identify the proposed rack location, you’ll need to update it. </p>
+
+     </div>
+
     {% if rack.photo %}
     <img src="{{rack.photo.extra_thumbnails.large}}" />
     {% else %}
@@ -185,16 +191,53 @@
    {% endif %}
 
   </div>
-  <div id="support-content" style="display:none" class="tab-content">
-    <h3> Statment of support </h3>
+  <ul>
+    <li class="" id="photo-tab"><h2><a href="#tabs">(2) GET SUPPORT</a></h2>
+    <hr />
+       {% for step in steps_query %}
+          {% ifequal  step.name "statement" %}
+             {% ifequal step.status "todo" %} 
+               <input disabled="disabled" type="checkbox" name="size-up"/>This needs doing</p> 
+             {% endifequal %}
+             {% ifequal step.status "finished" %} 
+               <input disabled="disabled" type="checkbox" name="size-up" checked/>This step is done.</p> 
+             {% endifequal %}
+     
+             {% endifequal %} 
+       {% endfor %} 
+    </li>
+  </ul>  
+
+  <div id="support-content" class="tab-content">
+     <div class="tip">
+       <p>Third, you’ll need to reach out to a property/business owner or worker and get their support. Once completed and signed, take a picture of the Statement of Support and upload here as a photo. Please note that public spaces do not require a statement of support. </p>
+     </div>
+    
     <form enctype="multipart/form-data" method="POST" action="support/">
-       <label>Statement of support</label><input type="file" name="file" id="support-doc" /> <br /> 
-       <label>Email</label><input type="text" name="email"   id="email-doc" />  <br />
-       <input type="hidden" value="{{rack.id}}" name="s_rack" />
-       <input type="submit" value="Add a statement of support" />      
+    <table> 
+      <tr>
+	<td> <label>Statement of support (PDF)</label> </td>
+	<td><input type="file" name="file" id="support-doc" /> </td>
+      </tr>
+      <tr>
+	<td><label>Email</label></td>
+	<td><input type="text" name="email"   id="email-doc" /></td>
+      </tr>
+      <input type="hidden" value="{{rack.id}}" name="s_rack" />
+      <tr>
+	<td> </td>
+	<td><input type="submit" value="Add a statement of support" /> </td>
+      </tr>
+    </table>
     </form>
-    {% for object in statement_query %}     
-       {{object.id}}
+    <h3>Current statement(s) of support </h3>
+    {% for object in statement_query %}
+    <div class="statement">
+      <a href="{{object.file.url}}">
+      <img src="/site_media/images/support.png" />
+      </a>
+      <p> Add by <strong>{{object.email}}</strong></p>
+    </div>
     {% endfor %} 
     
   </div>
