@@ -22,26 +22,26 @@
 			       jQuery.each(data, function() {
 				       if (this.fields.name == 'size-up') { 
 					   if (this.fields.status == 'todo') {
-              					   $('#size-up-control').append('<input type="checkbox" />' + this.fields.status + '</p> <code id="size-id">' + this.pk  + '</code>') ; 
+              					   $('#size-up-control').append('<input type="checkbox" /><p>' + this.fields.status + '</p> <code id="size-id">' + this.pk  + '</code>') ; 
 					   }
 					   if (this.fields.status == 'finished')  { 
-					    $('#size-up-control').append('<input type="checkbox" checked />' + this.fields.status + '</p> <code id="size-id">' + this.pk  + '</code>') ; 
+					    $('#size-up-control').append('<input type="checkbox" checked /><p>' + this.fields.status + '</p> <code id="size-id">' + this.pk  + '</code>') ; 
 					   }
 				       }
 				       if (this.fields.name == 'photo'){ 
 					   if (this.fields.status == 'todo') {
-              					   $('#photo-control').append('<input type="checkbox" />' + this.fields.status + '</p> <code>' + this.pk  + '</code>') ; 
+              					   $('#photo-control').append('<input type="checkbox" /><p>' + this.fields.status + '</p> <code id="photo-id">' + this.pk  + '</code>') ; 
 					   }
 					   if (this.fields.status == 'finished')  { 
-					    $('#photo-control').append('<input type="checkbox" checked />' + this.fields.status + '</p> <code>' + this.pk  + '</code>') ; 
+					    $('#photo-control').append('<input type="checkbox" checked /><p>' + this.fields.status + '</p> <code id="photo-id">' + this.pk  + '</code>') ; 
 					   }
 				       }
 				       if (this.fields.name == 'statement') { 
 					   if (this.fields.status == 'todo') {
-					       $('#statement-control').append('<input type="checkbox" />' + this.fields.status + '</p> <code>' + this.pk  + '</code>') ; 
+					       $('#statement-control').append('<input type="checkbox" /> <p>' + this.fields.status + '</p> <code id="statment-control">' + this.pk  + '</code>') ; 
 					   }
 					   if (this.fields.status == 'finished')  { 
-					       $('#statement-control').append('<input type="checkbox" checked />' + this.fields.status + '</p> <code>' + this.pk  + '</code>') ; 
+					       $('#statement-control').append('<input type="checkbox" checked /><p>' + this.fields.status + '</p> <code id="statment-control">' + this.pk  + '</code>') ; 
 					   }
 					   					  
 				       }
@@ -51,13 +51,30 @@
 
 
                  $('#size-up-control').click(function () {                        
-			 var id = $('#size-id').val()
+			 var id = $('#size-id').text();
 			 $.post("change-status/", {
 				   id: id, 
-				   name: "size-up"
 				     }); 
 			 
                    });
+
+                 $('#photo-control').click(function () {                        
+			 var id = $('#photo-id').text();
+			 $.post("change-status/", {
+				   id: id, 
+				     }); 
+			 
+                   });
+
+                 $('#statement-control').click(function () {                        
+			 var id = $('#statment-control').text();
+			 $.post("change-status/", {
+				   id: id, 
+				     }); 
+			 
+                   });
+
+
 
 
                 }); 
@@ -181,17 +198,18 @@
      <li class="" class="size-up">
        <h2><a href="#tabs">(1) SIZE IT UP</a></h2>
        <hr />
-       <div id="size-up-control">         
+       <div id="size-up-control" class="step-control">         
        </div>
      </li>
      
    </ul>  
    <div class="tab-content">
-     <div class="tip">
+     <div class="tip">      
        <p> The first step is to visit the site and see if it’s appropriate for bike rack placement. Print out this diagram and watch the StreetFilm PSA to find out how. If the original address listed isn’t appropriate, try around the corner or across the street. If there’s something you’re unsure about or a very minor issue, go ahead and approve the spot, including your concerns in the comments. Click edit to adjust the address or name and add comments.</p>
      </div>
      <div id="overview-map"></div>
      <div id="size-up-text">
+       <h4>Description:</h4>
        <p>{{rack.description}}</p>
      </div>
     </div>
@@ -199,7 +217,7 @@
     <li class="" id="photo-tab">
        <h2><a href="#tabs">(2) PHOTOGRAPH</a></h2>
        <hr />
-       <div id="photo-control"> </div>
+       <div id="photo-control" class="step-control"> </div>
     </li>
   </ul>  
   <div id="photo-content" class="tab-content">
@@ -220,7 +238,7 @@
   <ul>
     <li class="" id="photo-tab"><h2><a href="#tabs">(2) GET SUPPORT</a></h2>
     <hr />
-      <div id="statement-control"> </div>
+      <div id="statement-control" class="step-control"> </div>
     </li>
   </ul>  
 
