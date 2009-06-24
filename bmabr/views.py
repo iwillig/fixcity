@@ -192,9 +192,15 @@ def rack_status(request,rack_id):
 
 @login_required
 def change_status(request,rack_id): 
-    name = request.POST['name']
-#    step = Steps.objects.filter(name=
-    return HttpResponse(name)
+    id = request.POST['id']
+    step = Steps.objects.get(id=id)
+    if step.status == 'finished': 
+        new_step = Steps(id=id,step_rack=step.step_rack,name=step.name,status='todo')
+        new_step.save()
+    else: 
+        new_step = Steps(id=id,step_rack=step.step_rack,name=step.name,status='finished')
+        new_step.save()
+    return HttpResponse(step)
 
 
 
