@@ -46,6 +46,7 @@ class Rack(models.Model):
 
 
 class Steps(models.Model): 
+
     step_rack = models.ForeignKey(Rack)
     STEP_TYPE = ( 
         ('size-up' , 'Size Up'), 

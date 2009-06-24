@@ -16,7 +16,51 @@
 	 $(document).ready(function() {
 		 loadMap();
                  $('.tip').corners();
-	     }); 
+                 $('.error-photo').corners();
+                 $.getJSON("status/", 
+			   function(data) { 
+			       jQuery.each(data, function() {
+				       if (this.fields.name == 'size-up') { 
+					   if (this.fields.status == 'todo') {
+              					   $('#size-up-control').append('<input type="checkbox" />' + this.fields.status + '</p> <code id="size-id">' + this.pk  + '</code>') ; 
+					   }
+					   if (this.fields.status == 'finished')  { 
+					    $('#size-up-control').append('<input type="checkbox" checked />' + this.fields.status + '</p> <code id="size-id">' + this.pk  + '</code>') ; 
+					   }
+				       }
+				       if (this.fields.name == 'photo'){ 
+					   if (this.fields.status == 'todo') {
+              					   $('#photo-control').append('<input type="checkbox" />' + this.fields.status + '</p> <code>' + this.pk  + '</code>') ; 
+					   }
+					   if (this.fields.status == 'finished')  { 
+					    $('#photo-control').append('<input type="checkbox" checked />' + this.fields.status + '</p> <code>' + this.pk  + '</code>') ; 
+					   }
+				       }
+				       if (this.fields.name == 'statement') { 
+					   if (this.fields.status == 'todo') {
+					       $('#statement-control').append('<input type="checkbox" />' + this.fields.status + '</p> <code>' + this.pk  + '</code>') ; 
+					   }
+					   if (this.fields.status == 'finished')  { 
+					       $('#statement-control').append('<input type="checkbox" checked />' + this.fields.status + '</p> <code>' + this.pk  + '</code>') ; 
+					   }
+					   					  
+				       }
+				       
+				   }); 
+			   });  
+
+
+                 $('#size-up-control').click(function () {                        
+			 var id = $('#size-id').val()
+			 $.post("change-status/", {
+				   id: id, 
+				   name: "size-up"
+				     }); 
+			 
+                   });
+
+
+                }); 
 
 
 
@@ -65,7 +109,7 @@
                     ],  
 
                     protocol: new OpenLayers.Protocol.HTTP({
-                        url: "./rack/{{rack.id}}.kml",
+                        url: "/rack/{{rack.id}}.kml",
                     params: {         
                         },
                         format: new OpenLayers.Format.KML()
@@ -130,23 +174,15 @@
  {% endif %}
 </div>
 <div id="overview-top">
-  <h3 id="steps-message"> Here's what needs to be done</h3>
+  <h3 id="steps-message"> Heres what needs to be done</h3>
 <div id="tab-container">
  <a name="tabs">
    <ul>
      <li class="" class="size-up">
        <h2><a href="#tabs">(1) SIZE IT UP</a></h2>
        <hr />
-       {% for step in steps_query %}
-          {% ifequal  step.name "size-up" %}
-             {% ifequal step.status "todo" %} 
-               <input disabled="disabled" type="checkbox" name="size-up"/>This needs doing</p> 
-             {% endifequal %}
-             {% ifequal step.status "finished" %} 
-               <input disabled="disabled" type="checkbox" name="size-up" checked/>This step is done.</p> 
-             {% endifequal %}     
-             {% endifequal %} 
-       {% endfor %} 
+       <div id="size-up-control">         
+       </div>
      </li>
      
    </ul>  
@@ -163,17 +199,7 @@
     <li class="" id="photo-tab">
        <h2><a href="#tabs">(2) PHOTOGRAPH</a></h2>
        <hr />
-       {% for step in steps_query %}
-          {% ifequal  step.name "photo" %}
-             {% ifequal step.status "todo" %} 
-               <input disabled="disabled" type="checkbox" name="size-up"/>This needs doing</p> 
-             {% endifequal %}
-             {% ifequal step.status "finished" %} 
-               <input disabled="disabled" type="checkbox" name="size-up" checked/>This step is done.</p> 
-             {% endifequal %}
-     
-             {% endifequal %} 
-       {% endfor %} 
+       <div id="photo-control"> </div>
     </li>
   </ul>  
   <div id="photo-content" class="tab-content">
@@ -194,17 +220,7 @@
   <ul>
     <li class="" id="photo-tab"><h2><a href="#tabs">(2) GET SUPPORT</a></h2>
     <hr />
-       {% for step in steps_query %}
-          {% ifequal  step.name "statement" %}
-             {% ifequal step.status "todo" %} 
-               <input disabled="disabled" type="checkbox" name="size-up"/>This needs doing</p> 
-             {% endifequal %}
-             {% ifequal step.status "finished" %} 
-               <input disabled="disabled" type="checkbox" name="size-up" checked/>This step is done.</p> 
-             {% endifequal %}
-     
-             {% endifequal %} 
-       {% endfor %} 
+      <div id="statement-control"> </div>
     </li>
   </ul>  
 

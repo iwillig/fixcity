@@ -66,7 +66,7 @@ div#overview-comment { margin: 10px; padding: 10px; }
 /* top of rack suggestion over view page */
 #overview-map { height: 200px;width: 240px;background: #A1BDC4; float: left ; margin: 30px;  border: 1px dashed #808080;}
 #overview-photo { width: 510px; margin: 10px;} 
-.error-photo { height: 250px; }
+.error-photo { height: 200px; width: 200px;float:left;  }
 /* middle of rack suggestion over view page */
 h3#steps-message {  margin: 10px;  }
 #overview-middle {width: 100%;  margin-top: 5px; } 
@@ -138,7 +138,7 @@ ul#login input {  font-size: 130% ;  }
 .overview-tab {  }
 #tab-container {  margin-top: 10px; padding: 5px; }
 #tab-container ul {  width: 240px;margin:0px;position: absolute ;  }
-#tab-container .tab-content { margin-left: 240px; background: #eee ; padding: 20px; min-height: 200px; margin-bottom: 5px; }
+#tab-container .tab-content { margin-left: 240px; background: #eee ; padding: 20px; min-height: 260px; margin-bottom: 5px; }
 #tab-container .tab-content  {  }
 #tab-container .active {  }
 #tab-container li {  background: #eee ; padding: 10px;list-style: none ;  }

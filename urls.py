@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     (r'^geocode/$', 'fixcity.bmabr.views.geocode'),
     (r'^reverse/$', 'fixcity.bmabr.views.reverse_geocode'),
     (r'^getcommunityboard/$', 'fixcity.bmabr.views.get_communityboard'),
+   
 
     (r'assess/$','fixcity.bmabr.views.assess'),
     (r'assess/communityboard/(?P<cb_id>\d+)/$', 'fixcity.bmabr.views.assess_by_communityboard'),
@@ -35,6 +36,7 @@ urlpatterns = patterns('',
     (r'^rack/(?P<rack_id>\d+)/edit/$', 'fixcity.bmabr.views.rack_edit'),
 
     (r'^rack/(?P<rack_id>\d+)/status/$', 'fixcity.bmabr.views.rack_status'),
+    (r'^rack/(?P<rack_id>\d+)/change-status/$', 'fixcity.bmabr.views.change_status'),
     (r'^rack/(?P<rack_id>\d+)/support/$', 'fixcity.bmabr.views.support'),
 
 

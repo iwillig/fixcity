@@ -13,7 +13,7 @@
   <body>
    <div class="container">
         <div id="login-con">
-    {% if user.is_authenticated %}
+	  {% if user.is_authenticated %}
 	  <h4> <a href="/profile/">{{user.first_name}} {{user.last_name}}</a></h4>
 	  <a href="/accounts/logout?next={{request.path}}">Logout</a>	
 	{% else %}

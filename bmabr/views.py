@@ -5,6 +5,7 @@ from django.template import RequestContext
 from django.contrib import auth
 from django.contrib.auth.forms import UserCreationForm
 from django.template import Context
+from django.core import serializers
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import GEOSGeometry, fromstr
@@ -181,6 +182,22 @@ def newrack_form(request):
            context_instance=RequestContext(request, processors=[user_context])) 
 
 
+
+@login_required
+def rack_status(request,rack_id):
+    response = HttpResponse()
+    response['Content-Type'] = "text/javascript"
+    response.write(serializers.serialize('json', Steps.objects.filter(step_rack=rack_id)))    
+    return response
+
+@login_required
+def change_status(request,rack_id): 
+    name = request.POST['name']
+#    step = Steps.objects.filter(name=
+    return HttpResponse(name)
+
+
+
 def support(request, rack_id): 
     if request.method == "POST":
         form_support = SupportForm(request.POST,request.FILES)
@@ -195,14 +212,7 @@ def support(request, rack_id):
 
 
 
-@login_required
-def rack_status(request,rack_id):
-    rack = Rack.objects.get(id=rack_id) 
-    return render_to_response('rack_status.html', { 
-            'rack': rack,
-           },
-           context_instance=RequestContext(request, processors=[user_context])) 
-
+    
 
 
 @login_required
