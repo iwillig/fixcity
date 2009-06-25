@@ -35,6 +35,9 @@ ul#assess li:hover { background:  #ffffcc }
 ul#assess li h3 { margin: 10px;}
 ul#assess li h4 { margin: 0px;}
 ul#assess li h5 { margin: 0px;}
+ul#assess .thumbnail {  margin:10px; }
+.assess-rack { width: 200px;}
+span.caption { width: 100px;float: left ; margin-top: 10px;}
 div.mapevent {  float: right ;  }
 
 ol#submit { list-style: none; } 

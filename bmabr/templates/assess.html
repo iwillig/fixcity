@@ -41,12 +41,13 @@
    {% for communityboard in rack_list %} 
        <li class="list">  <h3><a href="/assess/communityboard/{{communityboard.grouper.name}}">{{communityboard.grouper}}</a></h3>
         {% for rack in communityboard.list %}
-         <a href="/rack/{{rack.id}}"><img src="{{rack.photo.thumbnail}}" /></a>
+            <a href="/rack/{{rack.id}}">
+            <img class="thumbnail" src="{{rack.photo.thumbnail}}" />
+	  </a>
       {% endfor %} 
       </li>
    {% endfor %} 
     </ul>
 </div>
-
 </div>
 {% endblock %}

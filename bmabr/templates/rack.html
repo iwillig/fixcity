@@ -22,7 +22,8 @@
 			       jQuery.each(data, function() {
 				       if (this.fields.name == 'size-up') { 
 					   if (this.fields.status == 'todo') {
-              					   $('#size-up-control').append('<input type="checkbox" /><code id="size-id">' + this.pk  + '</code>') ; 
+              					   $('#size-up-control').append('<input type="checkbox" /><code id="size-id">' + this.pk  + '</code>') ;
+         
 					   }
 					   if (this.fields.status == 'finished')  { 
 					    $('#size-up-control').append('<input type="checkbox" checked /><code id="size-id">' + this.pk  + '</code>') ; 
@@ -33,7 +34,7 @@
               					   $('#photo-control').append('<input type="checkbox" /><code id="photo-id">' + this.pk  + '</code>') ; 
 					   }
 					   if (this.fields.status == 'finished')  { 
-					    $('#photo-control').append('<input type="checkbox" checked /><code id="photo-id">' + this.pk  + '</code>') ; 
+					    $('#photo-control').append('<input type="checkbox" checked /><code id="photo-id">' + this.pk  + '</code>') ;   
 					   }
 				       }
 				       if (this.fields.name == 'statement') { 
