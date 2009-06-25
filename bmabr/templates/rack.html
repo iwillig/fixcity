@@ -22,26 +22,26 @@
 			       jQuery.each(data, function() {
 				       if (this.fields.name == 'size-up') { 
 					   if (this.fields.status == 'todo') {
-              					   $('#size-up-control').append('<input type="checkbox" /><p>' + this.fields.status + '</p> <code id="size-id">' + this.pk  + '</code>') ; 
+              					   $('#size-up-control').append('<input type="checkbox" /><code id="size-id">' + this.pk  + '</code>') ; 
 					   }
 					   if (this.fields.status == 'finished')  { 
-					    $('#size-up-control').append('<input type="checkbox" checked /><p>' + this.fields.status + '</p> <code id="size-id">' + this.pk  + '</code>') ; 
+					    $('#size-up-control').append('<input type="checkbox" checked /><code id="size-id">' + this.pk  + '</code>') ; 
 					   }
 				       }
 				       if (this.fields.name == 'photo'){ 
 					   if (this.fields.status == 'todo') {
-              					   $('#photo-control').append('<input type="checkbox" /><p>' + this.fields.status + '</p> <code id="photo-id">' + this.pk  + '</code>') ; 
+              					   $('#photo-control').append('<input type="checkbox" /><code id="photo-id">' + this.pk  + '</code>') ; 
 					   }
 					   if (this.fields.status == 'finished')  { 
-					    $('#photo-control').append('<input type="checkbox" checked /><p>' + this.fields.status + '</p> <code id="photo-id">' + this.pk  + '</code>') ; 
+					    $('#photo-control').append('<input type="checkbox" checked /><code id="photo-id">' + this.pk  + '</code>') ; 
 					   }
 				       }
 				       if (this.fields.name == 'statement') { 
 					   if (this.fields.status == 'todo') {
-					       $('#statement-control').append('<input type="checkbox" /> <p>' + this.fields.status + '</p> <code id="statment-control">' + this.pk  + '</code>') ; 
+					       $('#statement-control').append('<input type="checkbox" /><code id="statment-control">' + this.pk  + '</code>') ; 
 					   }
 					   if (this.fields.status == 'finished')  { 
-					       $('#statement-control').append('<input type="checkbox" checked /><p>' + this.fields.status + '</p> <code id="statment-control">' + this.pk  + '</code>') ; 
+					       $('#statement-control').append('<input type="checkbox" checked /><code id="statment-control">' + this.pk  + '</code>') ; 
 					   }
 					   					  
 				       }
@@ -173,9 +173,10 @@
 {% endblock %} 
 
 {% block content %}
+
 <div class="assess">
 <div id="page-title">
-  <h2 class="title">{{rack.address}}</h2>
+  <h2 class="title">{{rack.title}} |  {{rack.address}} | SUBMITED BY {{rack.user}} </h2>
   {% if user.is_authenticated %} 
  <ul class="tab-status">
    <!--
@@ -191,7 +192,10 @@
  {% endif %}
 </div>
 <div id="overview-top">
-  <h3 id="steps-message"> Heres what needs to be done</h3>
+  <h3 id="steps-message"> Here's what needs to be done</h3>
+  <div class="error_rack error">
+    <img src="/site_media/images/under-con.png" /><h3> This page is not full functional, please check by in a few days.</h3>
+  </div>
 <div id="tab-container">
  <a name="tabs">
    <ul>
@@ -248,21 +252,12 @@
      </div>
     
     <form enctype="multipart/form-data" method="POST" action="support/">
-    <table> 
-      <tr>
-	<td> <label>Statement of support (PDF)</label> </td>
-	<td><input type="file" name="file" id="support-doc" /> </td>
-      </tr>
-      <tr>
-	<td><label>Email</label></td>
-	<td><input type="text" name="email"   id="email-doc" /></td>
-      </tr>
-      <input type="hidden" value="{{rack.id}}" name="s_rack" />
-      <tr>
-	<td> </td>
-	<td><input type="submit" value="Add a statement of support" /> </td>
-      </tr>
-    </table>
+       <label>Statement of support (PDF)</label> 
+       <input type="file" name="file" id="support-doc" />
+       <label>Email</label>
+       <input type="text" name="email"   id="email-doc" />
+       <input type="hidden" value="{{rack.id}}" name="s_rack" />
+       <input type="submit" value="Add a statement of support" />
     </form>
     <h3>Current statement(s) of support </h3>
     {% for object in statement_query %}

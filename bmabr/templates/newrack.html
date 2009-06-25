@@ -159,7 +159,7 @@
 	   <p> Assess current requested locations </p>
 	 </li>
 	 <li class="about">
-	 <a href="/about/">About this projecet</a>    
+	 <a href="/about/">About</a>    
 	 <p> Find out more information</p>
 	 </li>
        </ul>
@@ -168,7 +168,6 @@
       <div class="suggest">
        <br />
     <div class="form-header">
-
   <form id="newrack" enctype="multipart/form-data" action="." method="post">
       <div class="form-input-newrack mandatory">
     <div id="request-map">
@@ -192,8 +191,8 @@
 
   <div id="form-newrack">
     <div class="form-header">
-
-      <div class="form-input-newrack mandatory">
+      <h2 class="required"> All fields in red required </h2>    
+    <div class="form-input-newrack mandatory">
 	<h3> Address </h3>
         <p> Zoom and drag the marker on the map--the address of your location will appear here.</p>
 	{{ form.address.errors }}

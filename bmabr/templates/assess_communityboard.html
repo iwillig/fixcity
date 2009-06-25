@@ -77,6 +77,7 @@
                     fontColor: "#eee",
                     fillColor: "#ff9e73",
                     strokeColor: "#80503b",
+                    strokeWidth: 2
 		    
                 }, {
                     context: {
@@ -150,6 +151,7 @@
   <div id="map-con">
     <div> 
     </div>
+    <p> Assessment is the second step in preparing a bulk order. The Transportation Alternatives Brooklyn Committee is orchestrating a bulk order for this area--see the About page for more information about getting involved. Take a look at these suggestions to find out what they need to be assessed.  </p>
     <div id="map"> 
     </div>
   </div>
@@ -166,7 +168,9 @@
       {% for rack in rack_query.list %}
 	<li class="list">
 	<div class="assess-text">
-	<h4><a href="/rack/{{rack.id}}"> <strong>{{rack.id}}</strong> {{rack.title}} </a></h4>
+	  
+	  <h4 class="id">{{rack.id}}</h4>
+	<h4><a href="/rack/{{rack.id}}">{{rack.title}} </a></h4>
 	<h5>{{rack.address}}</h5>
 	<p>{{rack.description|truncatewords:15 }}</p>
 	</div>

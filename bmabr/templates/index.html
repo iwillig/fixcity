@@ -182,7 +182,15 @@
 {% block content %}
 <div class="suggest">
   <br />
-    <div id="home-map"> </div>
+    <div id="home-map">
+    <div id="legend">
+      <ul style="margin: 0px;">
+	<li> Orange dots on the map represent suggestions ready for assessment.</li>
+	<li> Purple Dots have been assessed. </li>
+      </ul>
+    </div>
+
+    </div>
     <div id="introduction-text">
   <div id="index-form">
     <form action="rack/new/" method="GET">
@@ -193,6 +201,7 @@
 
   <br />
   </div>
+  
 </div>
 {% endblock %}
 

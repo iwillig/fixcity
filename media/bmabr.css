@@ -9,7 +9,7 @@ p { margin: 0px; }
 div#header {  width: 100% ; height: 60px; }
 div#page-title { padding: 10px;} 
 h2.title {float: left ; margin: 0px; }
-div#activity-con { width: 510px;padding: 10px;}
+div#activity-con { width: 510px;padding: 10px; min-height: 670px;}
 div#map-con {float: right ; width: 540px; padding: 10px;}
 div#map {background: #A1BDC4; height: 400px; width: 540px; margin: 10px; }
 div#location-rack-map { height: 200px; } 
@@ -26,11 +26,13 @@ div#index-form button { font-size: 200% ; }
 .help-location li {margin-left: 20px; }
 .help-dot {  } 
 
-#subtitle { float: right ;  margin-right: 300px; margin-top:15px;  }
+#subtitle { float: right ;  margin-right: 250px; margin-top:15px;  }
 #cbmenu { display: none ; } 
 ul#assess { list-style: none;padding: 0;margin: 0;  }
+#diagram { padding: 10px; margin: 10px 10px 10px 550px;  position: absolute; background: #eee ; width: 500px;}
 ul#assess li { margin: 8px; padding: 5px; background: #ffd4c2 ; } 
 ul#assess li:hover { background:  #ffffcc }
+ul#assess li h3 { margin: 10px;}
 ul#assess li h4 { margin: 0px;}
 ul#assess li h5 { margin: 0px;}
 div.mapevent {  float: right ;  }
@@ -38,7 +40,7 @@ div.mapevent {  float: right ;  }
 ol#submit { list-style: none; } 
 ol#submit li { margin: 5px; padding: 5px; background: #e8b9ed ; } 
 ol#submit li:hover { background:  #ffffcc }
-
+#bike-video {float: right ;margin: 20px;  }
 #request-map {height: 300px; width: 100%; background: #A1BDC4 ; }
 #rack-status {font-size:150% ;  }
 
@@ -83,8 +85,9 @@ ul#menu {margin-left: -5px; margin-bottom: 0px;padding: 5px;}
 div.suggest { color: white }
 
 .suggest { background: #30c09b; }
-.assess { background: #ff9e73 } 
+.assess { background: #ff9e73 }
 .assess-text { float: right ; margin-right: 80px; width: 300px; }
+h4.id  {float: right ; }
 .assess li.list {  min-height: 80px;  }
 div.assess { min-height: 500px; }
 .submit { background: #dd7fe6;  } 
@@ -122,6 +125,7 @@ div.formwrapper { border-bottom: 2px dashed #808080 ; padding: 10px;}
 .errorlist { background: red ; color: white ; font-weight: bold ; }
 .arrow { height: 50px; width: 50px; background: url(images/arrow-next.png);background-position: center center; background-repeat: no-repeat ;  margin: 0 auto ; float: right ;}
 div.form-header {}
+h2.required { margin: 12px;color: #fff ;  }
 #id_status { display: none; } 
 a.title { color: #672258; text-decoration:none;}
 .request { }
@@ -149,8 +153,14 @@ ul#login input {  font-size: 130% ;  }
 .tip {width: 200px; float: left;color: #BA4747 ; font-weight: bold ; margin:0px 10px 0px 10px; background: #fff; padding: 10px; }
 #size-up-text { width: 300px; margin-left: 490px;}
 
+.about-content h3 {margin: 5px; }
+.about-content  p {margin:0px 5px 10px 5px  }
+
 ul#update-rack {  list-style: none ;  }
 
 ul#update-rack input {width: 100% ;   }
 
 ul {list-style: none;}
+
+#legend { background: #30c09b; margin-left: 780px;padding: 10px; width: 300px; position:absolute; z-index: 200000 }
+div.error_rack {  text-align: center ;  }
