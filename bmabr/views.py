@@ -24,7 +24,7 @@ from django.contrib import auth
 
 from django.contrib.auth.models import User 
 
-from reportlab.pdfgen import canvas 
+#from reportlab.pdfgen import canvas 
 from geopy import geocoders
 
 cb_metric = 50.00 
