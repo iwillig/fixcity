@@ -1,9 +1,5 @@
-from django.conf.urls.defaults import *
-
-from fixcity.bmabr import views 
+from django.conf.urls.defaults import patterns
 from django.conf import settings
-
-from django.views.generic.create_update import update_object
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
