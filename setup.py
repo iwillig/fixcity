@@ -16,5 +16,6 @@ setup(name='fixcity',
         ],
       install_requires=[
         'geopy==dev,>=0.93dev-r84',
+        'Django>=1.1',
         ],
       )
