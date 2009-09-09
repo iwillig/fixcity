@@ -76,7 +76,6 @@
 
 	var WKT = geometry.toString();	
 	$("#location").text(WKT); 
-	console.log(WKT); 
 
 	geometry.transform(map.displayProjection, map.projection) ;
 	var location = new OpenLayers.Feature.Vector(
@@ -91,10 +90,8 @@
 	    xy.transform(map.projection, map.displayProjection) ;
 	    getAddress(xy);
 	    getCommunityBoard(xy); 
-	    console.log(xy); 
 	    var location_wkt = "POINT("+ xy.lon + " " + xy.lat +")"; 
 	    $("#location").text(location_wkt); 
-	    console.log(location_wkt); 	    
 	};
 	var point_control =  new OpenLayers.Control.DragFeature(
 	    address_point,

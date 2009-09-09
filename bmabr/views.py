@@ -28,7 +28,7 @@ from django.contrib.auth.models import User
 from geopy import geocoders
 
 cb_metric = 50.00 
-GKEY="ABQIAAAApLR-B_RMiEN2UBRoEWYPlhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRzLpaA-QUSeKPxm0Vj9Bgee3eRDg"
+GKEY="ABQIAAAApLR-B_RMiEN2UBRoEWYPlhTmTlZhMVUZVOGFgSe6Omf4DswcaBSLmUPer5a9LF8EEWHK6IrMgA62bg"
 g = geocoders.Google(GKEY)
 SRID=4326
 
