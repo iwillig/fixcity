@@ -16,6 +16,7 @@ setup(name='fixcity',
         ],
       install_requires=[
         'geopy==dev,>=0.93dev-r84',
+        'sorl-thumbnail',
         'Django>=1.1',
         ],
       )
