@@ -1,3 +1,7 @@
+import os
+
+HERE=os.path.abspath(os.path.dirname(__file__))
+
 # Django settings for fixcity project.
 
 DEBUG = True
@@ -11,8 +15,8 @@ MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'postgresql_psycopg2'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'bmabr'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'postgres'             # Not used with sqlite3.
-DATABASE_PASSWORD = 'hope'         # Not used with sqlite3.
+DATABASE_USER = 'fixcity'             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
@@ -21,7 +25,7 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/New_York'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -35,12 +39,13 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/var/www/media/'
+MEDIA_ROOT = os.path.join(HERE, 'media')
+print MEDIA_ROOT
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://localhost/media/'
+MEDIA_URL = 'http://localhost:8000/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -48,7 +53,7 @@ MEDIA_URL = 'http://localhost/media/'
 ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'r@*1315o^%e0l8p759i%igxp#t*p+pm9ch5%co@g*4t0&ht^v2'
+SECRET_KEY = 'zxcmgbu4869pu;izgopzdg9-isdgf@(*%@(*!&#(^['
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -65,13 +70,13 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'fixcity.urls'
 
-STATIC_DOC_ROOT = '/Users/iwillig/dev/fixcity/fixcity/media'
+STATIC_DOC_ROOT = MEDIA_ROOT
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-     "/home/ivan/development/fixcity/bmabr/templates"
+    os.path.join(HERE, 'templates'),
 )
 
 INSTALLED_APPS = (
