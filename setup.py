@@ -12,7 +12,7 @@ setup(name='fixcity',
       #scripts=['zopeedit.py'],
       #packages=packages,
       dependency_links=[
-        'http://geopy.googlecode.com/svn/branches/reverse-geocode#egg=geopy-0.93dev',
+        'http://geopy.googlecode.com/svn/branches/reverse-geocode#egg=geopy-dev',
         'http://dist.repoze.org/PIL-1.1.6.tar.gz#egg=PIL-1.1.6',
         ],
       install_requires=[
