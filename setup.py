@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 version='0.1dev'
 
@@ -9,8 +9,8 @@ setup(name='fixcity',
       author_email="iwillig@opengeo.org",
       url="http://www.plope.com/software/ExternalEditor",
       zip_safe=False,
-      #scripts=['zopeedit.py'],
-      #packages=packages,
+      scripts=[],
+      packages=find_packages(),
       dependency_links=[
         'http://geopy.googlecode.com/svn/branches/reverse-geocode#egg=geopy-dev',
         'http://dist.repoze.org/PIL-1.1.6.tar.gz#egg=PIL-1.1.6',
