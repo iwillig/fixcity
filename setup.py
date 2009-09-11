@@ -14,6 +14,7 @@ setup(name='fixcity',
       dependency_links=[
         'http://geopy.googlecode.com/svn/branches/reverse-geocode#egg=geopy-dev',
         'http://dist.repoze.org/PIL-1.1.6.tar.gz#egg=PIL-1.1.6',
+        'http://sourceforge.net/projects/ctypes/files/ctypes/1.0.2/ctypes-1.0.2.tar.gz/download#egg=ctypes-1.0.2',
         ],
       install_requires=[
         'geopy==dev,>=0.93dev-r84',
@@ -21,5 +22,6 @@ setup(name='fixcity',
         'Django>=1.1',
         'psycopg2>=2.0.12',
         'PIL==1.1.6',
+        'ctypes>=1.0.2',
         ],
       )
