@@ -200,3 +200,13 @@
 <h1>Report Damaged Rack</h1><a href="#">Suggest a new Rack</a>
 {% endblock %}
 
+{% block extra_footer %}
+<script type="text/javascript">
+//<![CDATA[
+  $(document).ready(function() {
+    $('input#location, input#address, textarea#description').inlineInfoTextify();
+  });
+//]]>
+</script>
+{% endblock %}
+
