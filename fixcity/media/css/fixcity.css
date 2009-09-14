@@ -1,0 +1,266 @@
+/*-----------------------
+General styles
+-----------------------*/
+body {
+font: small helvetica, verdana, sans-serif;
+background: #fff;
+color: #000; 
+text-align:center; /* silly IE 5.5 */
+}
+
+a:link, a:visited {
+color: #44c5f5;
+}
+
+.content {
+font-size: 1em; /* override tripoli */
+}
+
+/*-----------------------
+Utility Classes
+-----------------------*/
+/* self clearing float */
+.selfclear:after {
+content: ".";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+
+.selfclear {
+display: inline-block; /*silly IE 7 */
+}
+
+.selfclear {
+display: block;
+}
+
+* hmtl .selfclear {
+height: 1px;
+}
+
+.leftwise {
+float:left;
+}
+
+.rightwise {
+float:right;
+}
+
+.nobreak {
+white-space: nowrap;
+}
+
+.noshow {
+display:none;
+}
+
+/*-----------------------
+Structural Elements
+-----------------------*/
+.wrap {
+width: 940px; 
+margin: 0 auto; 
+text-align: left; /* silly IE 5.5 */
+}
+
+#header {
+background: #5c8699;
+padding: 0.5em 0;
+margin: 0 0 20px;
+}
+
+#header .wrap {
+text-align: right;
+}
+
+#header-nav li,
+#footer-nav li {
+float: left;
+margin: 0 1em 0 -0.5em;
+}
+
+* html #header-nav li,
+* html #footer-nav li {
+margin-left: -0.25em;
+}
+
+#header-nav a,
+#footer-nav a {
+color: #8ce1ff;
+text-decoration: none;
+padding: 0.2em 0.5em;
+}
+
+#header-nav a:hover,
+#footer-nav a:hover {
+text-decoration: underline;
+}
+
+#login a {
+color: #99e4ff;
+text-transform: uppercase;
+text-decoration: none;
+}
+
+#login a:hover {
+text-decoration: underline;
+}
+
+#logo {
+width: 380px;
+height: 110px;
+float: left;
+overflow: hidden;
+text-indent: -9999em;
+background: url(/site_media/img/logo.png) no-repeat;
+}
+
+#nav ul {
+float: left;
+margin: 15px 0 0 70px;
+}
+
+* html nav ul {
+margin-left: 35px;
+}
+
+#nav li {
+float: left;
+margin: 0 15px 0 0;
+}
+
+#nav li a {
+display: block;
+overflow: hidden;
+text-indent: -9999em;
+width: 135px;
+height: 90px;
+}
+
+#nav li a#add-rack {
+background: url(/site_media/img/add-rack-bg.png) no-repeat;
+}
+
+#nav li a#verify-rack {
+background: url(/site_media/img/verify-rack-bg.png) no-repeat;
+margin: 0 15px 0 0;
+}
+
+#nav li a#verification-kit {
+background: url(/site_media/img/verification-kit-bg.png) no-repeat;
+}
+
+#lede {
+margin: 20px 0 15px;
+padding: 0 0 5px;
+border-bottom: 1px solid #8fb9cc;
+}
+
+#lede h1 {
+display: inline;
+color: #5c8699;
+font-size: 1.75em;
+font-weight: normal;
+padding: 0 1em 0 0;
+margin: 0;
+}
+
+#addrack-form {
+width: 380px;
+overflow: hidden;
+float: left;
+}
+
+#addrack-form label {
+background: #fff;
+display: block;
+font-size: 1.2em;
+font-weight: bold;
+margin: 1em 0 0;
+}
+
+#addrack-form label:first-child {
+margin: 0;
+}
+
+#addrack-form input[type="text"],
+#addrack-form textarea {
+background: #fff;
+display: block;
+width: 362px;
+border: 1px solid #5c8699;
+padding: 8px;
+font-family: helvetica,verdana,sans-serif;
+}
+
+#addrack-form div.required {
+padding: 14px 0 0;
+background: url(/site_media/img/required-tab.png) 100% 0 no-repeat;
+}
+
+#addrack-form input[type="text"]:focus,
+#addrack-form textarea:focus {
+outline-width: 0;
+}
+
+#addrack-form input[type="button"],
+#addrack-form input[type="submit"] {
+background: #00b0f1;
+border: 0 none transparent;
+color: #fff;
+padding: 0.5em;
+}
+
+.overlabel {
+color: #5c8699;
+}
+
+#addrack-form .checkboxes {
+margin: 0 0 0 -0.3em;
+}
+
+#addrack-form .checkboxes label {
+font-size: 0.9em;
+font-weight: normal;
+display: inline;
+margin: 0 0 0 0.3em;
+}
+
+#addrack-form .checkboxes span {
+float: left;
+padding: 0.3em;
+border: 1px solid #8fb9cc;
+margin: 0.3em;
+}
+
+#addrack-form .checkboxes span:hover,
+#addrack-form .checkboxes span:hover label,
+#addrack-form .checkboxes span.checked,
+#addrack-form .checkboxes span.checked label {
+background: #5c8699;
+color: #fff;
+}
+
+.suggest {
+float: left;
+width: 540px;
+margin: 0 0 0 20px;
+}
+
+* html .suggest {
+margin-left: 10px;
+}
+
+#home-map {
+height: 300px;
+border: 1px solid #8fb9cc;
+}
+
+#footer .wrap {
+border-top: 1px solid #8fb9cc;
+padding: 1em 0;
+margin: 1em auto;
+text-align: right;
+}
