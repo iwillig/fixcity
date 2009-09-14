@@ -33,9 +33,15 @@ g = geocoders.Google(GKEY)
 SRID=4326
 
 def user_context(request):
+    user = request.user
+    if user.first_name and user.last_name:
+        displayname = u'%s %s' % (user.first_name, user.last_name)
+    else:
+        displayname = user.first_name or user.last_name or user.username
     return {
         'request': request, 
-        'user': request.user
+        'user': request.user,
+        'user_displayname': displayname,
     }
 
 def index(request):
