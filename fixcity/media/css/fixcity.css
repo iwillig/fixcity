@@ -206,7 +206,8 @@ outline-width: 0;
 }
 
 #addrack-form input[type="button"],
-#addrack-form input[type="submit"] {
+#addrack-form input[type="submit"],
+.fakebutton {
 background: #00b0f1;
 border: 0 none transparent;
 color: #fff;
@@ -241,6 +242,30 @@ margin: 0.3em;
 #addrack-form .checkboxes span.checked label {
 background: #5c8699;
 color: #fff;
+}
+
+#browse {
+opacity: 0.0;
+-moz-opacity: 0.0;
+filter: alpha(opacity=00);
+width: 100%;
+font-size: 1.3em;
+}
+
+
+#fakebrowse {
+margin-top: -2.3em;
+}
+
+#fakebrowse #fakebrowseinput {
+width: 290px;
+float: left;
+margin: 0 5px 0 0;
+}
+
+#fakebrowse .fakebutton {
+float: left;
+padding: 0.44em 0.5em;
 }
 
 .suggest {
