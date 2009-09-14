@@ -7,7 +7,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 
-    (r'^$', 'fixcity.bmabr.views.index'),
+#    (r'^$', 'fixcity.bmabr.views.index'),
+    (r'^$', 'fixcity.bmabr.views.newrack_form'), # temporary - tenzo's hacking the wrong template
     (r'^about/$', 'fixcity.bmabr.views.about'), 
 
     # Accounts URLs

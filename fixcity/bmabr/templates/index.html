@@ -5,160 +5,139 @@
 
 <script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
 <script defer="defer" type="text/javascript">
-    var map, layer, select;
-    var options = {
+
+	 $(document).ready(function() {
+	         // $('.form-input-newrack').corners();
+		 // $('#id_date').datepicker(); 
+		 $('#id_description').keypress(function (e) { 
+		      var charLength = $(this).val().length
+		      charLeft = 300  - charLength
+			  if (charLeft<0) { 
+			      $("#description").html("Please shorten your note " + charLeft); 
+			      $(this).css("background", "#ff5e5e") ; 
+			  }
+		          else { 
+			  $("#description").html(charLeft); 
+			  $(this).css("background", "#fff") ; 
+			  }
+		     }); 
+		 
+		 loadMap();
+			  });
+
+         var map, layer;
+         var options = {
             projection: new OpenLayers.Projection("EPSG:900913"),
 	    displayProjection: new OpenLayers.Projection("EPSG:4326"),
 	    units: "m",
-	    numZoomLevels:19,
-            maxResolution: 156543.03390625,
+	    numZoomLevels:20,
+	    maxResolution: 156543.03390625,
 	    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
 					     20037508.34, 20037508.34)
 	   };
 
-        function loadMap(){
-	map = new OpenLayers.Map('home-map',options);
+	format = "image/png";
 
+        function loadMap(){
+	map = new OpenLayers.Map('request-map',options);
 	var osm = new OpenLayers.Layer.WMS(
                  "OpenStreetMap",
                  "http://maps.opengeo.org/geowebcache/service/wms",
-       {
-            layers: "openstreetmap",
-            format: "image/png",
-            bgcolor: '#A1BDC4'
-            },
-            {wrapDateLine: true}
-        );
+	 {
+             layers: "openstreetmap",
+             format: "image/png",
+             bgcolor: '#A1BDC4'
+             },
+             {wrapDateLine: true}
+          );
 
-	var style = new OpenLayers.Style({
-      		    label: "${count}",
-                    fillColor: "#ff9e73",
-                    strokeColor: "#80503b",
-                    pointRadius: "10",
-                    strokeWidth: 2,
-                    strokeOpacity: 0.8
+	var address_options =   {
+	     projection: 'EPSG:4326',
+	     styleMap: new OpenLayers.StyleMap({
+		     "default": {
+			 pointRadius: "10",
+			 fillColor: "#30c09b",
+			 strokeColor: "#1e7861",
+			 strokeWidth: 2,
+			 strokeOpacity: 0.8 
+		     }
+		 })
+	}
 
-                }, {
-                    context: {
-                        radius: function(feature) {
-                            return Math.min(feature.attributes.count, 10) + 10;
-		    },
-			count: function(feature) {
-			return feature.attributes.id ;
-		    }
+	var address_point = new OpenLayers.Layer.Vector("Location Marker",address_options);
+	var geometry =  new OpenLayers.Geometry.Point(-73.954344,40.714063);
 
-                    }
-                });
+	var WKT = geometry.toString();	
+	$("#location").text(WKT); 
 
-
-	var style_built = new OpenLayers.Style({
-                    pointRadius: "${radius}",
-                    fillColor: "#ff9e73",
-                    strokeColor: "#80503b",
-                    strokeWidth: 2,
-                    strokeOpacity: 0.8
-
-                }, {
-                    context: {
-                        radius: function(feature) {
-                            return Math.min(feature.attributes.count, 7) + 3;
-                        }
-                    }
-                });
+	geometry.transform(map.displayProjection, map.projection) ;
+	var location = new OpenLayers.Feature.Vector(
+		     geometry
+	    );
+	address_point.addFeatures([location]);
+	map.addLayer(address_point);
 
 
-	var racks = new OpenLayers.Layer.Vector("Racks", {
-		    projection: map.displayProjection,
-		    extractFeatures: true,
-                    strategies: [
-			new OpenLayers.Strategy.Fixed(),
-                    ],
-                    protocol: new OpenLayers.Protocol.HTTP({
-                        url: "./rack/requested.kml",
-                        params: {
-                        },
-                        format: new OpenLayers.Format.KML()
-                    }),
-                    styleMap: new OpenLayers.StyleMap({
-                        "default": style,
-                        "select": {
-                            fillColor: "#ff9e73",
-                            strokeColor: "#925438"
-                        }
-                    })
+	var dropHandler = function(address_point,pixel){
+	    var xy = address_point.geometry.getBounds().getCenterLonLat();
+	    xy.transform(map.projection, map.displayProjection) ;
+	    getAddress(xy);
+	    getCommunityBoard(xy); 
+	    var location_wkt = "POINT("+ xy.lon + " " + xy.lat +")"; 
+	    $("#location").text(location_wkt); 
+	};
+	var point_control =  new OpenLayers.Control.DragFeature(
+	    address_point,
+	    {
+		onComplete: dropHandler
+	    });
+	    
+	map.addControl(point_control);
+	point_control.activate();
 
-                });
+	function getAddress(lonlat) {
+	    var lat = lonlat.lat ;
+	    var lon = lonlat.lon ;
+	    $.post("/reverse/", {lat:lat, lon:lon},
+		function(data){
+	            $("#address").val(data) ;
+                    $("#location_log").text(data) ;
+		    $("#address").effect("highlight", {}, 3000);
 
-
-	var racks_built = new OpenLayers.Layer.Vector("Racks", {
-		    projection: map.displayProjection,
-                    strategies: [
-                        new OpenLayers.Strategy.Fixed(),
-                    ],
-                    protocol: new OpenLayers.Protocol.HTTP({
-                        url: "./rack/built.kml",
-                        params: {
-
-                        },
-                        format: new OpenLayers.Format.KML()
-                    }),
-                    styleMap: new OpenLayers.StyleMap({
-                        "default": style_built,
-                        "select": {
-                            fillColor: "#8aeeef",
-                            strokeColor: "#32a8a9"
-                        }
-                    })
-
-                });
-
-
-        map.addLayers([osm,racks]);
-
-        selectControl = new OpenLayers.Control.SelectFeature(
-           [racks],
-          {
-	      clickout:true, toggle: false,
-	      multiple: false, hover: false
-          });
-
-	map.addControl(selectControl);
-	selectControl.activate();
-
-	racks.events.on({
-		"featureselected": function(e) {
-                    content = "<div><h3> <a href='/rack/" + e.feature.attributes.id + "'>" + e.feature.attributes.name +"</a> </h3> <p> " +  e.feature.attributes.description  +" </div>",
-		    popup = new OpenLayers.Popup.FramedCloud("chicken",
-				 e.feature.geometry.getBounds().getCenterLonLat(),
-				 null,
-				 content,
-				 null, true );
-		               e.feature.popup = popup;
-               		    map.addPopup(popup);
-		},
-		  "featureunselected": function(e) {
-		      map.removePopup(e.feature.popup);
-		      e.feature.popup.destroy();
-		      e.feature.popup = null;
-		 }
-
-
+		});
+	  }
+       function getCommunityBoard(lonlat) {
+	   var lat = lonlat.lat ;
+	   var lon = lonlat.lon ;
+           $.post("/getcommunityboard/",{lat:lat,lon:lon}, 
+		  function(data) { 
+		      var location = "Brooklyn Community Board " + data ; 
+		      $("#id_communityboard").val(data); 		    
+		      $("#cb_show").val(location); 
+		      $("#cb_show").effect("highlight", {}, 3000);
+		  }); 
+        } 
+  
+	$("#geocode_button").click(function () {
+		var geocode_text = $('geocode_text').val() ;
+		$.post("/geocode/", {geocode_text: geocode_text});
 	    });
 
 
-        var bounds = new OpenLayers.Bounds(-73.9703369140625, 40.698036193847699, -73.920738220214801, 40.739128112792997) ;
-        bounds.transform(map.displayProjection, map.projection);
-        map.zoomToExtent(bounds);
+	 var navControl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
+	         if (navControl) {
+	       navControl.disableZoomWheel();
+ 	 }
+
+        map.addLayers([osm]);
+	var center = new OpenLayers.LonLat(-73.954344,40.714063);
+        center.transform(map.displayProjection, map.projection)
+        map.setCenter(center,15)
+
         }
 
-
 </script>
 
-<script defer="defer" type="text/javascript">
-  window.onload = function() {
-    loadMap() ;
-   }
-</script>
 
 {% endblock %}
 {% block menu %}
@@ -180,21 +159,31 @@
 
 
 {% block content %}
-<form id="addrack-form" action="#" method="get">
-	<label for="location">Business, Agency, or Public Space</label>
-	<div class="required"><input id="location" name="location" type="text" title="Assume we want placeholder text here" value="" /></div>
+<form id="addrack-form" action="." method="POST">
+        <input type="hidden" name="user" value="{{user.username}}" />
+        <input type="hidden" name="date" value="{% now "m/d/y" %}"/>
+        <input type="text" id="cb_show" style="display:none" value="1" />
+
+        <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
+        <input style="display:none" type="text" name="email" value="{{user.email}}" />
+
+	<label for="title">Business, Agency, or Public Space</label>
+	<div class="required"><input id="title" name="title" type="text" title="Assume we want placeholder text here" value="" />{{ form.title.errors }}</div>
 	<label for="address">Street Address</label>
-	<div class="required"><input id="address" name="address" type="text" title="Enter an address or click a point on the map" /></div>
+	<div class="required"><input id="address" name="address" type="text" title="Enter an address or click a point on the map" value="{{request.POST.address}}" />
+        <input type="hidden" id="location" name="location" />
+        {{ form.address.errors }} {{ form.location.errors }} </div>
 	<label for="description">Description</label>
 	<textarea id="description" name="description" title="Please include any useful details and available contact information for property/business owner"></textarea>
 	<div class="checkboxes selfclear"><span><input id="restaurant" name="restaurant" type="checkbox" /><label for="restaurant">Restaurant</label></span><span><input id="school" name="school" type="checkbox" /><label for="school">School</label></span></div>
-  <input id="browse" name="browse" type="file">
+  <input id="browse" name="browse" type="file"/>
   <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
 	<input type="submit" value="Add this rack!" />
+
 </form>
 <div class="suggest">
-	<div id="home-map">
-	</div><!-- /#home-map -->
+	<div id="request-map">
+	</div>
 </div><!-- /#suggest -->
 {% endblock %}
 

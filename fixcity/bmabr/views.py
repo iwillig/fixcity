@@ -168,8 +168,8 @@ def assess_by_communityboard(request,cb_id):
 
 def newrack_form(request): 
     if request.method == 'POST':
-        CommunityBoard = request.POST['communityboard'] 
-        form = RackForm(request.POST,request.FILES)        
+        form = RackForm(request.POST,request.FILES)
+        import pdb; pdb.set_trace()
         if form.is_valid(): 
             new_rack = form.save()
             # create steps status for new rack suggestion
@@ -179,10 +179,11 @@ def newrack_form(request):
             photo_status.save()
             statement = Steps(step_rack=new_rack,name="statement",status='todo')
             statement.save()
-            return HttpResponseRedirect('/rack/%s' % new_rack.id)  
+            return HttpResponseRedirect('/rack/%s' % new_rack.id)
     else:
         form = RackForm()
-    return render_to_response('newrack.html', { 
+#    return render_to_response('newrack.html', { 
+    return render_to_response('index.html', {
             'form': form,
            },
            context_instance=RequestContext(request, processors=[user_context])) 
