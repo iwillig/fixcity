@@ -205,6 +205,7 @@ def change_status(request,rack_id):
 
 
 def support(request, rack_id): 
+    """Add a statement of support."""
     if request.method == "POST":
         form_support = SupportForm(request.POST,request.FILES)
         if form_support.is_valid(): 
