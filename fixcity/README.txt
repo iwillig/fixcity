@@ -1,7 +1,7 @@
 BikeRaction aka BuildMeABikeRack aka Fixcity
 ============================================
 
-This project has been through several names already. Sorry :)
+Thiss project has been through several names already. Sorry :)
 
 If you see "bmabr" in code, it's just an acronym for "Build Me A Bike
 Rack". Don't worry about it.
