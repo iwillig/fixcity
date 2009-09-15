@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %} fixcity.org {% endblock %}
+
+{% block extra_header %}
+
+<script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
+<script defer="defer" type="text/javascript">
+
+	 $(document).ready(function() {
+	         // $('.form-input-newrack').corners();
+		 // $('#id_date').datepicker(); 
+		 $('#id_description').keypress(function (e) { 
+		      var charLength = $(this).val().length
+		      charLeft = 300  - charLength
+			  if (charLeft<0) { 
+			      $("#description").html("Please shorten your note " + charLeft); 
+			      $(this).css("background", "#ff5e5e") ; 
+			  }
+		          else { 
+			  $("#description").html(charLeft); 
+			  $(this).css("background", "#fff") ; 
+			  }
+		     }); 
+		 
+		 loadMap();
+			  });
+
+         var map, layer;
+         var options = {
+            projection: new OpenLayers.Projection("EPSG:900913"),
+	    displayProjection: new OpenLayers.Projection("EPSG:4326"),
+	    units: "m",
+	    numZoomLevels:20,
+	    maxResolution: 156543.03390625,
+	    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+					     20037508.34, 20037508.34)
+	   };
+
+	format = "image/png";
+
+        function loadMap(){
+	map = new OpenLayers.Map('request-map',options);
+	var osm = new OpenLayers.Layer.WMS(
+                 "OpenStreetMap",
+                 "http://maps.opengeo.org/geowebcache/service/wms",
+	 {
+             layers: "openstreetmap",
+             format: "image/png",
+             bgcolor: '#A1BDC4'
+             },
+             {wrapDateLine: true}
+          );
+
+	var address_options =   {
+	     projection: 'EPSG:4326',
+	     styleMap: new OpenLayers.StyleMap({
+		     "default": {
+			 pointRadius: "10",
+			 fillColor: "#30c09b",
+			 strokeColor: "#1e7861",
+			 strokeWidth: 2,
+			 strokeOpacity: 0.8 
+		     }
+		 })
+	}
+
+	var address_point = new OpenLayers.Layer.Vector("Location Marker",address_options);
+	var geometry =  new OpenLayers.Geometry.Point(-73.954344,40.714063);
+
+	var WKT = geometry.toString();	
+	$("#location").text(WKT); 
+
+	geometry.transform(map.displayProjection, map.projection) ;
+	var location = new OpenLayers.Feature.Vector(
+		     geometry
+	    );
+	address_point.addFeatures([location]);
+	map.addLayer(address_point);
+
+
+	var dropHandler = function(address_point,pixel){
+	    var xy = address_point.geometry.getBounds().getCenterLonLat();
+	    xy.transform(map.projection, map.displayProjection) ;
+	    getAddress(xy);
+	    getCommunityBoard(xy); 
+	    var location_wkt = "POINT("+ xy.lon + " " + xy.lat +")"; 
+	    $("#location").text(location_wkt); 
+	};
+	var point_control =  new OpenLayers.Control.DragFeature(
+	    address_point,
+	    {
+		onComplete: dropHandler
+	    });
+	    
+	map.addControl(point_control);
+	point_control.activate();
+
+	function getAddress(lonlat) {
+	    var lat = lonlat.lat ;
+	    var lon = lonlat.lon ;
+	    $.post("/reverse/", {lat:lat, lon:lon},
+		function(data){
+	            $("#address").val(data) ;
+                    $("#location_log").text(data) ;
+		    $("#address").effect("highlight", {}, 3000);
+
+		});
+	  }
+       function getCommunityBoard(lonlat) {
+	   var lat = lonlat.lat ;
+	   var lon = lonlat.lon ;
+           $.post("/getcommunityboard/",{lat:lat,lon:lon}, 
+		  function(data) { 
+		      var location = "Brooklyn Community Board " + data ; 
+		      $("#id_communityboard").val(data); 		    
+		      $("#cb_show").val(location); 
+		      $("#cb_show").effect("highlight", {}, 3000);
+		  }); 
+        } 
+  
+	$("#geocode_button").click(function () {
+		var geocode_text = $('geocode_text').val() ;
+		$.post("/geocode/", {geocode_text: geocode_text});
+	    });
+
+
+	 var navControl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
+	         if (navControl) {
+	       navControl.disableZoomWheel();
+ 	 }
+
+        map.addLayers([osm]);
+	var center = new OpenLayers.LonLat(-73.954344,40.714063);
+        center.transform(map.displayProjection, map.projection)
+        map.setCenter(center,15)
+
+        }
+
+</script>
+
+
+{% endblock %}
+{% block menu %}
+<ul id="menu">
+  <li class="active suggest">
+    <a href="/">(1) SUGGEST</a>
+    <p> Suggest a bike rack location</p>
+  </li>
+  <li class="assess">
+    <a href="/assess/">(2) ASSESS</a>
+    <p> Assess current requested locations </p>
+  </li>
+  <li class="about">
+     <a href="/about/">About</a>
+     <p> Find out more information</p>
+  </li>
+</ul>
+{% endblock %}
+
+
+{% block content %}
+<form id="addrack-form" action="." method="POST">
+        <input type="hidden" name="user" value="{{user.username}}" />
+        <input type="hidden" name="date" value="{% now "m/d/y" %}"/>
+        <input type="text" id="cb_show" style="display:none" value="1" />
+
+        <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
+        <input style="display:none" type="text" name="email" value="{{user.email}}" />
+
+	<label for="title">Business, Agency, or Public Space</label>
+	<div class="required"><input id="title" name="title" type="text" title="Assume we want placeholder text here" value="" />{{ form.title.errors }}</div>
+	<label for="address">Street Address</label>
+	<div class="required"><input id="address" name="address" type="text" title="Enter an address or click a point on the map" value="{{request.POST.address}}" />
+        <input type="hidden" id="location" name="location" />
+        {{ form.address.errors }} {{ form.location.errors }} </div>
+	<label for="description">Description</label>
+	<textarea id="description" name="description" title="Please include any useful details and available contact information for property/business owner"></textarea>
+	<div class="checkboxes selfclear"><span><input id="restaurant" name="restaurant" type="checkbox" /><label for="restaurant">Restaurant</label></span><span><input id="school" name="school" type="checkbox" /><label for="school">School</label></span></div>
+  <input id="browse" name="browse" type="file"/>
+  <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
+	<input type="submit" value="Add this rack!" />
+
+</form>
+<div class="suggest">
+	<div id="request-map">
+	</div>
+</div><!-- /#suggest -->
+{% endblock %}
+
+{% block lede %}
+<h1>Report Damaged Rack</h1><a href="#">Suggest a new Rack</a>
+{% endblock %}
+
+{% block extra_footer %}
+<script type="text/javascript">
+//<![CDATA[
+  $(document).ready(function() {
+    $('input#location, input#address, textarea#description').inlineInfoTextify();
+    $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
+    $('.checkboxes input').click(function(){(this.checked) ? $(this).parent().addClass('checked') : $(this).parent().removeClass('checked');});
+  });
+//]]>
+</script>
+{% endblock %}
+
