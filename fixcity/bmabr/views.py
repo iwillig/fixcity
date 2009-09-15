@@ -167,7 +167,7 @@ def assess_by_communityboard(request,cb_id):
             },
             context_instance=RequestContext(request, processors=[user_context]))
 
-
+#@login_required
 def newrack_form(request): 
     if request.method == 'POST':
         form = RackForm(request.POST,request.FILES)
