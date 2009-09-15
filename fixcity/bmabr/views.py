@@ -34,10 +34,12 @@ SRID=4326
 
 def user_context(request):
     user = request.user
-    if user.first_name and user.last_name:
+    first = getattr(user, 'first_name', None)
+    last = getattr(user, 'last_name', None)
+    if first and last:
         displayname = u'%s %s' % (user.first_name, user.last_name)
     else:
-        displayname = user.first_name or user.last_name or user.username
+        displayname = first or last or user.username
     return {
         'request': request, 
         'user': request.user,
@@ -169,7 +171,6 @@ def assess_by_communityboard(request,cb_id):
 def newrack_form(request): 
     if request.method == 'POST':
         form = RackForm(request.POST,request.FILES)
-        import pdb; pdb.set_trace()
         if form.is_valid(): 
             new_rack = form.save()
             # create steps status for new rack suggestion
