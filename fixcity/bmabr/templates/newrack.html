@@ -7,23 +7,8 @@
 <script defer="defer" type="text/javascript">
 
 	 $(document).ready(function() {
-	         // $('.form-input-newrack').corners();
-		 // $('#id_date').datepicker(); 
-		 $('#id_description').keypress(function (e) { 
-		      var charLength = $(this).val().length
-		      charLeft = 300  - charLength
-			  if (charLeft<0) { 
-			      $("#description").html("Please shorten your note " + charLeft); 
-			      $(this).css("background", "#ff5e5e") ; 
-			  }
-		          else { 
-			  $("#description").html(charLeft); 
-			  $(this).css("background", "#fff") ; 
-			  }
-		     }); 
-		 
 		 loadMap();
-			  });
+	 });
 
          var map, layer;
          var options = {
@@ -182,7 +167,7 @@
 
 </form>
 <div class="suggest">
-	<div id="request-map">
+	<div id="request-map" style="height: 360px; width: 540px;">
 	</div>
 </div><!-- /#suggest -->
 {% endblock %}
