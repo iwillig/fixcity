@@ -37,7 +37,7 @@ def user_context(request):
     first = getattr(user, 'first_name', None)
     last = getattr(user, 'last_name', None)
     if first and last:
-        displayname = u'%s %s' % (user.first_name, user.last_name)
+        displayname = u'%s %s' % (first, last)
     else:
         displayname = first or last or user.username
     return {
