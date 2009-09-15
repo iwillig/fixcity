@@ -167,16 +167,10 @@
     <label for="description">Description</label>
       <textarea id="description" name="description"
                   title="Please include any useful details and available contact information for property/business owner">{{ request.POST.description }}</textarea>
-    <div class="checkboxes selfclear">
-      <span><input id="restaurant" name="restaurant" type="checkbox" />
-            <label for="restaurant">Restaurant</label>
-      </span>
-      <span><input id="school" name="school" type="checkbox" />
-            <label for="school">School</label>
-      </span></div>
-   <input id="browse" name="browse" type="file" />
-   <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
-   <input type="submit" value="Add this rack!" />
+
+    <input id="browse" name="browse" type="file" />
+    <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
+    <input type="submit" value="Add this rack!" />
 
 </form>
 <div class="suggest">
