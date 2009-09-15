@@ -144,26 +144,39 @@
 
 
 {% block content %}
-<form id="addrack-form" action="." method="POST">
-        <input type="hidden" name="user" value="{{user.username}}" />
-        <input type="hidden" name="date" value="{% now "m/d/y" %}"/>
-        <input type="text" id="cb_show" style="display:none" value="1" />
+<form id="addrack-form" action="." method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="user" value="{{user.username}}" />
+    <input style="display:none" type="text" name="email" value="{{user.email}}" />
 
-        <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
-        <input style="display:none" type="text" name="email" value="{{user.email}}" />
+    <input type="hidden" name="date" value="{% now "m/d/y" %}"/>
 
-	<label for="title">Business, Agency, or Public Space</label>
-	<div class="required"><input id="title" name="title" type="text" title="Assume we want placeholder text here" value="" />{{ form.title.errors }}</div>
-	<label for="address">Street Address</label>
-	<div class="required"><input id="address" name="address" type="text" title="Enter an address or click a point on the map" value="{{request.POST.address}}" />
-        <input type="hidden" id="location" name="location" />
+    <input type="text" id="cb_show" style="display:none" value="1" />
+    <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
+
+    <label for="title">Business, Agency, or Public Space</label>
+    <div class="required"><input id="title" name="title" type="text"
+                                 title="Assume we want placeholder text here"
+                                 value="{{request.POST.title}}"
+                           />{{ form.title.errors }}</div>
+    <label for="address">Street Address</label>
+    <div class="required"><input id="address" name="address" type="text"
+                                 title="Enter an address or click a point on the map"
+                                 value="{{request.POST.address}}" />
+    <input type="hidden" id="location" name="location" />
         {{ form.address.errors }} {{ form.location.errors }} </div>
-	<label for="description">Description</label>
-	<textarea id="description" name="description" title="Please include any useful details and available contact information for property/business owner"></textarea>
-	<div class="checkboxes selfclear"><span><input id="restaurant" name="restaurant" type="checkbox" /><label for="restaurant">Restaurant</label></span><span><input id="school" name="school" type="checkbox" /><label for="school">School</label></span></div>
-  <input id="browse" name="browse" type="file"/>
-  <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
-	<input type="submit" value="Add this rack!" />
+    <label for="description">Description</label>
+      <textarea id="description" name="description"
+                  title="Please include any useful details and available contact information for property/business owner">{{ request.POST.description }}</textarea>
+    <div class="checkboxes selfclear">
+      <span><input id="restaurant" name="restaurant" type="checkbox" />
+            <label for="restaurant">Restaurant</label>
+      </span>
+      <span><input id="school" name="school" type="checkbox" />
+            <label for="school">School</label>
+      </span></div>
+   <input id="browse" name="browse" type="file" />
+   <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
+   <input type="submit" value="Add this rack!" />
 
 </form>
 <div class="suggest">
