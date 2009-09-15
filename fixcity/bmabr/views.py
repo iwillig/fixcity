@@ -183,8 +183,7 @@ def newrack_form(request):
             return HttpResponseRedirect('/rack/%s' % new_rack.id)
     else:
         form = RackForm()
-#    return render_to_response('newrack.html', { 
-    return render_to_response('index.html', {
+    return render_to_response('newrack.html', { 
             'form': form,
            },
            context_instance=RequestContext(request, processors=[user_context])) 
