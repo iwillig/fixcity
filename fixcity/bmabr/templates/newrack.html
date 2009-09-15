@@ -53,7 +53,7 @@
 	var geometry =  new OpenLayers.Geometry.Point(-73.954344,40.714063);
 
 	var WKT = geometry.toString();	
-	$("#location").text(WKT); 
+	$("#location").val(WKT); 
 
 	geometry.transform(map.displayProjection, map.projection) ;
 	var location = new OpenLayers.Feature.Vector(
@@ -69,7 +69,7 @@
 	    getAddress(xy);
 	    getCommunityBoard(xy); 
 	    var location_wkt = "POINT("+ xy.lon + " " + xy.lat +")"; 
-	    $("#location").text(location_wkt); 
+	    $("#location").val(location_wkt); 
 	};
 	var point_control =  new OpenLayers.Control.DragFeature(
 	    address_point,
@@ -86,7 +86,6 @@
 	    $.post("/reverse/", {lat:lat, lon:lon},
 		function(data){
 	            $("#address").val(data) ;
-                    $("#location_log").text(data) ;
 		    $("#address").effect("highlight", {}, 3000);
 
 		});
@@ -162,7 +161,7 @@
     <div class="required"><input id="address" name="address" type="text"
                                  title="Enter an address or click a point on the map"
                                  value="{{request.POST.address}}" />
-    <input type="hidden" id="location" name="location" />
+    <input type="hidden" id="location" name="location" value="{{request.POST.location}}" />
         {{ form.address.errors }} {{ form.location.errors }} </div>
     <label for="description">Description</label>
       <textarea id="description" name="description"
@@ -189,7 +188,7 @@
 <script type="text/javascript">
 //<![CDATA[
   $(document).ready(function() {
-    $('input#location, input#address, textarea#description').inlineInfoTextify();
+    $('input#address, textarea#description').inlineInfoTextify();
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
     $('.checkboxes input').click(function(){(this.checked) ? $(this).parent().addClass('checked') : $(this).parent().removeClass('checked');});
   });
