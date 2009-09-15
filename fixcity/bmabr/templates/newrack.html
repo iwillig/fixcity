@@ -168,10 +168,9 @@
       <textarea id="description" name="description"
                   title="Please include any useful details and available contact information for property/business owner">{{ request.POST.description }}</textarea>
 
-    <input id="browse" name="browse" type="file" />
-
+    <label for="browse">Photo</label>
+    <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" />
     <div id="fakebrowse" class="selfclear">
-     <label for="fakebrowseinput">Photo</label>
      <input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
     <input type="submit" value="Add this rack!" />
 
