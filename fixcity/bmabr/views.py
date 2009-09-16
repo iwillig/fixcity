@@ -229,17 +229,17 @@ def support(request, rack_id):
 @login_required
 def rack_edit(request,rack_id):
     rack = Rack.objects.get(id=rack_id)
-    if request.method == 'POST': 
-        form = RackForm(request.POST,request.FILES)
-        if form.is_valid(): 
-            new_rack = form.save()
-            return HttpResponseRedirect('/rack/%s' % rack.id)
+    if request.method == 'POST':
+        form = RackForm(request.POST, request.FILES, instance=rack)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/rack/%s/edit' % rack.id)
     else: 
         form = RackForm()
     return render_to_response('update_rack.html', 
           {"rack": rack,
            "form": form },
-          context_instance=RequestContext(request, processors=[user_context])) 
+          context_instance=RequestContext(request, processors=[user_context]))
 
 def rack(request,rack_id): 
     rack = Rack.objects.get(id=rack_id)    

@@ -49,7 +49,7 @@
 		 })
 	}
 
-	var WKT = '{{request.POST.location|default:"POINT(-73.954344 40.714063)" }}';
+	var WKT = "{{ request.POST.location|default:rack.location.wkt }}";
 	var address_point = new OpenLayers.Layer.Vector("Location Marker",address_options);
 	var geometry =  new OpenLayers.Geometry.fromWKT(WKT);
 	$("#location").val(WKT); 
@@ -94,9 +94,9 @@
 	   var lon = lonlat.lon ;
            $.post("/getcommunityboard/",{lat:lat,lon:lon}, 
 		  function(data) { 
-		      var location = "Brooklyn Community Board " + data ; 
 		      $("#id_communityboard").val(data);
-                      // Community board is not part of the v1.0 UI.
+		      // Community board is not part of the v1.0 UI.
+		      // var location = "Brooklyn Community Board " + data ;
 		      // $("#cb_show").val(location); 
 		      // $("#cb_show").effect("highlight", {}, 3000);
 		  }); 
@@ -134,38 +134,45 @@
     <label for="email">Your Email</label>
     <div class="required">
      <input type="text" name="email"
-            value="{{request.POST.email|default:user_email}}" />
+            value="{{request.POST.email|default:rack.email}}" />
      {{ form.email.errors }}
-     <input type="hidden" name="user" value="{{user.username}}" />
+     <input type="hidden" name="user" value="{{request.POST.user|default:rack.user}}" />
      {{ form.user.errors }}
     </div>    
 
-    <input type="hidden" name="date" value="{% now "m/d/y" %}"/>
+    <input type="hidden" name="date" value="{{request.POST.date|default:rack.date}}"/>
 
     <!-- Displayed community board name -->
     <!-- <input type="text" id="cb_show" value="1" /> -->
-    <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
+    <input type="hidden" id="id_communityboard" name="communityboard"
+           value="{{request.POST.communityboard|default:rack.communityboard.gid}}" />
 
     <label for="title">Business, Agency, or Public Space</label>
     <div class="required"><input id="title" name="title" type="text"
                                  title="Assume we want placeholder text here"
-                                 value="{{request.POST.title}}"
+                                 value="{{request.POST.title|default:rack.title}}"
                            />{{ form.title.errors }}</div>
     <label for="address">Street Address</label>
     <div class="required"><input id="address" name="address" type="text"
                                  title="Enter an address or click a point on the map"
-                                 value="{{request.POST.address}}" />
-    <input type="hidden" id="location" name="location" value="{{request.POST.location}}" />
+                                 value="{{request.POST.address|default:rack.address}}" />
+    <input type="hidden" id="location" name="location" value="{{wkt}}" />
         {{ form.address.errors }} {{ form.location.errors }} </div>
     <label for="description">Description</label>
       <textarea id="description" name="description"
-                  title="Please include any useful details and available contact information for property/business owner">{{ request.POST.description }}</textarea>
+                  title="Please include any useful details and available contact information for property/business owner">{{ request.POST.description|default:rack.description }}</textarea>
 
     <label for="browse">Photo</label>
+    {% if rack.photo %}
+      <img src="{{rack.photo.extra_thumbnails.large}}" />
+      <br />
+    {% else %}
+      <div>No photo uploaded.</div>
+    {% endif %}
     <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" />
     <div id="fakebrowse" class="selfclear">
      <input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
-    <input type="submit" value="Add this rack!" />
+    <input type="submit" value="Edit rack" />
 
 <!--  errors for debugging
  {{ form.errors }}
@@ -178,7 +185,7 @@
 {% endblock %}
 
 {% block lede %}
-<h1>Report Damaged Rack</h1><a href="#">Suggest a new Rack</a>
+<h1>Edit Rack</h1>
 {% endblock %}
 
 {% block extra_footer %}
