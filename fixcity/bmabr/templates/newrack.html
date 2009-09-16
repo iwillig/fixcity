@@ -171,7 +171,7 @@
 -->
 </form>
 <div class="suggest">
-	<div id="request-map" style="height: 360px; width: 540px;">
+	<div id="request-map">
 	</div>
 </div><!-- /#suggest -->
 {% endblock %}
@@ -186,7 +186,6 @@
   $(document).ready(function() {
     $('input#address, textarea#description').inlineInfoTextify();
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
-    $('.checkboxes input').click(function(){(this.checked) ? $(this).parent().addClass('checked') : $(this).parent().removeClass('checked');});
   });
 //]]>
 </script>
