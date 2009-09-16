@@ -156,16 +156,16 @@ def submit(request):
 
 
 
-def assess(request): 
+def verify(request): 
     racks_query = Rack.objects.all()
-    return render_to_response('assess.html', { 
+    return render_to_response('verify.html', { 
             'rack_query': racks_query,
             },
             context_instance=RequestContext(request, processors=[user_context])) 
 
-def assess_by_communityboard(request,cb_id): 
+def verify_by_communityboard(request,cb_id): 
     rack_query = Rack.objects.filter(communityboard=cb_id)    
-    return render_to_response('assess_communityboard.html', { 
+    return render_to_response('verify_communityboard.html', { 
             'rack_query':rack_query
             },
             context_instance=RequestContext(request, processors=[user_context]))
@@ -224,11 +224,6 @@ def support(request, rack_id):
             return HttpResponse('something went wrong')              
     else:         
         return HttpResponse('not allowed')  
-
-
-
-
-    
 
 
 @login_required

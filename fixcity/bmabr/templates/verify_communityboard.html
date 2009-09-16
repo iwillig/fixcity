@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} assess {% endblock %}
+{% block title %} verify {% endblock %}
 
 {% block extra_header %} 
 
@@ -134,9 +134,9 @@
     <a href="/">(1) SUGGEST</a>
     <p> Suggest a bike rack location </p>
   </li>
-  <li class="assess">
-    <a href="/assess/">(2) ASSESS</a>
-    <p> Assess current requested locations </p>
+  <li class="verify">
+    <a href="/verify/">(2) VERIFY</a>
+    <p> Verify current requested locations </p>
   </li>
   <li class="about">
      <a href="/about/">About this projecet</a>    
@@ -147,11 +147,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="assess">
+<div class="verify">
   <div id="map-con">
     <div> 
     </div>
-    <p> Assessment is the second step in preparing a bulk order. The Transportation Alternatives Brooklyn Committee is orchestrating a bulk order for this area--see the About page for more information about getting involved. Take a look at these suggestions to find out what they need to be assessed.  </p>
+    <p> Verification is the second step in preparing a bulk order. The Transportation Alternatives Brooklyn Committee is orchestrating a bulk order for this area--see the About page for more information about getting involved. Take a look at these suggestions to find out what they need to be verified.  </p>
     <div id="map"> 
     </div>
   </div>
@@ -164,10 +164,10 @@
 
    {% for rack_query in rack_list %} 
       <h3>{{rack_query.grouper}}</h3>
-      <ul id="assess">
+      <ul id="verify">
       {% for rack in rack_query.list %}
 	<li class="list">
-	<div class="assess-text">
+	<div class="verify-text">
 	  
 	  <h4 class="id">{{rack.id}}</h4>
 	<h4><a href="/rack/{{rack.id}}">{{rack.title}} </a></h4>

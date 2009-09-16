@@ -22,8 +22,8 @@ urlpatterns = patterns('',
     (r'^getcommunityboard/$', 'fixcity.bmabr.views.get_communityboard'),
    
 
-    (r'assess/$','fixcity.bmabr.views.assess'),
-    (r'assess/communityboard/(?P<cb_id>\d+)/$', 'fixcity.bmabr.views.assess_by_communityboard'),
+    (r'verify/$','fixcity.bmabr.views.verify'),
+    (r'verify/communityboard/(?P<cb_id>\d+)/$', 'fixcity.bmabr.views.verify_by_communityboard'),
     (r'submit/all/$','fixcity.bmabr.views.submit_all'),
     (r'submit/$','fixcity.bmabr.views.submit'),
 
