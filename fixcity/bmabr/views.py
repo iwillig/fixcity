@@ -33,9 +33,11 @@ g = geocoders.Google(GKEY)
 SRID=4326
 
 def user_context(request):
+    # Complicated a bit because AnonymousUser doesn't have some attributes.
     user = request.user
     first = getattr(user, 'first_name', None)
     last = getattr(user, 'last_name', None)
+    email = getattr(user, 'email', None)
     if first and last:
         displayname = u'%s %s' % (first, last)
     else:
@@ -44,6 +46,7 @@ def user_context(request):
         'request': request, 
         'user': request.user,
         'user_displayname': displayname,
+        'user_email': email,
     }
 
 def index(request):
@@ -167,7 +170,6 @@ def assess_by_communityboard(request,cb_id):
             },
             context_instance=RequestContext(request, processors=[user_context]))
 
-#@login_required
 def newrack_form(request): 
     if request.method == 'POST':
         form = RackForm(request.POST,request.FILES)

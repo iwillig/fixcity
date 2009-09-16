@@ -25,7 +25,7 @@ class Rack(models.Model):
     title = models.CharField(max_length=50)
     date = models.DateTimeField()    
     description = models.TextField(blank=True)
-    email = models.EmailField()  # XXX redundant w/ the user?
+    email = models.EmailField()
     communityboard = models.ForeignKey(CommunityBoard)
     photo = ImageWithThumbnailsField(
                               upload_to='images/racks/', 
@@ -34,7 +34,9 @@ class Rack(models.Model):
                                    'large': {'size': (400,400)}, 
                                 },    
                               blank=True, null=True)
-    user = models.CharField(max_length=20) #XXX shouldn't this be a foreign key to a User?
+    # We might make this a foreign key to a User eventually, but for now
+    # it's optional.
+    user = models.CharField(max_length=20, blank=True, null=True)
     location = models.PointField(srid=4326)
     objects = models.GeoManager()
 
