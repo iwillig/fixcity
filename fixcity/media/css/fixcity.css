@@ -278,10 +278,103 @@ margin: 0 0 0 20px;
 margin-left: 10px;
 }
 
+#home-main {
+width: 700px;
+float: left;
+margin: 0 20px 0 0;
+}
+
 #home-map {
 height: 300px;
 border: 1px solid #8fb9cc;
 }
+
+#home-callouts {
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+
+#home-callouts li {
+margin: 0;
+padding: 0;
+width: 220px;
+float: left;
+}
+
+#home-callouts li#find-it,
+#home-callouts li#map-it {
+margin: 0 20px 0 0;
+}
+
+#home-callouts li#find-it h3 a,
+#home-callouts li#map-it h3 a,
+#home-callouts li#check-it h3 a  {
+display: block;
+height: 170px;
+overflow: hidden;
+text-indent: -9999em;
+}
+
+#home-callouts li#find-it h3 a {
+background: url(/site_media/img/find-it-bg.png) no-repeat;
+}
+
+#home-callouts li#map-it h3 a {
+background: url(/site_media/img/map-it-bg.png) no-repeat;
+}
+
+#home-callouts li#check-it h3 a {
+background: url(/site_media/img/check-it-bg.png) no-repeat;
+}
+
+#learnmore-foot {
+display: block;
+height: 50px;
+overflow: hidden;
+text-indent: -9999em;
+background: url(/site_media/img/learnmore-foot-bg.png) no-repeat;
+}
+
+#home-sidebar {
+float: left;
+width: 220px;
+}
+
+#home-sidebar h2 {
+color: #7997a9;
+font-size: 1.1em;
+}
+
+#home-sidebar #recent-racks {
+border-top: 1px solid #a8c4d5;
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+
+#home-sidebar #recent-racks li {
+display: inline;
+margin: 0;
+padding: 0;
+}
+
+#home-sidebar #recent-racks li a {
+display: block;
+color: #7896a8;
+text-decoration: none;
+padding: 0.5em 0;
+border-bottom: 1px solid #edf2f5;
+}
+
+#home-sidebar #recent-racks li a:hover {
+
+}
+
+#home-sidebar #recent-racks li a strong {
+color: #57bbf1;
+}
+
 
 #footer .wrap {
 border-top: 1px solid #8fb9cc;
