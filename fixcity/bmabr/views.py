@@ -35,9 +35,9 @@ SRID=4326
 def user_context(request):
     # Complicated a bit because AnonymousUser doesn't have some attributes.
     user = request.user
-    first = getattr(user, 'first_name', None)
-    last = getattr(user, 'last_name', None)
-    email = getattr(user, 'email', None)
+    first = getattr(user, 'first_name', '')
+    last = getattr(user, 'last_name', '')
+    email = getattr(user, 'email', '')
     if first and last:
         displayname = u'%s %s' % (first, last)
     else:
