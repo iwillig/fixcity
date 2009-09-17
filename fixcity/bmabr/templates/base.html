@@ -37,6 +37,13 @@
       <div id="lede">
         {% block lede %}{% endblock %}
       </div><!-- /#lede -->
+      <div id="flash">
+        <ul>
+          {% for message in flash_messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div><!-- /#lede -->
       <div id="content" class="content selfclear">
         {% block content %}{% endblock %}
       </div><!-- /#content -->
