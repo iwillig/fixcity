@@ -158,7 +158,7 @@
      <input type="hidden" name="user" value="{{user.username}}" />
      {{ form.user.errors }}
     </div>
-    <input type="hidden" name="date" value="{% now "m/d/y" %}"/>
+    <input type="hidden" name="date" value="{% now "Y-m-d H:i:s" %}"/>
 
     <!-- Displayed community board name -->
     <!-- <input type="text" id="cb_show" value="1" /> -->

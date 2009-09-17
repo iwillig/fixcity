@@ -173,7 +173,7 @@ def submit(request):
 
 
 def verify(request): 
-    racks_query = Rack.objects.all()
+    racks_query = Rack.objects.order_by('-date', '-id')
     return render_to_response('verify.html', { 
             'rack_query': racks_query,
             },

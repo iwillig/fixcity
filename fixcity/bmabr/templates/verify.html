@@ -16,12 +16,8 @@
 
 <div id="racks">
   
-{% regroup rack_query by communityboard as rack_list %} 
     <ul id="racklist">
-   {% for communityboard in rack_list %} 
-       <!-- DO WE NEED THIS GROUPING? MOCKUP AT http://img.skitch.com/20090911-dry287dg58373i5u1is3a6jbf8.png DOESN'T HAVE IT
-         <a href="/verify/communityboard/{{communityboard.grouper.name}}">{{communityboard.grouper}}</a> -->
-        {% for rack in communityboard.list %}
+        {% for rack in rack_query %}
            <li class="selfclear">
              <a class="rack-thumbnail"
              href="/rack/{{rack.id}}/edit">{% if rack.photo %}<img src="{{rack.photo.thumbnail}}" alt="{{rack.title}} Photo" />{% endif %}</a> 
@@ -31,9 +27,8 @@
                <p>{{rack.description}}</p>
              </div>
             </li>
-      {% endfor %} 
-      
-   {% endfor %} 
+        {% endfor %} 
+
     </ul>
     <p>Pagination placeholder</p>
 </div><!-- /#racklist -->
