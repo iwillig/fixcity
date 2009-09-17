@@ -17,20 +17,43 @@
 <div id="racks">
   
     <ul id="racklist">
-        {% for rack in rack_query %}
+        {% for rack in racks_page.object_list %}
            <li class="selfclear">
              <a class="rack-thumbnail"
              href="/rack/{{rack.id}}/edit">{% if rack.photo %}<img src="{{rack.photo.thumbnail}}" alt="{{rack.title}} Photo" />{% endif %}</a> 
              <div class="rack-info">
                <h3><a href="/rack/{{rack.id}}/edit">{{rack.title}}</a></h3>
                <h4>{{rack.address}}</h4>
-               <p>{{rack.description}}</p>
+               <p>{{rack.description|truncatewords:10}}</p>
              </div>
             </li>
         {% endfor %} 
 
-    </ul>
-    <p>Pagination placeholder</p>
-</div><!-- /#racklist -->
+    </ul><!-- #/racklist -->
+
+    <p id="pagination">
+      {% if racks_page.has_previous %}
+        <a href="?page={{ racks_page.previous_page_number }}">Previous Page</a>
+      {% endif %}
+
+      {% for page_number in page_numbers %}
+        {% ifequal page_number racks_page.number %}
+          <span id="current-page">{{ page_number }}</span>
+        {% else %}
+          {% ifequal page_number "..." %}
+            ...
+          {% else %}
+            <a href="?page={{page_number}}">{{page_number}}</a>
+          {% endifequal %}
+
+        {% endifequal %}
+      {% endfor %}
+
+      {% if racks_page.has_next %}
+        <a href="?page={{ racks_page.next_page_number }}">Next Page</a>
+      {% endif %}
+    </p>
+
+</div><!-- /#racks -->
 <div id="rackmap-wrap"><div id="rackmap"></div></div>
 {% endblock %}

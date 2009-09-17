@@ -174,8 +174,52 @@ def submit(request):
 
 def verify(request): 
     racks_query = Rack.objects.order_by('-date', '-id')
+    from django.core.paginator import Paginator, InvalidPage, EmptyPage
+    paginator = Paginator(racks_query, 2)  #5
+
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+    # If page request (9999) is out of range, deliver last page of results.
+    try:
+        racks_page = paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        racks_page = paginator.page(paginator.num_pages)
+
+    # Tried doing this pagination logic in the template, it was hideous.
+    # The goal is to do something like (for page 7):
+    # 'previous page   1 ... 5 6 7 8 9 ... 18  next page'
+    # It's a bit easier if we just generate a list of page numbers that
+    # the UI should show, and have the template only deal with markup.
+    page_numbers = []
+    pagination_cluster_size = 3  # 5
+    if paginator.num_pages <= pagination_cluster_size + 2:
+        page_numbers = range(pagination_cluster_size + 3)
+    else:
+        page_numbers.append(1)
+        cluster_start = max(2,
+                            racks_page.number - (pagination_cluster_size / 2))
+        cluster_start = min(cluster_start,
+                            paginator.num_pages - pagination_cluster_size)
+        cluster_end = min(cluster_start + pagination_cluster_size,
+                          paginator.num_pages)
+        middle_cluster = range(cluster_start, cluster_end)
+        if middle_cluster[0] > 2:
+            # Stuff in a marker so the template knows there's a gap here.
+            page_numbers.append('...')
+        page_numbers.extend(middle_cluster)
+        if middle_cluster[-1] < (paginator.num_pages - 1):
+            # Stuff in a marker so the template knows there's a gap here.
+            page_numbers.append('...')
+        page_numbers.append(paginator.num_pages)
+
+
+    
     return render_to_response('verify.html', { 
             'rack_query': racks_query,
+            'racks_page': racks_page,
+            'page_numbers': page_numbers,
             },
             context_instance=RequestContext(request, processors=[user_context])) 
 
