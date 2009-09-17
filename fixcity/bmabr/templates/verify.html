@@ -23,9 +23,10 @@
          <a href="/verify/communityboard/{{communityboard.grouper.name}}">{{communityboard.grouper}}</a> -->
         {% for rack in communityboard.list %}
            <li class="selfclear">
-             <a class="rack-thumbnail" href="/rack/{{rack.id}}"><img src="{{rack.photo.thumbnail}}" alt="{{rack.title}} Photo" /></a> 
+             <a class="rack-thumbnail"
+             href="/rack/{{rack.id}}/edit">{% if rack.photo %}<img src="{{rack.photo.thumbnail}}" alt="{{rack.title}} Photo" />{% endif %}</a> 
              <div class="rack-info">
-               <h3>{{rack.title}}</h3>
+               <h3><a href="/rack/{{rack.id}}/edit">{{rack.title}}</a></h3>
                <h4>{{rack.address}}</h4>
                <p>{{rack.description}}</p>
              </div>
