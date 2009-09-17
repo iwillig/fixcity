@@ -152,9 +152,12 @@
     {% else %}
       <div>No photo uploaded.</div>
     {% endif %}
-    <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" />
-    <div id="fakebrowse" class="selfclear">
-     <input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
+    
+    <div id="photo-wrap">
+      <label for="browse">{% if rack.photo %}Replace{% else %}Add{% endif %} Photo</label>
+      <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" />
+      <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
+    </div><!-- /#photo-wrap -->
      
     <label for="email">Your Email</label>
     <div class="required">
@@ -193,6 +196,7 @@
   $(document).ready(function() {
     $('input#address, textarea#description, input#email').inlineInfoTextify();
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
+    expandOnce('#photo-wrap', '{% if rack.photo %}Replace{% else %}Add{% endif %} Photo');
   });
 //]]>
 </script>
