@@ -226,7 +226,6 @@ def support(request, rack_id):
         return HttpResponse('not allowed')  
 
 
-@login_required
 def rack_edit(request,rack_id):
     rack = Rack.objects.get(id=rack_id)
     if request.method == 'POST':
