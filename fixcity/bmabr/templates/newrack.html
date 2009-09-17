@@ -196,13 +196,7 @@
   $(document).ready(function() {
     $('input#address, textarea#description, input#email').inlineInfoTextify();
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
-  
-    function expandOnce(selector, text) {
-      var target=$(selector);
-      $('<span class="expandonce">' + text +'</span>').prependTo(target).click(function() {$(this).siblings().show().end().remove();}).siblings().hide();
-    }
-    
-    expandOnce('#photo-wrap', 'Add Photo')
+    expandOnce('#photo-wrap', 'Add Photo');
   });
 //]]>
 </script>
