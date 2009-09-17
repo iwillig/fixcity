@@ -130,22 +130,6 @@
 
 {% block content %}
 <form id="addrack-form" action="." method="POST" enctype="multipart/form-data">
-
-    <label for="email">Your Email</label>
-    <div class="required">
-     <input type="text" name="email"
-            value="{{request.POST.email|default:user_email}}" />
-     {{ form.email.errors }}
-     <input type="hidden" name="user" value="{{user.username}}" />
-     {{ form.user.errors }}
-    </div>    
-
-    <input type="hidden" name="date" value="{% now "m/d/y" %}"/>
-
-    <!-- Displayed community board name -->
-    <!-- <input type="text" id="cb_show" value="1" /> -->
-    <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
-
     <label for="title">Business, Agency, or Public Space</label>
     <div class="required"><input id="title" name="title" type="text"
                                  title="Assume we want placeholder text here"
@@ -165,6 +149,21 @@
     <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" />
     <div id="fakebrowse" class="selfclear">
      <input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
+     
+    <label for="email">Your Email</label>
+    <div class="required">
+     <input id="email" type="text" name="email"
+            value="{{request.POST.email|default:user_email}}" title="This will not be shared, but we may wish to contact you." />
+     {{ form.email.errors }}
+     <input type="hidden" name="user" value="{{user.username}}" />
+     {{ form.user.errors }}
+    </div>
+    <input type="hidden" name="date" value="{% now "m/d/y" %}"/>
+
+    <!-- Displayed community board name -->
+    <!-- <input type="text" id="cb_show" value="1" /> -->
+    <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
+
     <input type="submit" value="Add this rack!" />
 
 <!--  errors for debugging
@@ -172,22 +171,30 @@
 -->
 </form>
 <div class="suggest">
-	<div id="request-map" style="height: 360px; width: 540px;">
+	<div id="request-map">
 	</div>
+	<div id="quick-check">
+	  <h4>Quick Check: Does the location fit this description?</h4>
+	  <ul>
+	    <li>City-owned Property</li>
+	    <li>Concrete Sidewalk (wider than 11 ft.)</li>
+	    <li>Serves Many People</li>
+    </ul>
+    <p class="note">Note: Commercial streets get priority. There are many exceptions, but your apartment is probably not one of them!</p>
+  </div><!-- /#quick-check -->
 </div><!-- /#suggest -->
 {% endblock %}
 
 {% block lede %}
-<h1>Report Damaged Rack</h1><a href="#">Suggest a new Rack</a>
+<h1>Suggest a new Rack</h1>
 {% endblock %}
 
 {% block extra_footer %}
 <script type="text/javascript">
 //<![CDATA[
   $(document).ready(function() {
-    $('input#address, textarea#description').inlineInfoTextify();
+    $('input#address, textarea#description, input#email').inlineInfoTextify();
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
-    $('.checkboxes input').click(function(){(this.checked) ? $(this).parent().addClass('checked') : $(this).parent().removeClass('checked');});
   });
 //]]>
 </script>

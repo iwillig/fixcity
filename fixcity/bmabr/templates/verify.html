@@ -2,37 +2,39 @@
 {% block title %} verify {% endblock %}
 
 {% block extra_header %} 
-
-
 {% endblock %}
 
+{% block lede %}
+<h1>Verify a Rack!</h1>
+{% endblock %}
 
 
 {% block menu %} 
 {% endblock %}
 
 {% block content %}
-<div class="verify">
-<div id="diagram">
-<h5>Verification includes surveying and social outreach for the site(s) in question. This diagram explains the physical requirements. </h5>
-  <img src="/site_media/images/diagram.jpg" />
-</div>
-<div id="activity-con">
-  <h3>Click on a community board to see the suggestions made for that area and what needs to be done.</h3>
 
-   
+<div id="racks">
+  
 {% regroup rack_query by communityboard as rack_list %} 
-    <ul id="verify">
+    <ul id="racklist">
    {% for communityboard in rack_list %} 
-       <li class="list">  <h3><a href="/verify/communityboard/{{communityboard.grouper.name}}">{{communityboard.grouper}}</a></h3>
+       <!-- DO WE NEED THIS GROUPING? MOCKUP AT http://img.skitch.com/20090911-dry287dg58373i5u1is3a6jbf8.png DOESN'T HAVE IT
+         <a href="/verify/communityboard/{{communityboard.grouper.name}}">{{communityboard.grouper}}</a> -->
         {% for rack in communityboard.list %}
-            <a href="/rack/{{rack.id}}">
-            <img class="thumbnail" src="{{rack.photo.thumbnail}}" />
-	  </a>
+           <li class="selfclear">
+             <a class="rack-thumbnail" href="/rack/{{rack.id}}"><img src="{{rack.photo.thumbnail}}" alt="{{rack.title}} Photo" /></a> 
+             <div class="rack-info">
+               <h3>{{rack.title}}</h3>
+               <h4>{{rack.address}}</h4>
+               <p>{{rack.description}}</p>
+             </div>
+            </li>
       {% endfor %} 
-      </li>
+      
    {% endfor %} 
     </ul>
-</div>
-</div>
+    <p>Pagination placeholder</p>
+</div><!-- /#racklist -->
+<div id="rackmap-wrap"><div id="rackmap"></div></div>
 {% endblock %}
