@@ -29,7 +29,7 @@
         <a id="logo" href="/">Fixcity.org Bike Racks</a>
         <!-- maybe a better fit for {% block menu %}{% endblock %} -->
         <ul>
-          <li><a id="add-rack" href="/rack/new">Add a Rack</a></li>
+          <li><a id="add-rack" href="/rack/new/">Add a Rack</a></li>
           <li><a id="verify-rack" href="/verify/">Verify a Rack</a></li>
           <li><a id="verification-kit" href="#">Verification Kit</a></li>
         </ul>
@@ -40,7 +40,7 @@
       <div id="flash">
         <ul>
           {% for message in flash_messages %}
-          <li>{{ message }}</li>
+          <li>{{ message|safe }}</li>
           {% endfor %}
         </ul>
       </div><!-- /#lede -->
