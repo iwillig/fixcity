@@ -94,9 +94,9 @@
 	   var lon = lonlat.lon ;
            $.post("/getcommunityboard/",{lat:lat,lon:lon}, 
 		  function(data) { 
-		      var location = "Brooklyn Community Board " + data ; 
 		      $("#id_communityboard").val(data);
-                      // Community board is not part of the v1.0 UI.
+		      // Community board is not part of the v1.0 UI.
+		      // var location = "Brooklyn Community Board " + data ;
 		      // $("#cb_show").val(location); 
 		      // $("#cb_show").effect("highlight", {}, 3000);
 		  }); 

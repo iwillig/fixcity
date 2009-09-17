@@ -130,23 +130,6 @@
 
 {% block content %}
 <form id="addrack-form" action="." method="POST" enctype="multipart/form-data">
-
-    <label for="email">Your Email</label>
-    <div class="required">
-     <input type="text" name="email"
-            value="{{request.POST.email|default:rack.email}}" />
-     {{ form.email.errors }}
-     <input type="hidden" name="user" value="{{request.POST.user|default:rack.user}}" />
-     {{ form.user.errors }}
-    </div>    
-
-    <input type="hidden" name="date" value="{{request.POST.date|default:rack.date}}"/>
-
-    <!-- Displayed community board name -->
-    <!-- <input type="text" id="cb_show" value="1" /> -->
-    <input type="hidden" id="id_communityboard" name="communityboard"
-           value="{{request.POST.communityboard|default:rack.communityboard.gid}}" />
-
     <label for="title">Business, Agency, or Public Space</label>
     <div class="required"><input id="title" name="title" type="text"
                                  title="Assume we want placeholder text here"
@@ -172,14 +155,30 @@
     <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" />
     <div id="fakebrowse" class="selfclear">
      <input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
-    <input type="submit" value="Edit rack" />
+     
+    <label for="email">Your Email</label>
+    <div class="required">
+     <input id="email" type="text" name="email"
+            value="{{request.POST.email|default:rack.email}}" title="This will not be shared, but we may wish to contact you." />
+     {{ form.email.errors }}
+     <input type="hidden" name="user" value="{{request.POST.user|default:rack.user}}" />
+     {{ form.user.errors }}
+    </div>
+    <!-- XXX Do we want to update date on edit? -->
+    <input type="hidden" name="date" value="{{rack.date}}"/>
+
+    <!-- Displayed community board name -->
+    <!-- <input type="text" id="cb_show" value="1" /> -->
+    <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
+
+    <input type="submit" value="Save" />
 
 <!--  errors for debugging
  {{ form.errors }}
 -->
 </form>
 <div class="suggest">
-	<div id="request-map" style="height: 360px; width: 540px;">
+	<div id="request-map">
 	</div>
 </div><!-- /#suggest -->
 {% endblock %}
@@ -192,9 +191,8 @@
 <script type="text/javascript">
 //<![CDATA[
   $(document).ready(function() {
-    $('input#address, textarea#description').inlineInfoTextify();
+    $('input#address, textarea#description, input#email').inlineInfoTextify();
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
-    $('.checkboxes input').click(function(){(this.checked) ? $(this).parent().addClass('checked') : $(this).parent().removeClass('checked');});
   });
 //]]>
 </script>
