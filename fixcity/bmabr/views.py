@@ -43,10 +43,8 @@ def iter_flash_messages(request):
     the session. LIFO."""
     flash_messages = request.session.get('_flash', [])
     while flash_messages:
-        try:
-            yield flash_messages.pop()
-        finally:
-            request.session.modified = True
+        request.session.modified = True
+        yield flash_messages.pop()
 
 
 def user_context(request):
