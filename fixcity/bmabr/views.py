@@ -198,7 +198,8 @@ def newrack_form(request):
             photo_status.save()
             statement = Steps(step_rack=new_rack,name="statement",status='todo')
             statement.save()
-            flash('Your rack has been saved.', request)
+            flash('Your rack has been saved. <a href="/rack/new">Add another?</a>',
+                  request)
             return HttpResponseRedirect('/verify/')
         else:
             flash('Please correct the following errors.', request)
