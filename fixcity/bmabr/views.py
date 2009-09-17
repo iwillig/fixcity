@@ -151,7 +151,6 @@ def submit_all(request):
             })
 
 
-
 def submit(request): 
     community_board_query = CommunityBoard.objects.filter(name='1')
     for communityboard in community_board_query:         
@@ -175,7 +174,7 @@ def submit(request):
 def verify(request): 
     racks_query = Rack.objects.order_by('-date', '-id')
     from django.core.paginator import Paginator, InvalidPage, EmptyPage
-    paginator = Paginator(racks_query, 2)  #5
+    paginator = Paginator(racks_query, 5)
 
     try:
         page = int(request.GET.get('page', '1'))
@@ -187,15 +186,18 @@ def verify(request):
     except (EmptyPage, InvalidPage):
         racks_page = paginator.page(paginator.num_pages)
 
-    # Tried doing this pagination logic in the template, it was hideous.
-    # The goal is to do something like (for page 7):
-    # 'previous page   1 ... 5 6 7 8 9 ... 18  next page'
+    # Pagination logic. Tried doing this purely in the template, it
+    # was hideous.
+    # The goal is to have page links like (when eg. viewing page 7):
+    # '1 ... 5 6 7 8 9 ... 18'
+    # with a cluster in the middle.
     # It's a bit easier if we just generate a list of page numbers that
     # the UI should show, and have the template only deal with markup.
     page_numbers = []
-    pagination_cluster_size = 3  # 5
+    pagination_cluster_size = 5
     if paginator.num_pages <= pagination_cluster_size + 2:
-        page_numbers = range(pagination_cluster_size + 3)
+        # There's not enough pages to need clustering.
+        page_numbers = range(1, paginator.num_pages + 1)
     else:
         page_numbers.append(1)
         cluster_start = max(2,
@@ -206,16 +208,14 @@ def verify(request):
                           paginator.num_pages)
         middle_cluster = range(cluster_start, cluster_end)
         if middle_cluster[0] > 2:
-            # Stuff in a marker so the template knows there's a gap here.
+            # There's a gap here.
             page_numbers.append('...')
         page_numbers.extend(middle_cluster)
         if middle_cluster[-1] < (paginator.num_pages - 1):
-            # Stuff in a marker so the template knows there's a gap here.
+            # There's a gap here.
             page_numbers.append('...')
         page_numbers.append(paginator.num_pages)
 
-
-    
     return render_to_response('verify.html', { 
             'rack_query': racks_query,
             'racks_page': racks_page,
