@@ -32,6 +32,23 @@ GKEY="ABQIAAAApLR-B_RMiEN2UBRoEWYPlhTmTlZhMVUZVOGFgSe6Omf4DswcaBSLmUPer5a9LF8EEW
 g = geocoders.Google(GKEY)
 SRID=4326
 
+
+def flash(s, request):
+    """add the string "s" to the session's flash store"""
+    request.session.setdefault('_flash', []).append(s)
+    request.session.modified = True
+
+def iter_flash_messages(request):
+    """yield all the session's flash messages, and remove them from
+    the session. LIFO."""
+    flash_messages = request.session.get('_flash', [])
+    while flash_messages:
+        try:
+            yield flash_messages.pop()
+        finally:
+            request.session.modified = True
+
+
 def user_context(request):
     # Complicated a bit because AnonymousUser doesn't have some attributes.
     user = request.user
@@ -47,6 +64,7 @@ def user_context(request):
         'user': request.user,
         'user_displayname': displayname,
         'user_email': email,
+        'flash_messages': iter_flash_messages(request),
     }
 
 def index(request):
@@ -182,7 +200,10 @@ def newrack_form(request):
             photo_status.save()
             statement = Steps(step_rack=new_rack,name="statement",status='todo')
             statement.save()
-            return HttpResponseRedirect('/rack/%s' % new_rack.id)
+            flash('Your rack has been saved.', request)
+            return HttpResponseRedirect('/verify/')
+        else:
+            flash('Please correct the following errors.', request)
     else:
         form = RackForm()
     return render_to_response('newrack.html', { 
@@ -233,7 +254,10 @@ def rack_edit(request,rack_id):
         form = RackForm(request.POST, request.FILES, instance=rack)
         if form.is_valid():
             form.save()
+            flash('Your changes have been saved.', request)
             return HttpResponseRedirect('/rack/%s/edit' % rack.id)
+        else:
+            flash('Please correct the following errors.', request)
     else: 
         form = RackForm()
     return render_to_response('update_rack.html', 
