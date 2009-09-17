@@ -145,10 +145,11 @@
       <textarea id="description" name="description"
                   title="Please include any useful details and available contact information for property/business owner">{{ request.POST.description }}</textarea>
 
-    <label for="browse">Photo</label>
-    <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" />
-    <div id="fakebrowse" class="selfclear">
-     <input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
+    <div id="photo-wrap">
+      <label for="browse">Photo</label>
+      <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" />
+      <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
+    </div><!-- /#photo-wrap -->
      
     <label for="email">Your Email</label>
     <div class="required">
@@ -195,6 +196,13 @@
   $(document).ready(function() {
     $('input#address, textarea#description, input#email').inlineInfoTextify();
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
+  
+    function expandOnce(selector, text) {
+      var target=$(selector);
+      $('<span class="expandonce">' + text +'</span>').prependTo(target).click(function() {$(this).siblings().show().end().remove();}).siblings().hide();
+    }
+    
+    expandOnce('#photo-wrap', 'Add Photo')
   });
 //]]>
 </script>

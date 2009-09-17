@@ -406,6 +406,25 @@ background: #5c8699;
 color: #fff;
 }
 
+#photo-wrap {
+margin: 1em 0 0;
+padding: 0;
+}
+
+.expandonce {
+display: block;
+padding: 0 0 0 20px;
+background: url(/site_media/img/plus-toggle.png) 0 50% no-repeat;
+font-size: 1.2em;
+font-weight: bold;
+color: #00b0f1;
+}
+
+.expandonce:hover {
+cursor: pointer;
+text-decoration: underline;
+}
+
 #browse {
 opacity: 0.0;
 -moz-opacity: 0.0;
