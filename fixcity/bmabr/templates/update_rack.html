@@ -114,7 +114,7 @@
 		  }); 
         } 
   
-	$("#geocode_button").click(function () {
+	$("#address").blur(function () {
 		var geocode_text = $("#address").val();
 		getPointsFromAddress(geocode_text);
 	    });
@@ -152,8 +152,6 @@
     <input type="hidden" id="location" name="location" value="{{wkt}}" />
         {{ form.address.errors }} {{ form.location.errors }}
     </div>
-
-    <div><button type="button" id="geocode_button">geocode</button></div>
 
     <label for="description">Description</label>
       <textarea id="description" name="description"
