@@ -56,6 +56,13 @@ white-space: nowrap;
 display:none;
 }
 
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+outline-width: 0; /* override tripoli */
+}
+
 /*-----------------------
 Structural Elements
 -----------------------*/
@@ -168,11 +175,24 @@ margin: 0;
 }
 
 /* - */
-
 #home-main {
 width: 700px;
 float: left;
 margin: 0 20px 0 0;
+}
+
+#home-promo {
+min-height: 190px;
+padding: 0 0 0 240px;
+background: url(/site_media/img/bike-rack-240x190.png) 0 50% no-repeat;
+}
+
+#home-promo a {
+text-decoration: none;
+}
+
+#home-promo a:hover {
+text-decoration: underline;
 }
 
 #home-map {
@@ -193,22 +213,22 @@ width: 220px;
 float: left;
 }
 
-#home-callouts li#find-it,
+#home-callouts li#spot-it,
 #home-callouts li#map-it {
 margin: 0 20px 0 0;
 }
 
-#home-callouts li#find-it h3 a,
+#home-callouts li#spot-it h3 a,
 #home-callouts li#map-it h3 a,
 #home-callouts li#check-it h3 a  {
 display: block;
-height: 170px;
+height: 148px;
 overflow: hidden;
 text-indent: -9999em;
 }
 
-#home-callouts li#find-it h3 a {
-background: url(/site_media/img/find-it-bg.png) no-repeat;
+#home-callouts li#spot-it h3 a {
+background: url(/site_media/img/spot-it-bg.png) no-repeat;
 }
 
 #home-callouts li#map-it h3 a {
@@ -234,11 +254,12 @@ width: 220px;
 
 #home-sidebar h2 {
 color: #7997a9;
+background: #edf2f6;
 font-size: 1.1em;
+padding: 8px;
 }
 
 #home-sidebar #recent-racks {
-border-top: 1px solid #a8c4d5;
 list-style-type: none;
 margin: 0;
 padding: 0;
@@ -264,6 +285,30 @@ border-bottom: 1px solid #edf2f5;
 
 #home-sidebar #recent-racks li a strong {
 color: #57bbf1;
+}
+
+#home-sidebar #recent-racks li:last-child a {
+text-align: right;
+color: #57bbf1;
+border-bottom: 0 none transparent;
+}
+
+#home-sidebar #recent-racks li:last-child a:hover {
+text-decoration: underline;
+}
+
+#ss-form input#entry_0 {
+background: #fff;
+border: 1px solid #5c8699;
+padding: 0.5em;
+font-family: helvetica,verdana,sans-serif;
+}
+
+#ss-form input[type="submit"] {
+background: #00b0f1;
+border: 0 none transparent;
+color: #fff;
+padding: 0.5em;
 }
 
 /* - */
@@ -343,7 +388,7 @@ margin: 0;
 }
 
 #addrack-form input[type="text"],
-#addrack-form textarea {
+#addrack-form textarea, {
 background: #fff;
 display: block;
 width: 362px;
@@ -356,11 +401,6 @@ font-family: helvetica,verdana,sans-serif;
 padding: 14px 0 0;
 margin: -14px 0 0;
 background: url(/site_media/img/required-tab.png) 100% 0 no-repeat;
-}
-
-#addrack-form input[type="text"]:focus,
-#addrack-form textarea:focus {
-outline-width: 0;
 }
 
 #addrack-form input[type="button"],

@@ -66,8 +66,11 @@ def user_context(request):
     }
 
 def index(request):
+    racks_query = Rack.objects.order_by('-date', '-id')[:13]
     return render_to_response('index.html',
-       {'request':request},
+       {'request':request,
+        'recent_racks': racks_query,
+        },
        context_instance=RequestContext(request, processors=[user_context])
                               ) 
 def about(request):
@@ -215,7 +218,8 @@ def verify(request):
             # There's a gap here.
             page_numbers.append('...')
         page_numbers.append(paginator.num_pages)
-
+    if page_numbers == [1]:
+        page_numbers = []
     return render_to_response('verify.html', { 
             'rack_query': racks_query,
             'racks_page': racks_page,

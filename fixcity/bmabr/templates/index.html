@@ -105,25 +105,49 @@
 {% block menu %}
 {% endblock %}
 
+{% block lede %}<h1>Small steps to fix your city. Take action for better bike parking!</h1>{% endblock %}
+
 
 {% block content %}
 <div id="home-main">
+  <div id="home-promo"><p>Join us for <strong>Bike Rack Hunt!</strong>: a scavenger hunt for new bike rack spots in Brooklyn Community District 1 (Williamsburg/Greenpoint) and the first public trial of fixcity.org. Don't forget to BRING A CAMERA.</p>
+    <p><strong>Sunday September 20th, 2:30-6:30 PM</strong><br /><a href="http://thechangeyouwanttosee.com/"><strong>The Change You Want to See Gallery</strong></a> 84 Havemeyer St. (at Metropolitan)</p>
+    <p>Join our mailing list for more info.</p>
+    <form action="" method="post" target="fake-target" id="ss-form" name="ss-form"  onsubmit="this.action='http://spreadsheets.google.com/formResponse?formkey=dGFZSVNvWURoQTR4dnptU1d4YUgydlE6MA..';">
+    	<input type="text" name="entry.0.single" value="" id="entry_0" title="email@example.org" />
+    	<input type="hidden" name="pageNumber" value="0" /> 
+    	<input type="hidden" name="backupCache" value="" />
+      <input type="submit" name="submit" value="Join" id="submit-form" />
+    </form>
+    <iframe src="#" id="fake-target" name="fake-target" style="width:0px; height:0px; border:0px;"></iframe>
+    </div>
   <div id="home-map"></div>
   <ul id="home-callouts" class="selfclear">
-    <li id="find-it"><h3><a href="#">Find It.</a></h3><p>Hit the streets! Look for acceptable rack locations. Measure sidewalks and assess community needs, meeting the <a href="#">Location Guidelines</a>.</p></li>
-    <li id="map-it"><h3><a href="/rack/new/">Map It.</a></h3><p>Add your rack to the map! When you find a suitable location, add a <a href="/rack/new/">New Rack</a> to the map. You can even report a <a href="#">Damaged Rack</a>.</p></li>
-    <li id="check-it"><h3><a href="/verify/">Check It.</a></h3><p>Verify suggested rack locations! Take a look at the <a href="/verify/">racks</a> suggested in your community and check them against the <a href="#">Location Guidelines</a>.</p></li>
+    <li id="spot-it"><h3><a href="/rack/new/">Spot It.</a></h3><p>Where do you need more bike racks? Think of the spots you know of, or hit the streets and look for appropriate rack locations.</p></li>
+    <li id="map-it"><h3><a href="/rack/new/">Map It.</a></h3><p>Put your rack suggestion on the map! Find a suitable location and add a <a href="/rack/new/">New Rack</a>. You can even report a <a href="#">Damaged Rack</a>.</p></li>
+    <li id="check-it"><h3><a href="/verify/">Check It.</a></h3><p>Verify suggested rack locations!Check if spots meet <a href="#">Location Guidelines</a> and community needs to see racks on the ground sooner.</p></li>
   </ul>
-  <a id="learnmore-foot">Learn more about fixcity.org Bike Racks...</a>
+  <a id="learnmore-foot" href="/about">Learn more about fixcity.org Bike Racks...</a>
 </div><!-- /#home-main -->
 <div id="home-sidebar">
   <h2>Recently Added Racks</h2>
   <ul id="recent-racks">
-    <li><a href="#"><strong>Barcade</strong> 388 Union Ave, Brooklyn, NY 11211-3429</a></li>
+   {% for rack in recent_racks %}
+    <li><a href="/rack/{{rack.id}}/edit"><strong>{{rack.title}}</strong>
+      {{rack.address}}</a></li>
+   {% endfor %}
+   <li><a id="more-racks" href="/verify/">See All Unverified Racks</a></li>
   </ul>
 </div>
 {% endblock %}
 
 {% block extra_footer %}
+<script type="text/javascript">
+//<![CDATA[
+  $(document).ready(function() {
+    $('input#entry_0').inlineInfoTextify();
+  });
+//]]>
+</script>
 {% endblock %}
 
