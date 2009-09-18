@@ -9,6 +9,7 @@ urlpatterns = patterns('',
 
     (r'^$', 'fixcity.bmabr.views.index'),
     (r'^about/$', 'fixcity.bmabr.views.about'), 
+    (r'^contact/$', 'fixcity.bmabr.views.contact'),
 
     # Accounts URLs
     (r'^accounts/login/$','fixcity.bmabr.views.login'),

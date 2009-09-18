@@ -388,3 +388,6 @@ def communityboard(request):
             }
            )
 
+
+def contact(request):
+    return render_to_response('contact.html', {})
