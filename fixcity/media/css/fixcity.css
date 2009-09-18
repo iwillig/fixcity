@@ -311,6 +311,16 @@ color: #fff;
 padding: 0.5em;
 }
 
+#ss-form-confirmation {
+background: #00b0f1;
+border: 0 none transparent;
+color: #fff;
+padding: 0.5em;
+float: left;
+margin: 0 0 1.6em;
+display: none;
+}
+
 /* - */
 #racks {
 float: left;
