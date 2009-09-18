@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     (r'^$', 'fixcity.bmabr.views.index'),
     (r'^about/$', 'fixcity.bmabr.views.about'), 
     (r'^contact/$', 'fixcity.bmabr.views.contact'),
+    (r'^verification-kit/$', 'fixcity.bmabr.views.verification_kit'),
 
     # Accounts URLs
     (r'^accounts/login/$','fixcity.bmabr.views.login'),
