@@ -110,10 +110,10 @@
 
 {% block content %}
 <div id="home-main">
-  <div id="home-promo"><p>Join us for <strong>Bike Rack Hunt!</strong>: a scavenger hunt for new bike rack spots in Brooklyn Community District 1 (Williamsburg/Greenpoint) and the first public trial of fixcity.org. Don't forget to BRING A CAMERA.</p>
+  <div id="home-promo" class="selfclear"><p>Join us for <strong>Bike Rack Hunt!</strong>: a scavenger hunt for new bike rack spots in Brooklyn Community District 1 (Williamsburg/Greenpoint) and the first public trial of fixcity.org. Don't forget to BRING A CAMERA.</p>
     <p><strong>Sunday September 20th, 2:30-6:30 PM</strong><br /><a href="http://thechangeyouwanttosee.com/"><strong>The Change You Want to See Gallery</strong></a> 84 Havemeyer St. (at Metropolitan)</p>
     <p>Join our mailing list for more info.</p>
-    <form action="" method="post" target="fake-target" id="ss-form" name="ss-form"  onsubmit="this.action='http://spreadsheets.google.com/formResponse?formkey=dGFZSVNvWURoQTR4dnptU1d4YUgydlE6MA..';">
+    <form action="" method="post" target="fake-target" id="ss-form" name="ss-form">
     	<input type="text" name="entry.0.single" value="" id="entry_0" title="email@example.org" />
     	<input type="hidden" name="pageNumber" value="0" /> 
     	<input type="hidden" name="backupCache" value="" />
@@ -146,6 +146,11 @@
 //<![CDATA[
   $(document).ready(function() {
     $('input#entry_0').inlineInfoTextify();
+    $('#ss-form').submit(function() {
+      $('#ss-form').attr('action', 'http://spreadsheets.google.com/formResponse?formkey=dGFZSVNvWURoQTR4dnptU1d4YUgydlE6MA..').hide().after('<strong id="ss-form-confirmation">Thank you for joining!</strong>');
+      $('#ss-form-confirmation').fadeIn("slow");
+      return true;
+    });
   });
 //]]>
 </script>
