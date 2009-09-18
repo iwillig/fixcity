@@ -312,12 +312,12 @@ margin: 0;
 font-size: 0.95em;
 }
 
-#rackmap-wrap {
+#verify-map-wrap {
 float: left;
 width: 540px;
 }
 
-#rackmap {
+#verify-map {
 height: 420px;
 border: 1px solid #8fb9cc;
 }
