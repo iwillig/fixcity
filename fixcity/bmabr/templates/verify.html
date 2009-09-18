@@ -36,50 +36,11 @@
             {wrapDateLine: true} 
         );
     
-	select_style = new OpenLayers.Style({
-                    pointRadius: "30",
-		    externalGraphic: "/site_media/images/marker.png"		    
-	    })
-	var select_vector = new OpenLayers.Layer.Vector("Selector Marker"); 
-	$('.mapevent').toggle( 
-	      function (){
-		  var location =  $(this).find("code").html() ; 	       
-		  wkt_f = new OpenLayers.Format.WKT(
-			{
-			  internalProjection: map.projection,
-		       	  externalProjection: map.displayProjection
-			}
-                       ); 
-		  features = wkt_f.read(location) ;
- 		  select_vector.removeFeatures();  
-		  select_vector.addFeatures(features); 
-		  map.addLayer(select_vector); 
-	      }, 
-	      function () { 
-		  select_vector.removeFeatures();  
-		  map.removeLayer(select_vector); 
-	      } ); 
-
-
 	var style = new OpenLayers.Style({
-                    pointRadius: "10",
-		    label: "${id}",
-                    fontColor: "#eee",
-                    fillColor: "#ff9e73",
-                    strokeColor: "#80503b",
-                    strokeWidth: 2
-		    
-                }, {
-                    context: {
-                        radius: function(feature) {
-                            return Math.min(feature.attributes.count, 7) + 5;
-		    }, 
-			id: function(feature) { 
-			return feature.attributes.id ; 
-		    } 
-                    }
+                    pointRadius: "12",
+                    externalGraphic: "/site_media/img/rack.png"
+                  
                 });
-
 
 	var racks = new OpenLayers.Layer.Vector("Racks", {
 		    projection: map.displayProjection,
@@ -104,8 +65,6 @@
                 });
     
         map.addLayers([osm,racks]);
-
-
     
         var bounds = new OpenLayers.Bounds(-73.978431701660199, 40.6752319335938, -73.946891784667997, 40.723712921142599) ; 
 	bounds.transform(map.displayProjection, map.projection); 

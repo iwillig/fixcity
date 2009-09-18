@@ -62,21 +62,8 @@
 
 	var style = new OpenLayers.Style({
                     pointRadius: "10",
-		    label: "${id}",
-                    fontColor: "#eee",
-                    fillColor: "#ff9e73",
-                    strokeColor: "#80503b",
-                    strokeWidth: 2
-		    
-                }, {
-                    context: {
-                        radius: function(feature) {
-                            return Math.min(feature.attributes.count, 7) + 5;
-		    }, 
-			id: function(feature) { 
-			return feature.attributes.id ; 
-		    } 
-                    }
+                    externalGraphic: "/site_media/img/rack.png"
+                  
                 });
 
 
