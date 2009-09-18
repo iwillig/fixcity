@@ -162,7 +162,7 @@
     <label for="email">Your Email</label>
     <div class="required">
      <input id="email" type="text" name="email"
-            value="{{request.POST.email|default:rack.email}}" title="This will not be shared, but we may wish to contact you." />
+            value="{{request.POST.email|default:user_email}}" title="This will not be shared, but we may wish to contact you." />
      {{ form.email.errors }}
      <input type="hidden" name="user" value="{{request.POST.user|default:rack.user}}" />
      {{ form.user.errors }}
