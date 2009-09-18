@@ -388,7 +388,7 @@ margin: 0;
 }
 
 #addrack-form input[type="text"],
-#addrack-form textarea, {
+#addrack-form textarea {
 background: #fff;
 display: block;
 width: 362px;
