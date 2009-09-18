@@ -215,7 +215,8 @@ def verify(request):
             # There's a gap here.
             page_numbers.append('...')
         page_numbers.append(paginator.num_pages)
-
+    if page_numbers == [1]:
+        page_numbers = []
     return render_to_response('verify.html', { 
             'rack_query': racks_query,
             'racks_page': racks_page,
