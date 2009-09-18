@@ -27,6 +27,8 @@ from django.contrib.auth.models import User
 #from reportlab.pdfgen import canvas 
 from geopy import geocoders
 
+from django.utils import simplejson as json
+
 cb_metric = 50.00 
 GKEY="ABQIAAAApLR-B_RMiEN2UBRoEWYPlhTmTlZhMVUZVOGFgSe6Omf4DswcaBSLmUPer5a9LF8EEWHK6IrMgA62bg"
 g = geocoders.Google(GKEY)
@@ -132,10 +134,12 @@ def get_communityboard(request):
     cb = CommunityBoard.objects.get(the_geom__contains=pnt)  
     return HttpResponse(cb.gid)
 
-def geocode(request): 
+def geocode(request):
     location = request.POST['geocode_text']
-    (place, point) = g.geocode(location)
-    return HttpResponse(place, point)
+    results = g.geocode(location, exactly_one=False)
+    response = HttpResponse(content_type='application/json')
+    response.write(json.dumps([x for x in results]))
+    return response
 
 def reverse_geocode(request): 
     lat = request.POST['lat'] 
