@@ -66,8 +66,11 @@ def user_context(request):
     }
 
 def index(request):
+    racks_query = Rack.objects.order_by('-date', '-id')[:10]
     return render_to_response('index.html',
-       {'request':request},
+       {'request':request,
+        'recent_racks': racks_query,
+        },
        context_instance=RequestContext(request, processors=[user_context])
                               ) 
 def about(request):
