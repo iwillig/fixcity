@@ -40,11 +40,8 @@
 	     projection: 'EPSG:4326',
 	     styleMap: new OpenLayers.StyleMap({
 		     "default": {
-			 pointRadius: "10",
-			 fillColor: "#30c09b",
-			 strokeColor: "#1e7861",
-			 strokeWidth: 2,
-			 strokeOpacity: 0.8 
+                    pointRadius: "15",
+                    externalGraphic: "/site_media/img/rack-new.png"
 		     }
 		 })
 	}
@@ -147,7 +144,7 @@
 
     <div id="photo-wrap">
       <label for="browse">Photo</label>
-      <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" />
+      <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" size="20" />
       <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
     </div><!-- /#photo-wrap -->
      

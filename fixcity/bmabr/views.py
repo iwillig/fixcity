@@ -399,3 +399,6 @@ def communityboard(request):
 
 def contact(request):
     return render_to_response('contact.html', {})
+
+def verification_kit(request):
+    return render_to_response('verification-kit.html', {})
