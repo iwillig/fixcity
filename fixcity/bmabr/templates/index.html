@@ -71,7 +71,6 @@
 		    projection: map.displayProjection,
                     strategies: [
                         new OpenLayers.Strategy.Fixed(),
-                        new OpenLayers.Strategy.Cluster()
                     ],		  
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: "./rack/requested.kml",
@@ -91,10 +90,6 @@
                 });
     
         map.addLayers([osm,racks]);
-        var extent = racks.getDataExtent();
-	console.log(extent); 
-
-    
         var bounds = new OpenLayers.Bounds(-8234063.45026893,4968638.33081464,-8230209.19302436,4973585.50729644); 
         map.zoomToExtent(bounds); 
         }
