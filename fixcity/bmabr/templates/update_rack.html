@@ -126,8 +126,8 @@
  	 }
 
         map.addLayers([osm]);
-	var bounds = new OpenLayers.Bounds(-8234063.45026893,4968638.33081464,-8230209.19302436,4973585.50729644); 
-        map.zoomToExtent(bounds); 
+        var extent = address_point.getDataExtent();
+        map.zoomToExtent(extent); 
         }
 
 </script>
@@ -171,11 +171,18 @@
       <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
     </div><!-- /#photo-wrap -->
      
+    {% if user.is_authenticated %}
     <label for="email">Your Email</label>
     <div class="required">
-     <input id="email" type="text" name="email"
-            value="{{request.POST.email|default:user_email}}" title="This will not be shared, but we may wish to contact you." />
+       <input id="email" type="text" name="email"
+            value="{{rack.email}}" title="This will not be shared, but we may wish to contact you." />
      {{ form.email.errors }}
+     {% else %} 
+    <div class="required">
+      <input id="email" type="hidden" name="email"
+            value="{{rack.email}}" title="This will not be shared, but we may wish to contact you." />
+  
+     {% endif %}    
      <input type="hidden" name="user" value="{{request.POST.user|default:rack.user}}" />
      {{ form.user.errors }}
     </div>

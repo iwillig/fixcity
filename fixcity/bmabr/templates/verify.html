@@ -6,7 +6,7 @@
 <script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
 
 <script defer="defer" type="text/javascript">
-    var map, layer, select, select_vector ; 
+    var map, layer, select, select_vector, racks ; 
 	 $(document).ready(function() {		
 		 loadMap(); 		 
 	     }); 
@@ -22,7 +22,7 @@
 					     20037508.34, 20037508.34)
 	   };
 
-        function loadMap(){
+    function loadMap(){
 	map = new OpenLayers.Map('verify-map',options);
 
 	var osm = new OpenLayers.Layer.WMS(
@@ -42,10 +42,10 @@
                   
                 });
 
-	var racks = new OpenLayers.Layer.Vector("Racks", {
+	racks = new OpenLayers.Layer.Vector("Racks", {
 		    projection: map.displayProjection,
                     strategies: [
-                        new OpenLayers.Strategy.Fixed()
+                        new OpenLayers.Strategy.BBOX()
                     ],		  
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: "./rack/requested.kml",
@@ -65,10 +65,15 @@
                 });
     
         map.addLayers([osm,racks]);
-    
-        var bounds = new OpenLayers.Bounds(-73.978431701660199, 40.6752319335938, -73.946891784667997, 40.723712921142599) ; 
-	bounds.transform(map.displayProjection, map.projection); 
-        map.zoomToExtent(bounds); 
+        var bounds = new OpenLayers.Bounds(-8234063.45026893, 4968638.33081464,-8230209.19302436, 4973585.50729644) ; 
+    	map.zoomToExtent(bounds);
+	var findBounds = function(e) {
+             extent = racks.getDataExtent(); 
+             map.zoomToExtent(extent);   
+	 };
+        racks.events.on({
+        "featuresadded": findBounds
+	});  
         }
 
 

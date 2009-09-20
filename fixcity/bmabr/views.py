@@ -24,7 +24,6 @@ from django.contrib import auth
 
 from django.contrib.auth.models import User 
 
-#from reportlab.pdfgen import canvas 
 from geopy import geocoders
 
 from django.utils import simplejson as json
