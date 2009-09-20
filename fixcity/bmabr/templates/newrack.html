@@ -99,6 +99,7 @@
 	               var location = new OpenLayers.Feature.Vector(geometry);
 	               address_point.addFeatures([location]);
 	               address_point.refresh();
+                       map.zoomToExtent(address_point.getDataExtent());
 		}, 'json');
 	  }
 

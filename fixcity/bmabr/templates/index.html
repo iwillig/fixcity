@@ -70,7 +70,8 @@
 	var racks = new OpenLayers.Layer.Vector("Racks", {
 		    projection: map.displayProjection,
                     strategies: [
-                        new OpenLayers.Strategy.Fixed()
+                        new OpenLayers.Strategy.Fixed(),
+                        new OpenLayers.Strategy.Cluster()
                     ],		  
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: "./rack/requested.kml",
@@ -90,7 +91,8 @@
                 });
     
         map.addLayers([osm,racks]);
-
+        var extent = racks.getDataExtent();
+	console.log(extent); 
 
     
         var bounds = new OpenLayers.Bounds(-8234063.45026893,4968638.33081464,-8230209.19302436,4973585.50729644); 
@@ -109,17 +111,6 @@
 
 {% block content %}
 <div id="home-main">
-  <div id="home-promo" class="selfclear"><p>Join us for <strong>Bike Rack Hunt!</strong>: a scavenger hunt for new bike rack spots in Brooklyn Community District 1 (Williamsburg/Greenpoint) and the first public trial of fixcity.org. Don't forget to BRING A CAMERA.</p>
-    <p><strong>Sunday September 20th, 2:30-6:30 PM</strong><br /><a href="http://thechangeyouwanttosee.com/"><strong>The Change You Want to See Gallery</strong></a> 84 Havemeyer St. (at Metropolitan)</p>
-    <p>Join our mailing list for more info.</p>
-    <form action="" method="post" target="fake-target" id="ss-form" name="ss-form">
-    	<input type="text" name="entry.0.single" value="" id="entry_0" title="email@example.org" />
-    	<input type="hidden" name="pageNumber" value="0" /> 
-    	<input type="hidden" name="backupCache" value="" />
-      <input type="submit" name="submit" value="Join" id="submit-form" />
-    </form>
-    <iframe src="#" id="fake-target" name="fake-target" style="width:0px; height:0px; border:0px;"></iframe>
-    </div>
   <div id="home-map"></div>
   <ul id="home-callouts" class="selfclear">
     <li id="spot-it"><h3><a href="/rack/new/">Spot It.</a></h3><p>Where do you need more bike racks? Think of the spots you know of, or hit the streets and look for appropriate rack locations.</p></li>
