@@ -82,10 +82,26 @@
 	    $.post("/reverse/", {lat:lat, lon:lon},
 		function(data){
 	            $("#address").val(data) ;
-		    $("#address").effect("highlight", {}, 3000);
 
 		});
 	  }
+	function getPointsFromAddress(address) {
+	    $.post("/geocode/", {geocode_text:address},
+	        function(results){
+                       // FIXME: handle multiple results.
+                       var lon = results[0][1][1];
+                       var lat = results[0][1][0];
+ 	               var location_wkt = "POINT("+ lon.toString() + " " + lat.toString() +")";
+	               $("#location").val(location_wkt);
+	               address_point.destroyFeatures();
+	               var geometry = new OpenLayers.Geometry.fromWKT(location_wkt);
+	               geometry.transform(map.displayProjection, map.projection) ;
+	               var location = new OpenLayers.Feature.Vector(geometry);
+	               address_point.addFeatures([location]);
+	               address_point.refresh();
+		}, 'json');
+	  }
+
        function getCommunityBoard(lonlat) {
 	   var lat = lonlat.lat ;
 	   var lon = lonlat.lon ;
@@ -95,13 +111,12 @@
 		      // Community board is not part of the v1.0 UI.
 		      // var location = "Brooklyn Community Board " + data ;
 		      // $("#cb_show").val(location); 
-		      // $("#cb_show").effect("highlight", {}, 3000);
 		  }); 
         } 
   
-	$("#geocode_button").click(function () {
-		var geocode_text = $('geocode_text').val() ;
-		$.post("/geocode/", {geocode_text: geocode_text});
+	$("#address").blur(function () {
+		var geocode_text = $("#address").val();
+		getPointsFromAddress(geocode_text);
 	    });
 
 
@@ -111,9 +126,11 @@
  	 }
 
         map.addLayers([osm]);
-	var center = new OpenLayers.LonLat(-73.954344,40.714063);
-        center.transform(map.displayProjection, map.projection)
-        map.setCenter(center,15)
+	//var center = new OpenLayers.LonLat(-73.954344,40.714063);
+        //center.transform(map.displayProjection, map.projection)
+        //map.setCenter(center,15)
+	var bounds = new OpenLayers.Bounds(-8234063.45026893,4968638.33081464,-8230209.19302436,4973585.50729644); 
+        map.zoomToExtent(bounds); 
 
         }
 
