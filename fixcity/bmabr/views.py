@@ -248,7 +248,7 @@ def _maybe_geocode(request):
         lat, lon = results[0][1]
         request.POST['location'] = u'POINT(%.9f %.9f)' % (lon, lat)
 
-def newrack_form(request): 
+def newrack_form(request):
     if request.method == 'POST':
         _maybe_geocode(request)
         form = RackForm(request.POST,request.FILES)
