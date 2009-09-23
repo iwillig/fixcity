@@ -37,6 +37,11 @@ get started:
   ./manage.py syncdb
 
 
+You will also want to use the /admin/sites/site UI to change the
+domain name and display name of the website. These are used eg. in
+account confirmation email sent to users who register.
+
+
 Deployment
 ==========
 
