@@ -93,6 +93,7 @@
                        var lat = results[0][1][0];
  	               var location_wkt = "POINT("+ lon.toString() + " " + lat.toString() +")";
 	               $("#location").val(location_wkt);
+  	             $("#geocoded").val(1);
 	               address_point.destroyFeatures();
 	               var geometry = new OpenLayers.Geometry.fromWKT(location_wkt);
 	               geometry.transform(map.displayProjection, map.projection) ;
@@ -116,8 +117,7 @@
         } 
   
 	$("#address").blur(function () {
-		var geocode_text = $("#address").val();
-		getPointsFromAddress(geocode_text);
+		getPointsFromAddress($("#address").val());
 	    });
 
 
@@ -179,6 +179,8 @@
     <!-- Displayed community board name -->
     <!-- <input type="text" id="cb_show" value="1" /> -->
     <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
+    
+    <input type="hidden" id="geocoded" name="geocoded" value="0" />
 
     <input type="submit" value="Add this rack!" />
 
