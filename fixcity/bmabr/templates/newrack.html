@@ -145,17 +145,17 @@
 
 {% block content %}
 <form id="addrack-form" action="." method="POST" enctype="multipart/form-data">
-    <label for="title">Business, Agency, or Public Space</label>
-    <div class="required"><input id="title" name="title" type="text"
-                                 title="Assume we want placeholder text here"
-                                 value="{{request.POST.title}}"
-                           />{{ form.title.errors }}</div>
     <label for="address">Street Address</label>
     <div class="required"><input id="address" name="address" type="text"
                                  title="Enter an address or click a point on the map"
                                  value="{{request.POST.address}}" />
     <input type="hidden" id="location" name="location" value="{{request.POST.location}}" />
         {{ form.address.errors }} {{ form.location.errors }} </div>
+    <label for="title">Business, Agency, or Public Space</label>
+    <div class="required"><input id="title" name="title" type="text"
+                                 title="Business, Agency, or Public Space"
+                                 value="{{request.POST.title}}"
+                           />{{ form.title.errors }}</div>
     <label for="description">Description</label>
       <textarea id="description" name="description"
                   title="Please include any useful details and available contact information for property/business owner">{{ request.POST.description }}</textarea>
