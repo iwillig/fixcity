@@ -213,6 +213,7 @@
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
     expandOnce('#photo-wrap', 'Add Photo');
     $('textarea#description').maxLength(300);
+    $('input#address, textarea#description, input#email').infoSuffixify();
   });
 //]]>
 </script>

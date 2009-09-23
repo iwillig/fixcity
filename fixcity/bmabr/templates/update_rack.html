@@ -178,7 +178,7 @@
             value="{{rack.email}}" title="This will not be shared, but we may wish to contact you." />
      {{ form.email.errors }}
      {% else %} 
-    <div class="required">
+    <div>
       <input id="email" type="hidden" name="email"
             value="{{rack.email}}" title="This will not be shared, but we may wish to contact you." />
   
@@ -217,6 +217,7 @@
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
     expandOnce('#photo-wrap', '{% if rack.photo %}Replace{% else %}Add{% endif %} Photo');
     $('textarea#description').maxLength(300);
+    $('input#address, textarea#description').infoSuffixify();
   });
 //]]>
 </script>
