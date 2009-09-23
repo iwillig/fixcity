@@ -115,8 +115,15 @@
 		      // var location = "Brooklyn Community Board " + data ;
 		      // $("#cb_show").val(location); 
 		  }); 
-        } 
-  
+        }
+        
+  // For users with JS, we only want to be forced to check on the back end if there's an unprocessed change
+  $("#geocoded").val(1);
+
+  $("#address").focus(function () {
+  	$("#geocoded").val(0);
+      });
+
 	$("#address").blur(function () {
 		getPointsFromAddress($("#address").val());
 	    });
