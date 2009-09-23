@@ -1,3 +1,4 @@
+from django.conf.urls.defaults import include
 from django.conf.urls.defaults import patterns
 from django.conf import settings
 
@@ -13,8 +14,9 @@ urlpatterns = patterns('',
     (r'^verification-kit/$', 'fixcity.bmabr.views.verification_kit'),
 
     # Accounts URLs
-    (r'^accounts/login/$','fixcity.bmabr.views.login'),
-    (r'^accounts/logout/$','fixcity.bmabr.views.logout'),
+    #(r'^accounts/login/$','fixcity.bmabr.views.login'),
+    #(r'^accounts/logout/$','fixcity.bmabr.views.logout'),
+    (r'^accounts/', include('registration.urls')),
     (r'^profile/$', 'fixcity.bmabr.views.profile'),
 
     

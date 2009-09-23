@@ -78,6 +78,11 @@ TEMPLATE_DIRS = (
     os.path.join(HERE, 'templates'),
 )
 
+
+# This should be the number of days an activation key will remain
+# valid after an account is registered.
+ACCOUNT_ACTIVATION_DAYS = 14
+
 INSTALLED_APPS = (
     'sorl.thumbnail',
     'django.contrib.auth',
@@ -86,6 +91,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.gis',
+    'registration',
     'fixcity.bmabr',
 )
 
