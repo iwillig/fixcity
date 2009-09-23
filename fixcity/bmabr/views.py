@@ -412,7 +412,7 @@ class QuotaUploadHandler(FileUploadHandler):
     informative. We can maybe make it nice later if needed.
     """
 
-    QUOTA =  1 * 1024 * 1024  # 1 MB.  Should be a setting in settings.py?
+    QUOTA =  5 * 1024 * 1024  # Should be a setting in settings.py?
     
     def __init__(self, request=None):
         super(QuotaUploadHandler, self).__init__(request)
