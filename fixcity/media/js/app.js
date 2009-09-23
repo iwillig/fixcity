@@ -3,13 +3,20 @@ function expandOnce(selector, text) {
   $('<span class="expandonce">' + text +'</span>').prependTo(target).click(function() {$(this).siblings().removeClass("noshow").end().remove();}).siblings().addClass("noshow");
 }
 
+jQuery.fn.infoSuffixify = function() { //chainable
+	return this.each(function() {
+		var obj = $(this);
+		$('<img src="/site_media/img/info.png" alt="More information about this field" title="' + obj.attr('title') + '" />').appendTo('label[for="' + obj.attr('id') + '"]');
+	});
+}
+
+// Taken from http://www.andrewpeace.com/textarea-maxlength.html
 jQuery.fn.truncate = function(len)
 {
   this.val(this.val().substring(0,len));
   return false;
 }
 
-// Taken from http://www.andrewpeace.com/textarea-maxlength.html
 jQuery.fn.maxLength = function(len)
 {
   var maxLengthKeyPress = new Array();

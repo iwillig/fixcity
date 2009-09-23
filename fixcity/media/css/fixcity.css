@@ -397,6 +397,11 @@ margin: 1em 0 0;
 margin: 0;
 }
 
+#addrack-form label img {
+vertical-align: middle;
+margin: 0 0 0 0.5em;
+}
+
 #addrack-form input[type="text"],
 #addrack-form textarea {
 background: #fff;
