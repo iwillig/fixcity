@@ -6,6 +6,7 @@ from django.contrib import auth
 from django.contrib.auth.forms import UserCreationForm
 from django.template import Context
 from django.core import serializers
+from django.core.files.uploadhandler import FileUploadHandler, StopUpload
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import GEOSGeometry, fromstr
@@ -401,3 +402,28 @@ def contact(request):
 
 def verification_kit(request):
     return render_to_response('verification-kit.html', {})
+
+class QuotaUploadHandler(FileUploadHandler):
+    """
+    This upload handler terminates the connection if a file larger than
+    the specified quota is uploaded.
+
+    The browser typically shows an error that's not very
+    informative. We can maybe make it nice later if needed.
+    """
+
+    QUOTA =  1 * 1024 * 1024  # 1 MB.  Should be a setting in settings.py?
+    
+    def __init__(self, request=None):
+        super(QuotaUploadHandler, self).__init__(request)
+        self.total_upload = 0
+        
+    def receive_data_chunk(self, raw_data, start):
+        self.total_upload += len(raw_data)
+        if self.total_upload >= self.QUOTA:
+            raise StopUpload(connection_reset=True)
+        # Delegate to the next handler.
+        return raw_data
+            
+    def file_complete(self, file_size):
+        return None

@@ -83,6 +83,13 @@ TEMPLATE_DIRS = (
 # valid after an account is registered.
 ACCOUNT_ACTIVATION_DAYS = 14
 
+# Limit size of uploads, then fall back to standard upload behavior.
+FILE_UPLOAD_HANDLERS = (
+    "fixcity.bmabr.views.QuotaUploadHandler",
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+    )
+
 INSTALLED_APPS = (
     'sorl.thumbnail',
     'django.contrib.auth',
