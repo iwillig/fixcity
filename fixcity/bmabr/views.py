@@ -409,7 +409,9 @@ class QuotaUploadHandler(FileUploadHandler):
     the specified quota is uploaded.
 
     The browser typically shows an error that's not very
-    informative. We can maybe make it nice later if needed.
+    informative. We can maybe make it nice later if needed.  Maybe
+    just raise a more generic exception and give some attention to our
+    generic error page?
     """
 
     QUOTA =  5 * 1024 * 1024  # Should be a setting in settings.py?
