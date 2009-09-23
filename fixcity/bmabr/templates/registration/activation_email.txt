@@ -1,0 +1,10 @@
+You recently registered for an account at FixCity.org.
+To activate your registration, you must follow this link:
+
+ http://fixcity.org/accounts/activate/{{ activation_key }}
+
+If you do not activate within {{ expiration_days }} days, this
+activation link will expire and you will not be able to use your
+account.
+
+Thanks!
