@@ -238,10 +238,21 @@ def verify_by_communityboard(request,cb_id):
             },
             context_instance=RequestContext(request, processors=[user_context]))
 
+def _maybe_geocode(request):
+    """Handle an edge case where the address is the last thing the
+    user types before submitting, so the client-side geocoding
+    function never gets time to return."""
+    if request.POST['geocoded'] != u'1':
+        results = list(g.geocode(request.POST['address'], exactly_one=False))
+        # XXX handle multiple (or zero) results.
+        lat, lon = results[0][1]
+        request.POST['location'] = u'POINT(%.9f %.9f)' % (lon, lat)
+
 def newrack_form(request): 
     if request.method == 'POST':
+        _maybe_geocode(request)
         form = RackForm(request.POST,request.FILES)
-        if form.is_valid(): 
+        if form.is_valid():
             new_rack = form.save()
             # create steps status for new rack suggestion
             size_up = Steps(step_rack=new_rack,name="size-up",status="todo")
@@ -301,6 +312,7 @@ def support(request, rack_id):
 def rack_edit(request,rack_id):
     rack = Rack.objects.get(id=rack_id)
     if request.method == 'POST':
+        _maybe_geocode(request)
         form = RackForm(request.POST, request.FILES, instance=rack)
         if form.is_valid():
             form.save()

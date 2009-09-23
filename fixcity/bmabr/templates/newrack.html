@@ -84,16 +84,17 @@
 	            $("#address").val(data) ;
 
 		});
+	    $("#geocoded").val(1);
 	  }
 	function getPointsFromAddress(address) {
 	    $.post("/geocode/", {geocode_text:address},
 	        function(results){
-                       // FIXME: handle multiple results.
+                       // FIXME: handle multiple (or zero) results.
                        var lon = results[0][1][1];
                        var lat = results[0][1][0];
  	               var location_wkt = "POINT("+ lon.toString() + " " + lat.toString() +")";
 	               $("#location").val(location_wkt);
-  	             $("#geocoded").val(1);
+	               $("#geocoded").val(1);
 	               address_point.destroyFeatures();
 	               var geometry = new OpenLayers.Geometry.fromWKT(location_wkt);
 	               geometry.transform(map.displayProjection, map.projection) ;
