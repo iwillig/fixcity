@@ -20,6 +20,7 @@ from fixcity.bmabr.models import StatementOfSupport
 from geopy import geocoders
 
 from django.utils import simplejson as json
+from django.conf import settings
 
 cb_metric = 50.00 
 GKEY="ABQIAAAApLR-B_RMiEN2UBRoEWYPlhTmTlZhMVUZVOGFgSe6Omf4DswcaBSLmUPer5a9LF8EEWHK6IrMgA62bg"
@@ -406,6 +407,35 @@ def contact(request):
 def verification_kit(request):
     return render_to_response('verification-kit.html', {})
 
+def activate(request, activation_key,
+             template_name='registration/activate.html',
+             extra_context=None):
+    # Activate, then add this account to any Racks that were created
+    # anonymously with this user's email address.  I would prefer to
+    # simply wrap the registration.views.activate function from
+    # django-registration, but I can't really do that because I can't
+    # get at the activated user - it just returns rendered HTML. So,
+    # I'm copy-pasting its code.
+    from registration.models import RegistrationProfile
+    activation_key = activation_key.lower() # Normalize before trying anything with it.
+    account = RegistrationProfile.objects.activate_user(activation_key)
+    if extra_context is None:
+        extra_context = {}
+    context = RequestContext(request)
+    for key, value in extra_context.items():
+        context[key] = callable(value) and value() or value
+    # -- Begin patch to modify anonymous racks --
+    if account:
+        for rack in Rack.objects.filter(email=account.email, user=u''):
+            rack.user = account.username
+            rack.save()
+    # -- End patch --
+    return render_to_response(template_name,
+                              { 'account': account,
+                                'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS },
+                              context_instance=context)
+
+
 class QuotaUploadHandler(FileUploadHandler):
     """
     This upload handler terminates the connection if a file larger than
@@ -432,3 +462,4 @@ class QuotaUploadHandler(FileUploadHandler):
             
     def file_complete(self, file_size):
         return None
+

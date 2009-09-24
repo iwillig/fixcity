@@ -6,20 +6,22 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-
+urlpatterns = patterns(
+    '',
     (r'^$', 'fixcity.bmabr.views.index'),
     (r'^about/$', 'fixcity.bmabr.views.about'), 
     (r'^contact/$', 'fixcity.bmabr.views.contact'),
     (r'^verification-kit/$', 'fixcity.bmabr.views.verification_kit'),
 
-    # Accounts URLs
-    #(r'^accounts/login/$','fixcity.bmabr.views.login'),
-    #(r'^accounts/logout/$','fixcity.bmabr.views.logout'),
+    # Account URL overrides.
+    # Note these go first because django just iterates over these patterns and uses
+    # the FIRST match.
+    (r'^accounts/activate/(?P<activation_key>\w+)/$', 'fixcity.bmabr.views.activate'),
+    # Accounts URLs - anything for django-registration that we didn't override.
     (r'^accounts/', include('registration.urls')),
-    (r'^profile/$', 'fixcity.bmabr.views.profile'),
-
     
+
+    (r'^profile/$', 'fixcity.bmabr.views.profile'),
 
     (r'^geocode/$', 'fixcity.bmabr.views.geocode'),
     (r'^reverse/$', 'fixcity.bmabr.views.reverse_geocode'),
