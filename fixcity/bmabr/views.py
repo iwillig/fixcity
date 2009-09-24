@@ -1,29 +1,21 @@
 # Create your views here.
-from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
-from django.shortcuts import get_object_or_404, render_to_response
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import auth
-from django.contrib.auth.forms import UserCreationForm
-from django.template import Context
 from django.core import serializers
 from django.core.files.uploadhandler import FileUploadHandler, StopUpload
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.gis.geos import GEOSGeometry, fromstr
+from django.contrib.gis.geos import fromstr
 from django.contrib.gis.shortcuts import render_to_kml
-from django.contrib.gis.geos import Point
-from django.contrib.gis.measure import D
 
 from fixcity.bmabr.models import Rack, Comment, Steps
 from fixcity.bmabr.models import Neighborhoods
 from fixcity.bmabr.models import CommunityBoard
 from fixcity.bmabr.models import RackForm, CommentForm, SupportForm
 from fixcity.bmabr.models import StatementOfSupport
-
-from django.contrib.gis.geos import fromstr
-from django.contrib import auth
-
-from django.contrib.auth.models import User 
 
 from geopy import geocoders
 
@@ -180,7 +172,6 @@ def submit(request):
 
 def verify(request): 
     racks_query = Rack.objects.order_by('-date', '-id')
-    from django.core.paginator import Paginator, InvalidPage, EmptyPage
     paginator = Paginator(racks_query, 5)
 
     try:
