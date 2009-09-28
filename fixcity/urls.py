@@ -16,6 +16,8 @@ urlpatterns = patterns(
     # Account URL overrides.
     # Note these go first because django just iterates over these patterns and uses
     # the FIRST match.
+    # XXX I think the auth application provides some generic passwd reset views
+    # we could use? see http://www.stonemind.net/blog/2007/04/13/django-registration-for-newbies/
     (r'^accounts/activate/(?P<activation_key>\w+)/$', 'fixcity.bmabr.views.activate'),
     # Accounts URLs - anything for django-registration that we didn't override.
     (r'^accounts/', include('registration.urls')),
