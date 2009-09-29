@@ -14,7 +14,7 @@
 
      Password again: <input type="password" name="new_password2" />
 
-     <input type="submit" />
+     <input type="submit" value="set password and log in" />
 
      {{ form.errors }}
   </form>
@@ -31,20 +31,12 @@
 
   <p>Cound not activate your account!</p>
 
-  <p>Things to check:
-
-  <ul>
-    <li>Make sure you went to exactly the right URL</li>
-
-    <li>Make sure  your account was not registered more than
-  {{expiration_days}} days ago. </li>
-
-    <li>Or perhaps you already activated this account?
-      <!-- How can we detect that?? -->
-    </li>
-  </ul>
+  <p>Reason: {{key_status}}
 
  {% endif %}
 {% endif %}
+
+{{ form.errors }}
+
 </body>
 </html>

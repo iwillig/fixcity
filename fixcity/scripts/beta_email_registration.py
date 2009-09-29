@@ -14,15 +14,14 @@ $ ./manage.py shell
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import Site
+from django.core.mail import send_mail
 from django.utils.http import int_to_base36
 from fixcity.bmabr.models import Rack
 from registration.forms import RegistrationForm
 from registration.models import RegistrationProfile
 
 
-register_email_prefix = """To: %(email)s
-Subject: Thanks for taking part in the %(domain)s beta!
-
+register_email_prefix = """
 Hi %(email)s, thanks for taking part in the %(domain)s beta test.
 We'd like to invite you to create an account on %(domain)s.
 
@@ -58,11 +57,13 @@ http://%(domain)s/accounts/register?email=%(email)s
 """ + register_email_postfix
 
 
-def send_email(template, **kw):
-    # XXX ACTUALLY SEND MAIL HERE
+
+def send_email(template, email_func=send_mail, **kw):
+    subject = 'Thanks for taking part in the %(domain)s beta!' % kw
     body = template % kw
-    print "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-    print body
+    email_func(subject, body, 'from@example.com', ['%(email)s' % kw],
+               fail_silently=False)
+    print "Registration invite sent to %(email)s" % kw
 
 def randpass(length=16):
     import random
@@ -74,7 +75,22 @@ def randpass(length=16):
     return output
 
 
-def register_all():    
+def register_all():
+    # Monkeypatch to temporarily prevent other code from sending mail.
+    import django.core.mail
+    orig_send_mail = django.core.mail.send_mail
+    def no_send_mail(*args, **kw):
+        pass
+    # Make sure *our* code can send mail.
+    send_email.func_defaults = (orig_send_mail,)
+    try:
+        django.core.mail.send_mail = no_send_mail
+        _register_all()
+    finally:
+        # Un-monkey.
+        django.core.mail.send_mail = orig_send_mail
+
+def _register_all():    
     anon_racks = Rack.objects.filter(user=u'')
     addrs = set([rack.email.strip() for rack in anon_racks])
     names_seen = set()

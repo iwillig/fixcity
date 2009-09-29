@@ -7,6 +7,13 @@ from django.core import serializers
 from django.core.files.uploadhandler import FileUploadHandler, StopUpload
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django.utils.http import base36_to_int
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import fromstr
 from django.contrib.gis.shortcuts import render_to_kml
@@ -417,20 +424,12 @@ def activate(request, activation_key,
     # get at the activated user - it just returns rendered HTML. So,
     # I'm copy-pasting its code.
 
-    # Before activation: Make sure we set a password.
-    # Did we get a reset token?
-    from django.contrib.auth.tokens import default_token_generator as token_generator
-    from django.contrib.auth.forms import SetPasswordForm
-    from django.utils.http import base36_to_int
-    from django.http import Http404
-    from django.shortcuts import get_object_or_404
-    from django.contrib.auth.models import User
-
     context_instance = RequestContext(request)
 
-    # -- Begin copy-pasted code from django-registration.
     from registration.models import RegistrationProfile
+    # -- Begin copy-pasted code from django-registration.
     activation_key = activation_key.lower() # Normalize before trying anything with it.
+    
     account = RegistrationProfile.objects.activate_user(activation_key)
     if extra_context is None:
         extra_context = {}
@@ -438,12 +437,36 @@ def activate(request, activation_key,
         context_instance[key] = callable(value) and value() or value
     # -- End copy-pasted code from django-registration.
 
+    # Let the user know if activation failed, and why.
+    context_instance['key_status'] = 'Activation failed. Double-check your URL'
+    if account:
+        context_instance['key_status'] = 'Activated'
+    else:
+        from registration.models import SHA1_RE
+        if not SHA1_RE.search(activation_key):
+            context_instance['key_status'] = ('Malformed activation key. '
+                                              'Make sure you got the URL right!')
+        else:
+            reg_profile = RegistrationProfile.objects.filter(
+                activation_key=activation_key)
+            if reg_profile: 
+                reg_profile = reg_profile[0]
+                if reg_profile.activation_key_expired():
+                    context_instance['key_status'] = 'Activation key expired'
+            else:
+                # Unfortunately it's impossible to be sure if the user already
+                # activated, because activation causes the key to be reset.
+                # We could do it if we knew who the user was at this point,
+                # but we don't.
+                context_instance['key_status'] = ('No such activation key.'
+                                                  ' Maybe you already activated?')
+
     # Now see if we need to reset the password.
     token = request.REQUEST.get('token')
     context_instance['valid_reset_token'] = False
     if token:
         uidb36 = request.REQUEST['uidb36']
-        # Copy-paste-hack code from django.contrib.auth.views, yay.
+        # Copy-paste-and-hack code from django.contrib.auth.views, yay.
         try:
             uid_int = base36_to_int(uidb36)
         except ValueError:
@@ -463,8 +486,6 @@ def activate(request, activation_key,
                                         password=request.POST['new_password1'])
                     if user:
                         login(request, user)
-                        # Don't show the reset form on the next view.
-                        context_instance['valid_reset_token'] = False
                         return HttpResponseRedirect('/')
 
     # Post-activation: Modify anonymous racks.
