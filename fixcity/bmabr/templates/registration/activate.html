@@ -1,13 +1,33 @@
 <html>
 <body>
 
-{% if account %}
+{% if valid_reset_token %}
+   <h1>You need to choose a password before you can use your
+       account.</h1>
+
+    <form action="/accounts/activate/{{activation_key}}/" method="POST">
+
+     <input type="hidden" name="token" value="{{token}}" />
+     <input type="hidden" name="uidb36" value="{{uidb36}}" />
+
+     Password: <input type="password" name="new_password1" />
+
+     Password again: <input type="password" name="new_password2" />
+
+     <input type="submit" />
+
+     {{ form.errors }}
+  </form>
+{% else %}
+
+ {% if account %}
   <h1>Your account has been activated.</h1>
+
 
   <p>Now you can <a href="/accounts/login/?name={{account}}&next=/">log in</a>.
   </p>
-
-{% else %}
+ 
+ {% else %}
 
   <p>Cound not activate your account!</p>
 
@@ -24,7 +44,7 @@
     </li>
   </ul>
 
+ {% endif %}
 {% endif %}
-
 </body>
 </html>

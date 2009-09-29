@@ -416,24 +416,68 @@ def activate(request, activation_key,
     # django-registration, but I can't really do that because I can't
     # get at the activated user - it just returns rendered HTML. So,
     # I'm copy-pasting its code.
+
+    # Before activation: Make sure we set a password.
+    # Did we get a reset token?
+    from django.contrib.auth.tokens import default_token_generator as token_generator
+    from django.contrib.auth.forms import SetPasswordForm
+    from django.utils.http import base36_to_int
+    from django.http import Http404
+    from django.shortcuts import get_object_or_404
+    from django.contrib.auth.models import User
+
+    context_instance = RequestContext(request)
+
+    # -- Begin copy-pasted code from django-registration.
     from registration.models import RegistrationProfile
     activation_key = activation_key.lower() # Normalize before trying anything with it.
     account = RegistrationProfile.objects.activate_user(activation_key)
     if extra_context is None:
         extra_context = {}
-    context = RequestContext(request)
     for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
-    # -- Begin patch to modify anonymous racks --
+        context_instance[key] = callable(value) and value() or value
+    # -- End copy-pasted code from django-registration.
+
+    # Now see if we need to reset the password.
+    token = request.REQUEST.get('token')
+    context_instance['valid_reset_token'] = False
+    if token:
+        uidb36 = request.REQUEST['uidb36']
+        # Copy-paste-hack code from django.contrib.auth.views, yay.
+        try:
+            uid_int = base36_to_int(uidb36)
+        except ValueError:
+            raise Http404
+        context_instance['token'] = token
+        context_instance['uidb36'] = uidb36
+        user = get_object_or_404(User, id=uid_int)
+        if token_generator.check_token(user, token):
+            context_instance['valid_reset_token'] = True
+            if request.method == 'POST':
+                form = SetPasswordForm(user, request.POST)
+                if form.is_valid():
+                    form.save()
+                    flash('Password changed.', request)
+                    from django.contrib.auth import login, authenticate
+                    user = authenticate(username=user.username,
+                                        password=request.POST['new_password1'])
+                    if user:
+                        login(request, user)
+                        # Don't show the reset form on the next view.
+                        context_instance['valid_reset_token'] = False
+                        return HttpResponseRedirect('/')
+
+    # Post-activation: Modify anonymous racks.
+    context_instance['activation_key'] = activation_key
     if account:
         for rack in Rack.objects.filter(email=account.email, user=u''):
             rack.user = account.username
             rack.save()
-    # -- End patch --
+
     return render_to_response(template_name,
                               { 'account': account,
                                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS },
-                              context_instance=context)
+                              context_instance=context_instance)
 
 
 class QuotaUploadHandler(FileUploadHandler):
