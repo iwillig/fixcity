@@ -1,10 +1,13 @@
-<html>
-<body>
-<h1>Registration almost complete</h1>.
+{% extends "base.html" %}
+{% block title %} fixcity.org :: Registration (almost) complete {% endblock %}
 
-<p>You have been sent an email with a link to activate your
-  account. Please check your email and follow the link, then you will
-  be all set!
-</p>
-</body>
-</html>
+{% block extra_header %}
+{% endblock %}
+{% block menu %}
+{% endblock %}
+
+{% block lede %}<h1>Registration (almost) complete</h1>{% endblock %}
+
+{% block content %}
+<p>You have been sent an email with a link to activate your account. Please check your email and follow the link, then you will be all set!</p>
+{% endblock %}

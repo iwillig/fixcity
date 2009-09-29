@@ -387,13 +387,13 @@ border: 1px solid #8fb9cc;
 
 /* - */
 
-#addrack-form {
+#content form {
 width: 380px;
 overflow: hidden;
 float: left;
 }
 
-#addrack-form label {
+#content form label {
 background: #fff;
 display: block;
 font-size: 1.2em;
@@ -401,17 +401,18 @@ font-weight: bold;
 margin: 1em 0 0;
 }
 
-#addrack-form label:first-child {
+#content form label:first-child {
 margin: 0;
 }
 
-#addrack-form label img {
+#content form label img {
 vertical-align: middle;
 margin: 0 0 0 0.5em;
 }
 
-#addrack-form input[type="text"],
-#addrack-form textarea {
+#content form input[type="text"],
+#content form input[type="password"],
+#content form textarea {
 background: #fff;
 display: block;
 width: 362px;
@@ -420,14 +421,14 @@ padding: 8px;
 font-family: helvetica,verdana,sans-serif;
 }
 
-#addrack-form div.required {
+#content form div.required {
 padding: 14px 0 0;
 margin: -14px 0 0;
 background: url(/site_media/img/required-tab.png) 100% 0 no-repeat;
 }
 
-#addrack-form input[type="button"],
-#addrack-form input[type="submit"],
+#content form input[type="button"],
+#content form input[type="submit"],
 .fakebutton {
 background: #00b0f1;
 border: 0 none transparent;
@@ -435,38 +436,16 @@ color: #fff;
 padding: 0.5em;
 }
 
-#addrack-form #email {
+#content form input.standalone {
+margin: 1em 0;
+}
+
+#content form #email {
 margin: 0 0 1em;
 }
 
 .overlabel {
 color: #5c8699;
-}
-
-#addrack-form .checkboxes {
-margin: 0 0 0 -0.3em;
-}
-
-#addrack-form .checkboxes label {
-font-size: 0.9em;
-font-weight: normal;
-display: inline;
-margin: 0 0 0 0.3em;
-}
-
-#addrack-form .checkboxes span {
-float: left;
-padding: 0.3em;
-border: 1px solid #8fb9cc;
-margin: 0.3em;
-}
-
-#addrack-form .checkboxes span:hover,
-#addrack-form .checkboxes span:hover label,
-#addrack-form .checkboxes span.checked,
-#addrack-form .checkboxes span.checked label {
-background: #5c8699;
-color: #fff;
 }
 
 #photo-wrap {

@@ -1,42 +1,40 @@
-<html>
-<body>
+{% extends "base.html" %}
+{% block title %} fixcity.org :: {% if valid_reset_token %}Choose Password{% else %}Activate{% endif %} {% endblock %}
 
+{% block extra_header %}
+{% endblock %}
+{% block menu %}
+{% endblock %}
+
+{% block lede %}<h1>{% if valid_reset_token %}Choose Password{% else %}Activate{% endif %}</h1>{% endblock %}
+
+{% block content %}
 {% if valid_reset_token %}
-   <h1>You need to choose a password before you can use your
-       account.</h1>
+   <h2>You need to choose a password before you can use your account.</h2>
 
     <form action="/accounts/activate/{{activation_key}}/" method="POST">
-
      <input type="hidden" name="token" value="{{token}}" />
      <input type="hidden" name="uidb36" value="{{uidb36}}" />
-
-     Password: <input type="password" name="new_password1" />
-
-     Password again: <input type="password" name="new_password2" />
-
-     <input type="submit" value="set password and log in" />
-
+     <label for="new_password1">Password</label>
+     <div class="required"><input type="password" name="new_password1" id="new_password1" /></div> 
+     <label for="new_password2">Password (again)</label>
+     <div class="required"><input type="password" name="new_password2" id="new_password2" /></div>
+     <input class="standalone" type="submit" value="Set Password and Log In" />
      {{ form.errors }}
   </form>
 {% else %}
 
  {% if account %}
-  <h1>Your account has been activated.</h1>
-
-
-  <p>Now you can <a href="/accounts/login/?name={{account}}&next=/">log in</a>.
-  </p>
+  <h2>Your account has been activated.</h2>
+  <p>Now you can <a href="/accounts/login/?name={{account}}&next=/">log in</a>.</p>
  
  {% else %}
 
   <p>Cound not activate your account!</p>
-
   <p>Reason: {{key_status}}
 
  {% endif %}
 {% endif %}
 
 {{ form.errors }}
-
-</body>
-</html>
+{% endblock %}

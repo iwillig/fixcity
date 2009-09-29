@@ -1,19 +1,25 @@
-<html>
-<body>
-<h1>Register</h1>
+{% extends "base.html" %}
+{% block title %} fixcity. :: Register {% endblock %}
+
+{% block extra_header %}
+{% endblock %}
+{% block menu %}
+{% endblock %}
+
+{% block lede %}<h1>Register</h1>{% endblock %}
+
+{% block content %}
 <form action="/accounts/register/" method="POST">
-
-  Username: <input type="text" name="username" />
-
-  Email: <input type="text" name="email" value="{{request.REQUEST.email}}" />
-
-  Password: <input type="password" name="password1" />
-
-  Password again: <input type="password" name="password2" />
-
-  <input type="submit" />
-
+  <label for="username">Username</label>
+  <div class="required"><input type="text" name="username" id="username" /></div>
+  <label for="username">Email</label>
+  <div class="required"><input type="text" name="email" value="{{request.REQUEST.email}}" /></div>
+  <label for="password1">Password</label>
+  <div class="required"><input type="password" name="password1" id="password1" /></div> 
+  <label for="password2">Password (again)</label>
+  <div class="required"><input type="password" name="password2" id="password2" /></div>
+  <input class="standalone" type="submit" value="Register" />
+  <p>Right now membership is limited to Brooklyn TA. Please contact us for more information </p>
   {{ form.errors }}
 </form>
-</body>
-</html>
+{% endblock %}

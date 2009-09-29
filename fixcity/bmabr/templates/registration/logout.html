@@ -1,8 +1,15 @@
-<html>
-<body>
+{% extends "base.html" %}
+{% block title %} fixcity.org :: Logged Out {% endblock %}
 
-<p>You have been logged out.</p>
+{% block extra_header %}
+{% endblock %}
+{% block menu %}
+{% endblock %}
+
+{% block lede %}<h1>You have been logged out</h1>{% endblock %}
+
+{% block content %}
 <p><a href="/accounts/login/">Log in again</a></p>
+<!-- Really, shouldn't we handle this by setting a flash message and redirecting folks to the homepage? -->
+{% endblock %}
 
-</body>
-</html>
