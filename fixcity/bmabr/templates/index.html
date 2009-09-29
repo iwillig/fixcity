@@ -109,8 +109,8 @@
   <div id="home-map"></div>
   <ul id="home-callouts" class="selfclear">
     <li id="spot-it"><h3><a href="/rack/new/">Spot It.</a></h3><p>Where do you need more bike racks? Think of the spots you know of, or hit the streets and look for appropriate rack locations.</p></li>
-    <li id="map-it"><h3><a href="/rack/new/">Map It.</a></h3><p>Put your rack suggestion on the map! Find a suitable location and add a <a href="/rack/new/">New Rack</a>.</p></li>
-    <li id="check-it"><h3><a href="/verify/">Check It.</a></h3><p>Verify suggested rack locations!Check if spots meet <a href="/site_media/resources/rack_diagram.pdf">Location Guidelines</a> and community needs to see racks on the ground sooner.</p></li>
+    <li id="map-it"><h3><a href="/rack/new/">Map It.</a></h3><p>Suggest a <a href="/rack/new/">New Rack</a> to put your spot on the map! Upload photos of appropriate locations.</p></li>
+    <li id="check-it"><h3><a href="/verify/">Check It.</a></h3><p>Verify suggested rack locations! Check if spots meet <a href="/site_media/resources/rack_diagram.pdf">Location Guidelines</a> and community needs to see racks on the ground sooner.</p></li>
   </ul>
   <a id="learnmore-foot" href="/about">Learn more about fixcity.org Bike Racks...</a>
 </div><!-- /#home-main -->
@@ -130,7 +130,6 @@
 <script type="text/javascript">
 //<![CDATA[
   $(document).ready(function() {
-    $('input#entry_0').inlineInfoTextify();
     $('#ss-form').submit(function() {
       $('#ss-form').attr('action', 'http://spreadsheets.google.com/formResponse?formkey=dGFZSVNvWURoQTR4dnptU1d4YUgydlE6MA..').hide().after('<strong id="ss-form-confirmation">Thank you for joining!</strong>');
       $('#ss-form-confirmation').fadeIn("slow");

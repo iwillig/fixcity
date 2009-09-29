@@ -138,6 +138,14 @@ float: left;
 margin: 0 15px 0 0;
 }
 
+#nav li:first-child {
+margin: 0 25px 0 0;
+}
+
+#nav li:last-child {
+margin: 0;
+}
+
 #nav li a {
 display: block;
 overflow: hidden;
