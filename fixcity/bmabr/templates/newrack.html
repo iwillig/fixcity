@@ -169,9 +169,9 @@
                   title="Please include any useful details and available contact information for property/business owner">{{ request.POST.description }}</textarea>
 
     <div id="photo-wrap">
-      <label for="browse">Photo</label>
+      <label for="fakebrowseinput">Photo</label>
       <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" size="20" />
-      <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" /><span class="fakebutton">browse</span></div>
+      <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" title="JPG, GIF or PNG files - 5MB maximum" /><span class="fakebutton">browse</span></div>
     </div><!-- /#photo-wrap -->
      
     <label for="email">Your Email</label>
@@ -219,11 +219,11 @@
 <script type="text/javascript">
 //<![CDATA[
   $(document).ready(function() {
-    $('input#address, textarea#description, input#email').inlineInfoTextify();
-    $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
+    $('input#address, textarea#description, input#email, input#fakebrowseinput').inlineInfoTextify();
+    $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val()).removeClass("overlabel");});
     expandOnce('#photo-wrap', 'Add Photo');
     $('textarea#description').maxLength(300);
-    $('input#address, textarea#description, input#email').infoSuffixify();
+    $('input#address, textarea#description, input#email, input#fakebrowseinput').infoSuffixify();
   });
 //]]>
 </script>

@@ -223,11 +223,11 @@
 <script type="text/javascript">
 //<![CDATA[
   $(document).ready(function() {
-    $('input#address, textarea#description, input#email').inlineInfoTextify();
-    $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val());});
+    $('input#address, textarea#description, input#email, input#fakebrowseinput').inlineInfoTextify();
+    $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val()).removeClass("overlabel");});
     expandOnce('#photo-wrap', '{% if rack.photo %}Replace{% else %}Add{% endif %} Photo');
     $('textarea#description').maxLength(300);
-    $('input#address, textarea#description').infoSuffixify();
+    $('input#address, textarea#description, input#fakebrowseinput').infoSuffixify();
   });
 //]]>
 </script>
