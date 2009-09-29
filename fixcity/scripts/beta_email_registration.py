@@ -66,12 +66,11 @@ def send_email(template, **kw):
 
 def randpass(length=16):
     import random
-    chars = range(ord('a'), ord('z')+1)
-    chars.extend(range(ord('A'), ord('Z')+1))
-    chars.extend(range(ord('0'), ord('9')+1))
-    output = ''
+    import string
+    chars = string.letters + string.digits + string.punctuation
+    output = random.choice(string.letters)
     while len(output) < length:
-        output += chr(random.choice(chars))
+        output += random.choice(chars)
     return output
 
 
@@ -86,7 +85,7 @@ def register_all():
         if name in names_seen:
             raise ValueError("Oh crap, already saw name %r" % name)
         names_seen.add(name)
-        password = randpass()  # This one is never used
+        password = randpass()  # Just so we always have a non-empty password.
         data = {'username': name, 'email': email,
                 'password1': password, 'password2': password,}
         template_args = {'name': name, 'email': email, 'domain': current_site.domain,
