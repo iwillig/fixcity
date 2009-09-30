@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib import auth
 from django.core import serializers
-from django.core.files.uploadhandler import FileUploadHandler, StopUpload
+from django.core.files.uploadhandler import FileUploadHandler
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
 from django.contrib.auth.forms import SetPasswordForm
@@ -482,9 +482,10 @@ def activate(request, activation_key,
             uid_int = base36_to_int(uidb36)
         except ValueError:
             raise Http404
+        user = get_object_or_404(User, id=uid_int)
         context_instance['token'] = token
         context_instance['uidb36'] = uidb36
-        user = get_object_or_404(User, id=uid_int)
+        context_instance['username'] = user.username
         if token_generator.check_token(user, token):
             context_instance['valid_reset_token'] = True
             if request.method == 'POST':
@@ -512,30 +513,46 @@ def activate(request, activation_key,
                               context_instance=context_instance)
 
 
+class QuotaExceededError(Exception):
+    pass
+
 class QuotaUploadHandler(FileUploadHandler):
     """
     This upload handler terminates the connection if a file larger than
     the specified quota is uploaded.
-
-    The browser typically shows an error that's not very
-    informative. We can maybe make it nice later if needed.  Maybe
-    just raise a more generic exception and give some attention to our
-    generic error page?
     """
 
-    QUOTA =  5 * 1024 * 1024  # Should be a setting in settings.py?
-    
+    QUOTA_MB = 5  # Should be a setting in settings.py?
+    QUOTA =  QUOTA_MB * 1024 * 1024
+
     def __init__(self, request=None):
         super(QuotaUploadHandler, self).__init__(request)
         self.total_upload = 0
-        
+    
     def receive_data_chunk(self, raw_data, start):
         self.total_upload += len(raw_data)
         if self.total_upload >= self.QUOTA:
-            raise StopUpload(connection_reset=True)
+            raise QuotaExceededError('Maximum upload size is %.2f MB'
+                                     % self.QUOTA_MB)
         # Delegate to the next handler.
         return raw_data
             
     def file_complete(self, file_size):
         return None
 
+def server_error(request, template_name='500.html'):
+    """
+    500 error handler.
+
+    Templates: `500.html`
+    Context: None
+    """
+    import sys
+    info = sys.exc_info()
+    return render_to_response(
+        template_name,
+        {'exc_type': info[1].__class__.__name__,
+         'exc_value': str(info[1]),
+         },
+        context_instance = RequestContext(request)
+    )

@@ -1,5 +1,5 @@
-from django.conf.urls.defaults import include
-from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import *
+
 from django.conf import settings
 
 # Uncomment the next two lines to enable the admin:
@@ -77,3 +77,5 @@ urlpatterns = patterns(
     # Uncomment the next line to enable the admin:
      (r'^admin/(.*)', admin.site.root),
 )
+
+handler500 = 'fixcity.bmabr.views.server_error'
