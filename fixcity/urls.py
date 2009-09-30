@@ -10,6 +10,7 @@ urlpatterns = patterns(
     '',
     (r'^$', 'fixcity.bmabr.views.index'),
     (r'^about/$', 'fixcity.bmabr.views.about'), 
+    (r'^faq/$', 'fixcity.bmabr.views.faq'),
     (r'^contact/$', 'fixcity.bmabr.views.contact'),
     (r'^verification-kit/$', 'fixcity.bmabr.views.verification_kit'),
 

@@ -79,7 +79,13 @@ def about(request):
     return render_to_response('about.html',
        {'request':request},
        context_instance=RequestContext(request, processors=[user_context])
-                              ) 
+                              )
+
+def faq(request):
+    return render_to_response('faq.html',
+       {'request':request},
+       context_instance=RequestContext(request, processors=[user_context])
+                              )
 
 @login_required
 def profile(request): 
