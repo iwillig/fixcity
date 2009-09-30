@@ -20,6 +20,7 @@
     <div class="wrap">
       <ul id="header-nav">
         <li><a href="/about">About</a></li>
+        <li><a href="/faq">FAQ</a></li>
         <li><a href="/contact">Contact</a></li>
       </ul>
       <span id="login">{% if user.is_authenticated %}<a href="/profile/">{{user_displayname}}</a> <a href="/accounts/logout/?next={{request.path}}">log out</a>
