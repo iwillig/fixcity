@@ -420,7 +420,10 @@ def communityboard(request):
 
 
 def contact(request):
-    return render_to_response('contact.html', {})
+    return render_to_response(
+        'contact.html', {},
+        context_instance=RequestContext(request, processors=[user_context]),
+        )
 
 def verification_kit(request):
     return render_to_response(
