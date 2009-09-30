@@ -224,6 +224,7 @@
     expandOnce('#photo-wrap', 'Add Photo');
     $('textarea#description').maxLength(300);
     $('input#address, textarea#description, input#email, input#fakebrowseinput').infoSuffixify();
+    $('<small> <a href="#">Photo Guidelines</a></small>').appendTo('label[for="fakebrowseinput"]').click(function() {Boxy.ask("<p class=\"content\">Photographs should show an unobstructed view of the suggested spot, curb, and storefront. Please copy these examples closely in terms of angle, zoom, and detail.</p><h2>Good</h2><img src=\"/site_media/img/rackphoto-good.jpg\" /><hr /><h2>Ideal</h2><img src=\"/site_media/img/rackphoto-ideal.jpg\" />", null, null, {title: "Photo Guidelines", closeable: true});return false;});
   });
 //]]>
 </script>
