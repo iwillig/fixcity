@@ -10,6 +10,7 @@
 
 {% block content %}
 {% if valid_reset_token %}
+   <h2>Welcome, {{username}}.</h2>
    <h2>You need to choose a password before you can use your account.</h2>
 
     <form action="/accounts/activate/{{activation_key}}/" method="POST">
