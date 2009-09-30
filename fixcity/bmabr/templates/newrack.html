@@ -159,19 +159,25 @@
                                  value="{{request.POST.address}}" />
     <input type="hidden" id="location" name="location" value="{{request.POST.location}}" />
         {{ form.address.errors }} {{ form.location.errors }} </div>
-    <label for="title">Business, Agency, or Public Space</label>
+    <label for="title">Establishment</label>
     <div class="required"><input id="title" name="title" type="text"
-                                 title="Business, Agency, or Public Space"
+                                 title="What are you trying to get to? i.e. Key Foods, PS 121, restaurants"
                                  value="{{request.POST.title}}"
                            />{{ form.title.errors }}</div>
     <label for="description">Description</label>
       <textarea id="description" name="description"
-                  title="Please include any useful details and available contact information for property/business owner">{{ request.POST.description }}</textarea>
+                  title="Why are bike racks needed here? Other details?">{{ request.POST.description }}</textarea>
 
     <div id="photo-wrap">
       <label for="fakebrowseinput">Photo</label>
       <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" size="20" />
       <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" title="JPG, GIF or PNG files - 5MB maximum" /><span class="fakebutton">browse</span></div>
+    </div><!-- /#photo-wrap -->
+    
+    <div id="statement-wrap">
+      <label for="statement">Statement of Support</label>
+      <input id="statement" name="statement" type="file" value="" size="20" />
+      <div id="fakestatement" class="selfclear"><input name="fakestatementinput" id="fakestatementinput" type="text" title="" /><span class="fakebutton">browse</span></div>
     </div><!-- /#photo-wrap -->
      
     <label for="email">Your Email</label>
@@ -219,11 +225,13 @@
 <script type="text/javascript">
 //<![CDATA[
   $(document).ready(function() {
-    $('input#address, textarea#description, input#email, input#fakebrowseinput').inlineInfoTextify();
+    $('input#address, input#title, textarea#description, input#email, input#fakebrowseinput').inlineInfoTextify();
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val()).removeClass("overlabel");});
+    $('input#statement').change(function( objEvent ){$('#fakestatementinput').val($(this).val()).removeClass("overlabel");});
     expandOnce('#photo-wrap', 'Add Photo');
+    expandOnce('#statement-wrap', 'Add Statement of Support');
     $('textarea#description').maxLength(300);
-    $('input#address, textarea#description, input#email, input#fakebrowseinput').infoSuffixify();
+    $('input#address, input#title, textarea#description, input#email, input#fakebrowseinput').infoSuffixify();
     $('<small> <a href="#">Photo Guidelines</a></small>').appendTo('label[for="fakebrowseinput"]').click(function() {Boxy.ask("<p class=\"content\">Photographs should show an unobstructed view of the suggested spot, curb, and storefront. Please copy these examples closely in terms of angle, zoom, and detail.</p><h2>Good</h2><img src=\"/site_media/img/rackphoto-good.jpg\" width=\"400\" height=\"268\" /><hr /><h2>Ideal</h2><img src=\"/site_media/img/rackphoto-ideal.jpg\" width=\"400\" height=\"300\"  />", null, null, {title: "Photo Guidelines", closeable: true});return false;});
   });
 //]]>

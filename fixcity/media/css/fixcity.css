@@ -401,7 +401,7 @@ font-weight: bold;
 margin: 1em 0 0;
 }
 
-#content form label:first-child {
+#content form>label:first-child {
 margin: 0;
 }
 
@@ -448,14 +448,10 @@ margin: 0 0 1em;
 color: #5c8699;
 }
 
-#photo-wrap {
-margin: 1em 0 0;
-padding: 0;
-}
-
 .expandonce {
 display: block;
 padding: 0 0 0 20px;
+margin: 1em 0 0;
 background: url(/site_media/img/plus-toggle.png) 0 50% no-repeat;
 font-size: 1.2em;
 font-weight: bold;
@@ -467,7 +463,14 @@ cursor: pointer;
 text-decoration: underline;
 }
 
-#browse {
+#photo-wrap,
+#statement-wrap {
+margin: 1em 0 0;
+padding: 0;
+}
+
+#browse,
+#statement {
 opacity: 0.0;
 -moz-opacity: 0.0;
 filter: alpha(opacity=00);
@@ -478,18 +481,21 @@ font-size: 2.5em;
 padding: 0;
 }
 
-#fakebrowse {
+#fakebrowse,
+#fakestatement {
 margin-top: -3.5em;
 }
 
-#fakebrowse #fakebrowseinput {
+#fakebrowse #fakebrowseinput,
+#fakestatement #fakestatementinput {
 width: 290px;
 float: left;
 margin: 0 5px 0 0;
 height: 1.2em;
 }
 
-#fakebrowse .fakebutton {
+#fakebrowse .fakebutton,
+#fakestatement .fakebutton {
 float: left;
 padding: 0.44em 0.5em;
 }
