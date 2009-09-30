@@ -44,8 +44,17 @@ height: 1px;
 float:left;
 }
 
+.leftwise img {
+margin: 10px 10px 10px 0;
+}
+
+
 .rightwise {
 float:right;
+}
+
+.rightwise img {
+margin: 10px 0 10px 10px;
 }
 
 .nobreak {
