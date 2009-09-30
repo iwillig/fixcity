@@ -260,8 +260,13 @@ def newrack_form(request):
             photo_status.save()
             statement = Steps(step_rack=new_rack,name="statement",status='todo')
             statement.save()
-            flash('Your rack has been saved. <a href="/rack/new">Add another?</a>',
-                  request)
+            message = '''
+            Thank you for your suggestion! Racks can take six months
+            or more for the DOT to install, but we\'ll be in touch
+            about its progress. <a href="/rack/new/">Add another
+            rack</a> or continue to see other suggestions.
+            '''
+            flash(message, request)
             return HttpResponseRedirect('/verify/')
         else:
             flash('Please correct the following errors.', request)
