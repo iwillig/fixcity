@@ -23,6 +23,10 @@ Bootstrapping a Database
 This application requires a PostGIS database and some shape data. To
 get started:
 
+ 1) Copy the config.ini.in file to config.ini.  Edit database settings
+    in config.ini as needed.  You MUST change the value of the
+    'SECRET_KEY' setting.
+
  1) Create your database:
 
   createdb -T template_postgis bmabr

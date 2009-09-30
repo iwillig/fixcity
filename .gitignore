@@ -2,3 +2,4 @@
 *~
 *.egg-info
 fixcity/media/images/racks/*
+fixcity/config.ini

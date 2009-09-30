@@ -1,6 +1,10 @@
 [main]
+
 DEBUG=False
-SECRET_KEY = zxcmgbu4869pu;izgopzdg9-isdgf@(*%@(*!&#(^[
+
+# Make this a unique random string, and don't share it with anybody!!
+SECRET_KEY = YOU MUST CHANGE THIS
+
 
 [db]
 
