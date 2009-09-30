@@ -423,7 +423,11 @@ def contact(request):
     return render_to_response('contact.html', {})
 
 def verification_kit(request):
-    return render_to_response('verification-kit.html', {})
+    return render_to_response(
+        'verification-kit.html',
+        {},
+        context_instance=RequestContext(request, processors=[user_context]),
+        )
 
 def activate(request, activation_key,
              template_name='registration/activate.html',
