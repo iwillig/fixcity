@@ -1,0 +1,23 @@
+[main]
+DEBUG=False
+SECRET_KEY = zxcmgbu4869pu;izgopzdg9-isdgf@(*%@(*!&#(^[
+
+[db]
+
+# Engine: 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_ENGINE = postgresql_psycopg2
+
+# Name. Or path to database file if using sqlite3.
+DATABASE_NAME = bmabr
+
+# Not used with sqlite3.
+DATABASE_USER = postgres
+
+# Not used with sqlite3.
+DATABASE_PASSWORD = 
+
+# Set to empty string for localhost. Not used with sqlite3.
+DATABASE_HOST = localhost
+
+# Set to empty string for default. Not used with sqlite3.         
+DATABASE_PORT =       
