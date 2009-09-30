@@ -1,10 +1,22 @@
+# Django settings for fixcity project.
+# Deployment-specific or sensitive settings must go in config.ini!
+
 import os
+import sys
 
 HERE=os.path.abspath(os.path.dirname(__file__))
 
-# Django settings for fixcity project.
+# Sensitive settings are read from config.ini.
+import ConfigParser
+config = ConfigParser.RawConfigParser()
+try:
+    config.readfp(open(os.path.join(HERE, 'config.ini')))
+except IOError:
+    sys.stderr.write('\n\nYou need to create a config.ini file. '
+                     'See config.ini.in for a sample.\n\n')
+    raise
 
-DEBUG = False
+DEBUG = config.getboolean('main', 'DEBUG')
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -13,12 +25,12 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'postgresql_psycopg2'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'bmabr'             # Or path to database file if using sqlite3.
-DATABASE_USER = 'postgres'             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = 'localhost'             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASE_ENGINE = config.get('db', 'DATABASE_ENGINE')
+DATABASE_NAME = config.get('db', 'DATABASE_NAME')
+DATABASE_USER = config.get('db', 'DATABASE_USER')
+DATABASE_PASSWORD = config.get('db', 'DATABASE_PASSWORD')
+DATABASE_HOST = config.get('db', 'DATABASE_HOST')
+DATABASE_PORT = config.get('db', 'DATABASE_PORT')
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -52,7 +64,10 @@ MEDIA_URL = '/site_media/'
 ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'zxcmgbu4869pu;izgopzdg9-isdgf@(*%@(*!&#(^['
+SECRET_KEY = config.get('main', 'SECRET_KEY')
+
+assert SECRET_KEY != 'YOU MUST CHANGE THIS', \
+        'You really need to change the SECRET_KEY setting in your config.ini!'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
