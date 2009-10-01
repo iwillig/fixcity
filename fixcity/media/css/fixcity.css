@@ -16,6 +16,15 @@ color: #44c5f5;
 font-size: 1em; /* override tripoli */
 }
 
+h2, 
+h3,
+h4,
+h5,
+h6 {
+font-weight: normal;
+color: #5c8699;
+}
+
 /*-----------------------
 Utility Classes
 -----------------------*/
@@ -272,6 +281,7 @@ width: 220px;
 #home-sidebar h2 {
 color: #7997a9;
 background: #edf2f6;
+font-weight: bold;
 font-size: 1.1em;
 padding: 8px;
 }
@@ -544,6 +554,39 @@ margin-bottom: 1em;
 font-size: 0.9em;
 font-style: italic;
 margin: 0;
+}
+
+/* - */
+#bigmovie {
+width: 620px;
+height: 345px;
+float: left;
+margin: 0 23px 0 0;
+}
+
+#movietext {
+float: left;
+width: 297px;
+}
+
+#movietext h2 {
+margin-top: 0;
+color: #333;
+}
+
+.threewide .col {
+width: 300px;
+float: left;
+margin: 0 20px 0 0;
+}
+
+.threewide>.col:last-child {
+margin: 0;
+}
+
+.resource-list a {
+font-size: 1.3em;
+vertical-align: middle;
 }
 
 /* - */

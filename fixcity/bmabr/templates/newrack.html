@@ -233,6 +233,7 @@
     $('textarea#description').maxLength(300);
     $('input#address, input#title, textarea#description, input#email, input#fakebrowseinput').infoSuffixify();
     $('<small> <a href="#">Photo Guidelines</a></small>').appendTo('label[for="fakebrowseinput"]').click(function() {Boxy.ask("<p class=\"content\">Photographs should show an unobstructed view of the suggested spot, curb, and storefront. Please copy these examples closely in terms of angle, zoom, and detail.</p><h2>Good</h2><img src=\"/site_media/img/rackphoto-good.jpg\" width=\"400\" height=\"268\" /><hr /><h2>Ideal</h2><img src=\"/site_media/img/rackphoto-ideal.jpg\" width=\"400\" height=\"300\"  />", null, null, {title: "Photo Guidelines", closeable: true});return false;});
+    $('<small> <a href="#">Location Guidelines</a></small>').appendTo('label[for="address"]').click(function() {Boxy.ask("<div class=\"content selfclear\"><a class=\"rightwise\" href=\"/site_media/resources/rack_diagram.pdf\"><img src=\"/site_media/img/rack_diagram-thumb.png\" width=\"160\" height=\"200\" /></a><p>Your location suggestion should comply with the requirements shown in this diagram. <a href=\"/site_media/resources/PlacementGuide.pdf\">Print</a> and take out with you to verify this location, or watch the <a href=\"#\">Rack Placement Streetfilm</a> to better inform your suggestions.</p></div>", null, null, {title: "Location Guidelines", closeable: true});return false;});
   });
 //]]>
 </script>

@@ -20,7 +20,7 @@
 
   <h2>How do I verify racks?</h2>
 
-  <p>To verify your suggestion or others, simply check if the location meets the requirements (link) and has an appropriate photo (link). If the sidewalk in front of your destination won't work, try across the street or around the corner--you can update the address accordingly. Photos should also be updated if needed to show exactly where the rack can go.</p>
+  <p>To verify your suggestion or others, simply check if the location meets the <a class="location-guidelines" href="#">requirements</a> and has an appropriate <a class="photo-guidelines" href="#">photo</a>. If the sidewalk in front of your destination won't work, try across the street or around the corner--you can update the address accordingly. Photos should also be updated if needed to show exactly where the rack can go.</p>
 
   <h2>What can I do to get racks on the ground sooner?</h2>
 
@@ -52,9 +52,18 @@
 
   <h2>How can I start a bulk order for my NYC neighborhood?</h2>
 
-  <p>We plan to expand fixcity Bike Racks for use throughout New York City after the completion of our beta pilot project in Brooklyn Community District 1. <a href="/contact">Contact us</a> for more information.</p>
+  <p>We plan to expand fixcity.org Bike Racks for use throughout New York City after the completion of our beta pilot project in Brooklyn Community District 1. <a href="/contact">Contact us</a> for more information.</p>
 </div>
 {% endblock %}
 
-
+{% block extra_footer %}
+<script type="text/javascript">
+//<![CDATA[
+  $(document).ready(function() {
+    $('.photo-guidelines').click(function() {Boxy.ask("<p class=\"content\">Photographs should show an unobstructed view of the suggested spot, curb, and storefront. Please copy these examples closely in terms of angle, zoom, and detail.</p><h2>Good</h2><img src=\"/site_media/img/rackphoto-good.jpg\" width=\"400\" height=\"268\" /><hr /><h2>Ideal</h2><img src=\"/site_media/img/rackphoto-ideal.jpg\" width=\"400\" height=\"300\"  />", null, null, {title: "Photo Guidelines", closeable: true});return false;});;
+    $('.location-guidelines').click(function() {Boxy.ask("<div class=\"content selfclear\"><a class=\"rightwise\" href=\"/site_media/resources/rack_diagram.pdf\"><img src=\"/site_media/img/rack_diagram-thumb.png\" width=\"160\" height=\"200\" /></a><p>Your location suggestion should comply with the requirements shown in this diagram. <a href=\"/site_media/resources/PlacementGuide.pdf\">Print</a> and take out with you to verify this location, or watch the <a href=\"#\">Rack Placement Streetfilm</a> to better inform your suggestions.</p></div>", null, null, {title: "Location Guidelines", closeable: true});return false;});
+  });
+//]]>
+</script>
+{% endblock %}
 
