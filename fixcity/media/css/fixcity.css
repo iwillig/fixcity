@@ -160,7 +160,15 @@ margin: 0 15px 0 0;
 margin: 0 25px 0 0;
 }
 
+#nav li.first-child {
+margin: 0 25px 0 0;
+}
+
 #nav li:last-child {
+margin: 0;
+}
+
+#nav li.last-child {
 margin: 0;
 }
 
@@ -338,6 +346,13 @@ color: #fff;
 padding: 0.5em;
 }
 
+#ss-form input.submit {
+background: #00b0f1;
+border: 0 none transparent;
+color: #fff;
+padding: 0.5em;
+}
+
 #ss-form-confirmation {
 background: #00b0f1;
 border: 0 none transparent;
@@ -424,6 +439,10 @@ margin: 1em 0 0;
 margin: 0;
 }
 
+#content form label.first-child {
+margin: 0;
+}
+
 #content form label img {
 vertical-align: middle;
 margin: 0 0 0 0.5em;
@@ -432,6 +451,16 @@ margin: 0 0 0 0.5em;
 #content form input[type="text"],
 #content form input[type="password"],
 #content form textarea {
+background: #fff;
+display: block;
+width: 362px;
+border: 1px solid #5c8699;
+padding: 8px;
+font-family: helvetica,verdana,sans-serif;
+}
+
+#content form input.text,
+#content form input.password {
 background: #fff;
 display: block;
 width: 362px;
@@ -449,6 +478,14 @@ background: url(/site_media/img/required-tab.png) 100% 0 no-repeat;
 #content form input[type="button"],
 #content form input[type="submit"],
 .fakebutton {
+background: #00b0f1;
+border: 0 none transparent;
+color: #fff;
+padding: 0.5em;
+}
+
+#content form input.button,
+#content form input.submit {
 background: #00b0f1;
 border: 0 none transparent;
 color: #fff;
@@ -582,6 +619,10 @@ margin: 0 20px 0 0;
 }
 
 .threewide>.col:last-child {
+margin: 0;
+}
+
+.threewide .last-child {
 margin: 0;
 }
 

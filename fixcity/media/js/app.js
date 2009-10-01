@@ -1,3 +1,7 @@
+$(document).ready(function() {
+  $(document).superSelectify({manualSelectors: '#nav li:first-child, #nav li:last-child, #ss-form input[type="submit"], #content form>label:first-child, #content form input[type="text"], #content form input[type="password"], #content form input[type="button"], #content form input[type="submit"], .threewide>.col:last-child'});
+});
+
 function expandOnce(selector, text) {
   var target=$(selector);
   $('<span class="expandonce">' + text +'</span>').prependTo(target).click(function() {$(this).siblings().removeClass("noshow").end().remove();}).siblings().addClass("noshow");
