@@ -61,7 +61,7 @@ http://%(domain)s/accounts/register?email=%(email)s
 def send_email(template, email_func=send_mail, **kw):
     subject = 'Thanks for taking part in the %(domain)s beta!' % kw
     body = template % kw
-    email_func(subject, body, 'from@example.com', ['%(email)s' % kw],
+    email_func(subject, body, settings.DEFAULT_FROM_EMAIL, ['%(email)s' % kw],
                fail_silently=False)
     print "Registration invite sent to %(email)s" % kw
 

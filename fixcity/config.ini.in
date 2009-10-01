@@ -5,6 +5,7 @@ DEBUG=False
 # Make this a unique random string, and don't share it with anybody!!
 SECRET_KEY = YOU MUST CHANGE THIS
 
+DEFAULT_FROM_EMAIL = foo@example.com
 
 [db]
 

@@ -25,6 +25,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+DEFAULT_FROM_EMAIL = config.get('main', 'DEFAULT_FROM_EMAIL')
+
 DATABASE_ENGINE = config.get('db', 'DATABASE_ENGINE')
 DATABASE_NAME = config.get('db', 'DATABASE_NAME')
 DATABASE_USER = config.get('db', 'DATABASE_USER')
