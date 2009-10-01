@@ -35,9 +35,9 @@ g = geocoders.Google(GKEY)
 SRID=4326
 
 
-def flash(s, request):
-    """add the string "s" to the session's flash store"""
-    request.session.setdefault('_flash', []).append(s)
+def flash(astring, request):
+    """add a string to the session's flash store"""
+    request.session.setdefault('_flash', []).append(astring)
     request.session.modified = True
 
 def iter_flash_messages(request):
@@ -198,11 +198,10 @@ def verify(request):
     except (EmptyPage, InvalidPage):
         racks_page = paginator.page(paginator.num_pages)
 
-    # Pagination logic. Tried doing this purely in the template, it
-    # was hideous.
-    # The goal is to have page links like (when eg. viewing page 7):
-    # '1 ... 5 6 7 8 9 ... 18'
-    # with a cluster in the middle.
+    # Pagination link clustering logic. Tried doing this purely in the
+    # template, it was hideous.  The goal is to have page links like
+    # (when eg. viewing page 7): '1 ... 5 6 7 8 9 ... 18' with a
+    # cluster in the middle.    
     # It's a bit easier if we just generate a list of page numbers that
     # the UI should show, and have the template only deal with markup.
     page_numbers = []
@@ -318,7 +317,7 @@ def support(request, rack_id):
     else:         
         return HttpResponse('not allowed')  
 
-
+@login_required
 def rack_edit(request,rack_id):
     rack = Rack.objects.get(id=rack_id)
     if request.method == 'POST':

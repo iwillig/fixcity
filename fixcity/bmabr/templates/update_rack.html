@@ -172,6 +172,7 @@
     {% else %}
       <div>No photo uploaded.</div>
     {% endif %}
+    {{ form.photo.errors }}
     
     <div id="photo-wrap">
       <label for="fakebrowseinput">{% if rack.photo %}Replace{% else %}Add{% endif %} Photo</label>
