@@ -14,31 +14,41 @@
 
 {% block content %}
 <div class="selfclear">
-  <div><!-- we'll put the streetfilm here --></div>
-  <p>Watch the "So You Want Bike Racks?" Streetfilm to learn where racks can go! Verify in two easy steps:</p>
-  <ol>
-    <li>Confirm the location is appropriate for a rack. Adjust address if needed--open space may be just around the corner.</li>
-    <li>Make sure suggestion has a good photo of where the rack should go.</li>
-  </ol>
-  <p>Print the <a href="/site_media/resources/PlacementGuide.pdf">rack placement guide</a> to take out with you. Statement of Support is only required for residential buildings and schools. And remember, your arm-span is as wide as you are tall, so you can measure with your own body or bike!</p>
-</div>
-Rack Placement Guide
-Sample Photos
-(Place the two sample photos here)
-Forms for Businesses, Residences, & Schools
-Statement of Support Business Info Sheet
-External Resources
-* Find your Community Board http://www.nyc.gov/html/cau/html/cb/directory.shtml
-* Community Data portal link: http://home2.nyc.gov/html/dcp/html/neigh_info/nhmap.shtml
-
-<img class="rightwise" src="/site_media/img/rack-measure.jpg" width="400" height="300" alt="Image showing approximate sidewalk widths" />
-<h2>Forms</h2>
+  <div id="bigmovie"><!-- we'll put the streetfilm here --></div>
+  <div id="movietext">
+    <h2>So You Want Bike Racks?</h2> 
+    <p>Watch the Streetfilm to learn where racks can go!</p>
+    <p><strong>Verify in two easy steps:</strong></p>
+    <ol>
+      <li>Confirm the location is appropriate for a rack. Adjust address if needed--open space may be just around the corner.</li>
+      <li>Make sure suggestion has a good photo of where the rack should go.</li>
+    </ol>
+    <p>Print the <a href="/site_media/resources/PlacementGuide.pdf">rack placement guide</a> to take out with you. Statement of Support is only required for residential buildings and schools. And remember, your arm-span is as wide as you are tall, so you can measure with your own body or bike!</p>
+  </div><!-- /#movietext -->
+</div><!-- /.selfclear -->
+<div class="selfclear threewide">
+  <div class="col">
+    <h3>Rack Measure</h3>
+    <img src="/site_media/img/rack-measure-thumb.jpg" width="300" height="250" alt="Photo showing how to estimate sidewalk space" />
+  </div>
+  <div class="col">
+    <h3>Ideal Photo</h3>
+    <img src="/site_media/img/rackphoto-ideal-thumb.jpg" width="300" height="250" alt="Sample ideal bikerack photo" />
+  </div>
+  <div class="col">
+    <h3>Good Photo</h3>
+    <img src="/site_media/img/rackphoto-good-thumb.jpg" width="300" height="250" alt="Sample good bikerack photo" />
+  </div>
+</div><!-- /.selfclear -->
+<h2>Forms for Businesses, Residences, &amp; Schools</h2>
 <ul class="resource-list">
+  <li><a href="/site_media/resources/BikeRackInfoSheet.pdf">Bike Rack Info Sheet</a></li>
   <li><a href="/site_media/resources/PlacementGuide.pdf">Rack Diagram</a></li>
   <li><a href="/site_media/resources/SupportStatement.pdf">Support Statement</a></li>
 </ul>
 <h2>External Resources</h2>
 <ul class="resource-list">
+  <li><a href="http://www.nyc.gov/html/cau/html/cb/directory.shtml">Find your Community Board</a></li>
   <li><a href="http://home2.nyc.gov/html/dcp/html/neigh_info/nhmap.shtml">NYC Community Data Portal</a></li>
 </ul>
 {% endblock %}
