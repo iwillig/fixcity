@@ -97,6 +97,8 @@ def _register_all():
     current_site = Site.objects.get(id=settings.SITE_ID)
     for email in addrs:
         name = email.split('@', 1)[0]
+        import re
+        name = re.sub(r'[^!A-Za-z_-]', '_', name)
         name = name.replace('+', '_')  # XXX do more cleanup
         if name in names_seen:
             raise ValueError("Oh crap, already saw name %r" % name)
