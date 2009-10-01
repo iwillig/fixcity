@@ -173,6 +173,7 @@
       <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" size="20" />
       <div id="fakebrowse" class="selfclear"><input name="fakebrowseinput" id="fakebrowseinput" type="text" title="JPG, GIF or PNG files - 5MB maximum" /><span class="fakebutton">browse</span></div>
     </div><!-- /#photo-wrap -->
+    {{ form.photo.errors }}
     
     <div id="statement-wrap">
       <label for="statement">Statement of Support</label>
