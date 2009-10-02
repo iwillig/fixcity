@@ -2,7 +2,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.contrib import auth
 from django.core import serializers
 from django.core.files.uploadhandler import FileUploadHandler
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -28,6 +27,10 @@ from geopy import geocoders
 
 from django.utils import simplejson as json
 from django.conf import settings
+
+import logging
+import sys
+import traceback
 
 cb_metric = 50.00 
 GKEY="ABQIAAAApLR-B_RMiEN2UBRoEWYPlhTmTlZhMVUZVOGFgSe6Omf4DswcaBSLmUPer5a9LF8EEWHK6IrMgA62bg"
@@ -82,6 +85,7 @@ def about(request):
                               )
 
 def faq(request):
+    raise Exception('Just testing an error')
     return render_to_response('faq.html',
        {'request':request},
        context_instance=RequestContext(request, processors=[user_context])
@@ -524,16 +528,23 @@ class QuotaUploadHandler(FileUploadHandler):
 def server_error(request, template_name='500.html'):
     """
     500 error handler.
+    This ONLY gets used if settings.DEBUG==False.
 
     Templates: `500.html`
     Context: None
     """
-    import sys
     info = sys.exc_info()
+    exc_type = info[1].__class__.__name__
+    exc_value = str(info[1])
+    logger = logging.getLogger('')
+    logger.error('at %r:' % request.build_absolute_uri())
+    # This is fairly ugly in the apache error log, as each line gets
+    # its own log entry, but hey it's way better than nothing.
+    logger.error(traceback.format_exc())
     return render_to_response(
         template_name,
-        {'exc_type': info[1].__class__.__name__,
-         'exc_value': str(info[1]),
+        {'exc_type': exc_type, 
+         'exc_value': exc_value,
          },
         context_instance = RequestContext(request)
     )

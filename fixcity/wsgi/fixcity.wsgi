@@ -26,4 +26,19 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'fixcity.settings'
 os.environ['PYTHON_EGG_CACHE'] = '/tmp/fixcity-python-eggs'
 
 import django.core.handlers.wsgi
+from wsgilog import WsgiLog
+
 application = django.core.handlers.wsgi.WSGIHandler()
+
+# Log uncaught exceptions to stderr via WSGI middleware.
+#
+# This isn't usually necessary: when settings.DEBUG is true, the
+# default behavior is to dump errors to stdout and show them nicely in
+# the browser; when settings.DEBUG is false, our custom 500 error view
+# takes care of logging. But if for any reason *that* view blows up,
+# we fall back to this.  (I wouldn't have bothered except I figured
+# out how to get this working before I hooked up logging in that
+# view.)
+
+application = WsgiLog(application, tohtml=False, tofile=False,
+                      tostream=True, toprint=False)

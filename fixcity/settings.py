@@ -119,3 +119,16 @@ INSTALLED_APPS = (
     'fixcity.bmabr',
 )
 
+
+
+# Logging?
+import logging
+import sys
+
+handler = logging.StreamHandler(sys.stderr)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger = logging.getLogger('')
+logger.addHandler(handler) 
+logger.setLevel(logging.DEBUG)

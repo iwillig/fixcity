@@ -24,5 +24,6 @@ setup(name='fixcity',
         'psycopg2>=2.0.12',
         'PIL==1.1.6',
         'ctypes>=1.0.2',
+        'wsgilog>=0.1',
         ],
       )
