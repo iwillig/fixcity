@@ -98,31 +98,6 @@ def profile(request):
        context_instance=RequestContext(request, processors=[user_context])
                               ) 
 
-    
-
-def login(request): 
-    next = request.GET.get('next')
-    if request.method == 'POST': 
-        username = request.POST.get('username')
-        password = request.POST.get('password') 
-        user = auth.authenticate(username=username,password=password)
-        if user is not None and user.is_active: 
-            auth.login(request, user)
-            return HttpResponseRedirect(next)
-        else: 
-            return HttpResponseRedirect("/user/error/")
-    else: 
-        pass 
-    return render_to_response('login.html', 
-       context_instance=RequestContext(request, processors=[user_context])
-                              )
-
-def logout(request): 
-    next = request.GET.get('next')
-    auth.logout(request)
-    return HttpResponseRedirect(next)
-
-
 def built(request): 
     rack = Rack.objects.all()
     rack_extent = rack.extent()
