@@ -27,23 +27,23 @@ get started:
     in config.ini as needed.  You MUST change the value of the
     'SECRET_KEY' setting.
 
- 1) Create your database:
+ 2) Create your database:
 
   createdb -T template_postgis bmabr
 
- 2) Load the data:
+ 3) Load the data:
 
    psql -d bmabr < fixcity/sql/gis_community_board.sql
 
- 3) Bootstrap the django models:
+ 4) Bootstrap the django models:
 
   cd fixcity
   ./manage.py syncdb
 
 
-You will also want to use the /admin/sites/site UI to change the
-domain name and display name of the website. These are used eg. in
-account confirmation email sent to users who register.
+ 5) Visit the /admin/sites/site UI to change the domain name and
+    display name of the website. These are used eg. in account
+    confirmation email sent to users who register.
 
 
 Deployment
