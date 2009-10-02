@@ -9,14 +9,20 @@
 {% block lede %}<h1>Please Log In</h1>{% endblock %}
 
 {% block content %}
+  {% if form.errors %}
+  <div class="error">Please correct the errors below:</div>
+  <!-- hack to get rid of the __all__ when showing form errors -->
+   {% for err in form.errors.values %}
+     {{ err }}
+   {% endfor %}
+  {% endif %}
+
   <form action="" method="POST" />
     <label for="username">Username</label>
-    <div class="required"><input type="text" name="username" id="username" /></div>
+    <div class="required"><input type="text" name="username" id="username" />
     <label for="password">Password</label>
-    <div class="required"><input type="password" name="password" id="password" /></div> 
+    <div class="required"><input type="password" name="password" id="password" />
     <input class="standalone" type="submit" value="Log In" />
     <p>You need an account to view this page. Create one <a href="/accounts/register">here</a> or suggest a rack and you'll receive an email allowing you to register for an account.</p>
-    {{ form.errors }}
-  </form>
 
 {% endblock %}
