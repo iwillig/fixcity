@@ -22,9 +22,10 @@ from registration.models import RegistrationProfile
 
 
 register_email_prefix = """
-Hi %(email)s, sorry for our silly mistake! (It happens sometimes
-... but we promise it won't happen again). Here's what we meant
-to send:
+Hi %(email)s, sorry for our silly mistake!
+(It happens sometimes ... but we promise it won't happen again).
+Yesterday we sent you an email with broken links.
+Here's what we meant to send:
 
 Thanks for taking part in the %(domain)s beta test.
 We'd like to invite you to create an account on %(domain)s.
