@@ -7,7 +7,7 @@ $ ./manage.py shell
 ... then at the prompt, type this:
 
 >>> from .scripts.beta_email_registration import register_all
->>> register_all()
+>>> register_all(trial_run=False)
 
 """
 
@@ -22,7 +22,11 @@ from registration.models import RegistrationProfile
 
 
 register_email_prefix = """
-Hi %(email)s, thanks for taking part in the %(domain)s beta test.
+Hi %(email)s, sorry for our silly mistake! (It happens sometimes
+... but we promise it won't happen again). Here's what we meant
+to send:
+
+Thanks for taking part in the %(domain)s beta test.
 We'd like to invite you to create an account on %(domain)s.
 
 Registering for an account will allow you to correct and update any
@@ -58,12 +62,13 @@ http://%(domain)s/accounts/register?email=%(email)s
 
 
 
-def send_email(template, email_func=send_mail, **kw):
+def send_email(template, trial_run, email_func=send_mail, **kw):
     subject = 'Thanks for taking part in the %(domain)s beta!' % kw
     body = template % kw
     email_func(subject, body, settings.DEFAULT_FROM_EMAIL, ['%(email)s' % kw],
                fail_silently=False)
-    print "Registration invite sent to %(email)s" % kw
+    if not trial_run:
+        print "Registration invite sent to %(email)s" % kw
 
 def randpass(length=16):
     import random
@@ -75,7 +80,9 @@ def randpass(length=16):
     return output
 
 
-def register_all():
+def register_all(trial_run=True):
+    if trial_run:
+        print "TRIAL RUN, WILL NOT ACTUALLY SEND MAIL."
     # Monkeypatch to temporarily prevent other code from sending mail.
     import django.core.mail
     orig_send_mail = django.core.mail.send_mail
@@ -85,12 +92,12 @@ def register_all():
     send_email.func_defaults = (orig_send_mail,)
     try:
         django.core.mail.send_mail = no_send_mail
-        _register_all()
+        _register_all(trial_run)
     finally:
         # Un-monkey.
         django.core.mail.send_mail = orig_send_mail
 
-def _register_all():    
+def _register_all(trial_run):
     anon_racks = Rack.objects.filter(user=u'')
     addrs = set([rack.email.strip() for rack in anon_racks])
     names_seen = set()
@@ -98,7 +105,7 @@ def _register_all():
     for email in addrs:
         name = email.split('@', 1)[0]
         import re
-        name = re.sub(r'[^!A-Za-z_-]', '_', name)
+        name = re.sub(r'[^!A-Za-z0-9_-]', '_', name)
         name = name.replace('+', '_')  # XXX do more cleanup
         if name in names_seen:
             raise ValueError("Oh crap, already saw name %r" % name)
@@ -120,7 +127,8 @@ def _register_all():
             # We also need to provide a way to set your password.
             template_args['password_reset_token'] = default_token_generator.make_token(user)
             template_args['uidb36'] = int_to_base36(user.id)
-            #user.delete(); reg_profile.delete() #XXX remove this when everything works
+            if trial_run:
+                user.delete(); reg_profile.delete()
         else:
             if form.errors.get('username', [''])[0].count(u'already taken'):
                 # Send an email without the link to the predetermined username.
@@ -130,5 +138,16 @@ def _register_all():
                 import pprint
                 pprint.pprint(form.errors)
                 continue
-        send_email(template, **template_args)
-
+    if trial_run:
+        def trial_email(subject, body, from_, addresses, fail_silently):
+            print "-" * 60
+            print "Wound send this mail:"
+            print "To: %s" % ", ".join(addresses)
+            print "From: %s" % from_
+            print "Subject: %s" % subject
+            print
+            print body
+            print '-' * 60
+        send_email(template, trial_run, email_func=trial_email, **template_args)
+    else:
+        send_email(template, trial_run, **template_args)
