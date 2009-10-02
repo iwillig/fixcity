@@ -111,9 +111,6 @@
            $.post("/getcommunityboard/",{lat:lat,lon:lon}, 
 		  function(data) { 
 		      $("#id_communityboard").val(data);
-		      // Community board is not part of the v1.0 UI.
-		      // var location = "Brooklyn Community Board " + data ;
-		      // $("#cb_show").val(location); 
 		  }); 
         } 
   
@@ -135,9 +132,6 @@
  	 }
 
         map.addLayers([osm]);
-	//var center = new OpenLayers.LonLat(-73.954344,40.714063);
-        //center.transform(map.displayProjection, map.projection)
-        //map.setCenter(center,15)
 	var bounds = new OpenLayers.Bounds(-8234063.45026893,4968638.33081464,-8230209.19302436,4973585.50729644); 
         map.zoomToExtent(bounds); 
 
