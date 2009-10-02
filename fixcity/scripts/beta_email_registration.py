@@ -93,12 +93,24 @@ def register_all(trial_run=True):
     send_email.func_defaults = (orig_send_mail,)
     try:
         django.core.mail.send_mail = no_send_mail
-        _register_all(trial_run)
+        _register_all(trial_run, orig_send_mail)
     finally:
         # Un-monkey.
         django.core.mail.send_mail = orig_send_mail
 
-def _register_all(trial_run):
+def _register_all(trial_run, email_func):
+    if trial_run:
+        def trial_email(subject, body, from_, addresses, fail_silently):
+            print "-" * 60
+            print "Would send this mail:"
+            print "To: %s" % ", ".join(addresses)
+            print "From: %s" % from_
+            print "Subject: %s" % subject
+            print
+            print body
+            print '-' * 60
+        email_func = trial_email
+
     anon_racks = Rack.objects.filter(user=u'')
     addrs = set([rack.email.strip() for rack in anon_racks])
     names_seen = set()
@@ -107,7 +119,6 @@ def _register_all(trial_run):
         name = email.split('@', 1)[0]
         import re
         name = re.sub(r'[^!A-Za-z0-9_-]', '_', name)
-        name = name.replace('+', '_')  # XXX do more cleanup
         if name in names_seen:
             raise ValueError("Oh crap, already saw name %r" % name)
         names_seen.add(name)
@@ -139,16 +150,5 @@ def _register_all(trial_run):
                 import pprint
                 pprint.pprint(form.errors)
                 continue
-    if trial_run:
-        def trial_email(subject, body, from_, addresses, fail_silently):
-            print "-" * 60
-            print "Wound send this mail:"
-            print "To: %s" % ", ".join(addresses)
-            print "From: %s" % from_
-            print "Subject: %s" % subject
-            print
-            print body
-            print '-' * 60
-        send_email(template, trial_run, email_func=trial_email, **template_args)
-    else:
-        send_email(template, trial_run, **template_args)
+        send_email(template, trial_run, email_func=email_func, **template_args)
+
