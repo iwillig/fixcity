@@ -85,7 +85,6 @@ def about(request):
                               )
 
 def faq(request):
-    raise Exception('Just testing an error')
     return render_to_response('faq.html',
        {'request':request},
        context_instance=RequestContext(request, processors=[user_context])
