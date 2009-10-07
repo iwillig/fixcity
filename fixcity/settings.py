@@ -6,6 +6,7 @@ import sys
 
 HERE=os.path.abspath(os.path.dirname(__file__))
 
+
 # Sensitive settings are read from config.ini.
 import ConfigParser
 config = ConfigParser.RawConfigParser()
@@ -40,6 +41,9 @@ DATABASE_PORT = config.get('db', 'DATABASE_PORT')
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'America/New_York'
+
+# Caching. If we end up using it a lot, consider memcached.
+CACHE_BACKEND = 'locmem:///'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html

@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core import serializers
+from django.core.cache import cache
 from django.core.files.uploadhandler import FileUploadHandler
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
@@ -15,6 +16,7 @@ from django.utils.http import base36_to_int
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import fromstr
+from django.contrib.gis.geos.point import Point
 from django.contrib.gis.shortcuts import render_to_kml
 
 from fixcity.bmabr.models import Rack, Comment, Steps
@@ -110,27 +112,53 @@ def built(request):
             )
 
 
+def _get_communityboard_id(lon, lat):
+    # Cache a bit, since that's easier than ensuring that our AJAX
+    # code doesn't call it with the same params a bunch of times.
+    lon, lat = float(lon), float(lat)
+    key = ('_get_communityboard_id', lon, lat)
+    cb_id = cache.get(key)
+    if cb_id is None:
+        pnt = Point(lon, lat, srid=SRID)
+        cb = CommunityBoard.objects.get(the_geom__contains=pnt)
+        cb_id = cb.gid
+        cache.set(key, cb_id, 60 * 10)
+    return cb_id
+
 def get_communityboard(request):
-    lat = request.POST['lat'] 
-    lon = request.POST['lon'] 
-    point = 'POINT(%s %s)' % (lon,lat)
-    pnt = fromstr(point,srid=4326)
-    cb = CommunityBoard.objects.get(the_geom__contains=pnt)  
-    return HttpResponse(cb.gid)
+    lat = request.REQUEST['lat']
+    lon = request.REQUEST['lon']
+    return HttpResponse(_get_communityboard_id(lon, lat))
+
+def _geocode(text):
+    # Cache a bit, since that's easier than ensuring that our AJAX
+    # code doesn't call it with the same params a bunch of times.
+    text = text.strip()
+    key = ('_geocode', text)
+    result = cache.get(key)
+    if result is None:
+        result = list(g.geocode(text, exactly_one=False))
+        cache.set(key, result, 60 * 10)
+    return result
 
 def geocode(request):
-    location = request.POST['geocode_text']
-    results = g.geocode(location, exactly_one=False)
+    location = request.REQUEST['geocode_text']
+    results = _geocode(location)
     response = HttpResponse(content_type='application/json')
-    response.write(json.dumps([x for x in results]))
+    response.write(json.dumps(results))
     return response
 
 def reverse_geocode(request): 
-    lat = request.POST['lat'] 
-    lon = request.POST['lon']
+    lat = request.REQUEST['lat'] 
+    lon = request.REQUEST['lon']
     point = (lat, lon)
-    (new_place,new_point) = g.reverse(point)
-    return HttpResponse(new_place)
+    key = ('reverse_geocode', point)
+    result = cache.get(key)
+    if result is None:
+        (new_place,new_point) = g.reverse(point)
+        result = new_place
+        cache.set(key, result, 60 * 10)
+    return HttpResponse(result)
 
 def submit_all(request): 
     ''' 
@@ -221,14 +249,21 @@ def verify_by_communityboard(request,cb_id):
             context_instance=RequestContext(request, processors=[user_context]))
 
 def _maybe_geocode(request):
-    """Handle an edge case where the address is the last thing the
-    user types before submitting, so the client-side geocoding
-    function never gets time to return."""
-    if request.POST['geocoded'] != u'1':
-        results = list(g.geocode(request.POST['address'], exactly_one=False))
+    """Handle an edge case where the form is submitted before the
+    client-side ajax code finishes setting the location and/or
+    community board.  This can easily happen eg. if the user types an
+    address and immediately hits return or clicks submit.
+    """ 
+    if request.POST[u'geocoded'] != u'1':
+        results = _geocode(request.POST['address'])
         # XXX handle multiple (or zero) results.
         lat, lon = results[0][1]
-        request.POST['location'] = u'POINT(%.9f %.9f)' % (lon, lat)
+        request.POST[u'location'] = str(Point(lon, lat, srid=SRID))
+    if request.POST[u'got_communityboard'] != u'1' \
+           or not request.POST[u'communityboard']:
+        pnt = fromstr(request.POST['location'], srid=SRID)
+        request.POST['id_communityboard'] = _get_communityboard_id(pnt.x, pnt.y)
+        
 
 def newrack_form(request):
     if request.method == 'POST':

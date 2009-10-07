@@ -13,7 +13,9 @@
          var map, layer;
          var options = {
             projection: new OpenLayers.Projection("EPSG:900913"),
+            // EPSG 900913 = Spheroid Mercator (used by Google)
 	    displayProjection: new OpenLayers.Projection("EPSG:4326"),
+            // EPSG 4326 = lat,lon
 	    units: "m",
 	    numZoomLevels:20,
 	    maxResolution: 156543.03390625,
@@ -49,7 +51,7 @@
 	var WKT = "{{ request.POST.location|default:rack.location.wkt }}";
 	var address_point = new OpenLayers.Layer.Vector("Location Marker",address_options);
 	var geometry =  new OpenLayers.Geometry.fromWKT(WKT);
-	$("#location").val(WKT); 
+	$("#location").val(WKT);
 
 	geometry.transform(map.displayProjection, map.projection) ;
 	var location = new OpenLayers.Feature.Vector(
@@ -63,69 +65,83 @@
 	    var xy = address_point.geometry.getBounds().getCenterLonLat();
 	    xy.transform(map.projection, map.displayProjection) ;
 	    getAddress(xy);
-	    getCommunityBoard(xy); 
-	    var location_wkt = "POINT("+ xy.lon + " " + xy.lat +")"; 
-	    $("#location").val(location_wkt); 
+	    getCommunityBoard(xy);
+	    var location_wkt = "POINT("+ xy.lon + " " + xy.lat +")";
+	    $("#location").val(location_wkt);
+	    xy.transform(map.displayProjection, map.projection);
+	    map.setCenter(xy);
 	};
 	var point_control =  new OpenLayers.Control.DragFeature(
 	    address_point,
 	    {
 		onComplete: dropHandler
 	    });
-	    
+
 	map.addControl(point_control);
 	point_control.activate();
 
 	function getAddress(lonlat) {
 	    var lat = lonlat.lat ;
 	    var lon = lonlat.lon ;
-	    $.post("/reverse/", {lat:lat, lon:lon},
+            // Geocoding is asynchronous, so it might not complete
+            // before the form submits. Set flags in the form in case
+	    // that happens, so the server can do the work after form submits.
+	    $("#geocoded").val(0);
+	    $.get("/reverse/", {lat:lat, lon:lon},
 		function(data){
 	            $("#address").val(data) ;
-
+	            $("#geocoded").val(1);
 		});
-	    $("#geocoded").val(1);
-
 	  }
 	function getPointsFromAddress(address) {
-	    $.post("/geocode/", {geocode_text:address},
+	    $("#geocoded").val(0);
+	    $("#got_communityboard").val(0);
+	    $.get("/geocode/", {geocode_text:address},
 	        function(results){
                        // FIXME: handle multiple (or zero) results.
                        var lon = results[0][1][1];
                        var lat = results[0][1][0];
+                       var xy = new OpenLayers.LonLat(lon, lat);
+                       getCommunityBoard(xy);
  	               var location_wkt = "POINT("+ lon.toString() + " " + lat.toString() +")";
 	               $("#location").val(location_wkt);
- 	               $("#geocoded").val(1);
+	               $("#geocoded").val(1);
 	               address_point.destroyFeatures();
 	               var geometry = new OpenLayers.Geometry.fromWKT(location_wkt);
 	               geometry.transform(map.displayProjection, map.projection) ;
 	               var location = new OpenLayers.Feature.Vector(geometry);
 	               address_point.addFeatures([location]);
 	               address_point.refresh();
+                       xy.transform(map.displayProjection, map.projection);
+                       map.setCenter(xy);
 		}, 'json');
 	  }
 
        function getCommunityBoard(lonlat) {
 	   var lat = lonlat.lat ;
 	   var lon = lonlat.lon ;
-           $.post("/getcommunityboard/",{lat:lat,lon:lon}, 
-		  function(data) { 
+	   $("#got_communityboard").val(0);
+           $.get("/getcommunityboard/",{lat:lat,lon:lon},
+		  function(data) {
 		      $("#id_communityboard").val(data);
-		      // Community board is not part of the v1.0 UI.
-		      // var location = "Brooklyn Community Board " + data ;
-		      // $("#cb_show").val(location); 
-		  }); 
+		      $("#got_communityboard").val(1);
+		  });
         }
-        
+
   // For users with JS, we only want to be forced to check on the back end if there's an unprocessed change
   $("#geocoded").val(1);
-
-  $("#address").focus(function () {
-  	$("#geocoded").val(0);
-      });
+  $("#got_communityboard").val(1);
 
 	$("#address").blur(function () {
 		getPointsFromAddress($("#address").val());
+	    });
+
+	$("#address").change(function () {
+	        // Be paranoid and assume we're going to reverse-geocode...
+	        // For some reason, doing this on focus doesn't seem
+	        // to be enough.
+	        $("#geocoded").val(0);
+	        $("#got_communityboard").val(0);
 	    });
 
 	 var navControl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
@@ -134,8 +150,7 @@
  	 }
 
         map.addLayers([osm]);
-        var extent = address_point.getDataExtent();
-        map.zoomToExtent(extent); 
+        map.setCenter(geometry.getBounds().getCenterLonLat(), 16);
         }
 
 </script>
@@ -204,11 +219,17 @@
     <!-- XXX Do we want to update date on edit? -->
     <input type="hidden" name="date" value="{{rack.date}}"/>
 
-    <!-- Displayed community board name -->
     <!-- <input type="text" id="cb_show" value="1" /> -->
-    <input type="hidden" id="id_communityboard" name="communityboard" value="1" />
-    
+    <input type="hidden" id="id_communityboard" name="communityboard" value="" />
+
+    <!-- These flags will trigger server-side processing of location &
+    communityboard if they're set to zero. We use this to hack around
+    the impossibility of knowing if asynch functions have finished
+    when the form submits.  Also provides a bit of graceful
+    degrading... not like we have a lot of that in a map-heavy
+    site. -->
     <input type="hidden" id="geocoded" name="geocoded" value="0" />
+    <input type="hidden" id="got_communityboard" name="got_communityboard" value="0" />
 
     <input type="submit" value="Save" />
 
