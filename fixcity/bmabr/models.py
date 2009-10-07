@@ -24,7 +24,7 @@ class Rack(models.Model):
     address = models.CharField(max_length=200)
     title = models.CharField(max_length=50)
     date = models.DateTimeField()    
-    description = models.TextField(blank=True)
+    description = models.CharField(max_length=300, blank=True)
     email = models.EmailField()
     communityboard = models.ForeignKey(CommunityBoard)
     photo = ImageWithThumbnailsField(
@@ -88,7 +88,7 @@ class StatementOfSupport(models.Model):
 
 
 class Comment(models.Model):
-    text = models.TextField()
+    text = models.CharField(max_length=300)
     email = models.EmailField()
     rack = models.ForeignKey(Rack)
     
