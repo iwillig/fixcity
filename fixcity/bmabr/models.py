@@ -15,7 +15,7 @@ class  CommunityBoard(models.Model):
         ordering = ['name']
 
     def __unicode__(self):
-        return "Brooklyn Communtiy Board %s " % self.name
+        return "Brooklyn Community Board %s " % self.name
 
 
 
