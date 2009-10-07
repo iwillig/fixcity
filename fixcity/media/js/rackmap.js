@@ -102,7 +102,7 @@ function loadMap() {
       address_point.addFeatures([location]);
       address_point.refresh();
       xy.transform(map.displayProjection, map.projection);
-      map.setCenter(xy);
+      map.setCenter(xy, 16);
     },
     'json');
   }
