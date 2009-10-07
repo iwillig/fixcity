@@ -38,7 +38,7 @@
     <label for="description">Description</label>
       <textarea id="description" name="description"
                   title="Why are bike racks needed here? Other details?">{{ request.POST.description }}</textarea>
-
+      {{ form.description.errors }}
     <div id="photo-wrap">
       <label for="fakebrowseinput">Photo</label>
       <input id="browse" name="photo" type="file" value="{{request.FILES.photo.name}}" size="20" />

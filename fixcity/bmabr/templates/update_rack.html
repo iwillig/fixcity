@@ -38,7 +38,7 @@
     <label for="description">Description</label>
       <textarea id="description" name="description"
                   title="Why are bike racks needed here? Other details?">{{ request.POST.description|default:rack.description }}</textarea>
-
+    {{ form.description.errors }}
     <label for="browse">Photo</label>
     {% if rack.photo %}
       <img src="{{rack.photo.extra_thumbnails.large}}" />
