@@ -160,9 +160,11 @@
 </script>
 
 <script defer="defer" type="text/javascript"> 
-  window.onload = function() { 
-    loadMap() ; 
-   }
+  if (jQuery.browser.msie) {
+   jQuery(window).load(function() {loadMap();});
+  } else {
+  jQuery(document).ready(function() {loadMap();});
+  }
 </script> 
 
 {% endblock %}

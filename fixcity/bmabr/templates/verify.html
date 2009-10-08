@@ -7,9 +7,12 @@
 
 <script defer="defer" type="text/javascript">
     var map, layer, select, select_vector, racks ; 
-	 $(document).ready(function() {		
-		 loadMap(); 		 
-	     }); 
+
+  if (jQuery.browser.msie) {
+   jQuery(window).load(function() {loadMap();});
+  } else {
+  jQuery(document).ready(function() {loadMap();});
+  }
 
 
     var options = {

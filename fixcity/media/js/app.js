@@ -1,16 +1,16 @@
-$(document).ready(function() {
+jQuery(document).ready(function($) {
   $(document).superSelectify({manualSelectors: '#nav li:first-child, #nav li:last-child, #ss-form input[type="submit"], #content form>label:first-child, #content form input[type="text"], #content form input[type="password"], #content form input[type="button"], #content form input[type="submit"], .threewide>.col:last-child'});
 });
 
 function expandOnce(selector, text) {
-  var target=$(selector);
-  $('<span class="expandonce">' + text +'</span>').prependTo(target).click(function() {$(this).siblings().removeClass("noshow").end().remove();}).siblings().addClass("noshow");
+  var target=jQuery(selector);
+  jQuery('<span class="expandonce">' + text +'</span>').prependTo(target).click(function() {jQuery(this).siblings().removeClass("noshow").end().remove();}).siblings().addClass("noshow");
 }
 
 jQuery.fn.infoSuffixify = function() { //chainable
 	return this.each(function() {
-		var obj = $(this);
-		$('<img src="/site_media/img/info.png" alt="More information about this field" title="' + obj.attr('title') + '" />').appendTo('label[for="' + obj.attr('id') + '"]');
+		var obj = jQuery(this);
+		jQuery('<img src="/site_media/img/info.png" alt="More information about this field" title="' + obj.attr('title') + '" />').appendTo('label[for="' + obj.attr('id') + '"]');
 	});
 }
 
@@ -53,7 +53,7 @@ jQuery.fn.maxLength = function(len)
       return;
 
     //get the textarea element
-    var textarea = $(this);
+    var textarea = jQuery(this);
     //if the length should be based on the maxlength attribute instead of the
     //input, use that
     len = useAttr ? parseInt(textarea.attr('maxlength')) : len;
@@ -72,7 +72,7 @@ jQuery.fn.maxLength = function(len)
   var handleChange = function(e)
   {
     //get the textarea element
-    var textarea = $(this);
+    var textarea = jQuery(this);
     
     //if the length should be based on the maxlength attribute instead of the
     //input, use that

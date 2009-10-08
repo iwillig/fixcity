@@ -4,83 +4,8 @@
 {% block title %} fixcity - overview page  {% endblock %} 
 
 {% block extra_header %} 
-<link type="text/css" href="/site_media/theme/jquery-ui-1.7.1.custom.css" rel="Stylesheet" />  
-<script type="text/javascript" src="/site_media/js/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="/site_media/js/jquery-ui-1.7.1.custom.min.js"></script>
-<script type="text/javascript" src="/site_media/js/corner/jquery.corners.js"></script>
-
-
 <script src="/site_media/openlayers/OpenLayers.js"></script>
 <script defer="defer" type="text/javascript">
-
-	 $(document).ready(function() {
-		 loadMap();
-                 $('.tip').corners();
-                 $('.error-photo').corners();
-                 $.getJSON("status/", 
-			   function(data) { 
-			       jQuery.each(data, function() {
-				       if (this.fields.name == 'size-up') { 
-					   if (this.fields.status == 'todo') {
-              					   $('#size-up-control').append('<input type="checkbox" /><code id="size-id">' + this.pk  + '</code>') ;
-         
-					   }
-					   if (this.fields.status == 'finished')  { 
-					    $('#size-up-control').append('<input type="checkbox" checked /><code id="size-id">' + this.pk  + '</code>') ; 
-					   }
-				       }
-				       if (this.fields.name == 'photo'){ 
-					   if (this.fields.status == 'todo') {
-              					   $('#photo-control').append('<input type="checkbox" /><code id="photo-id">' + this.pk  + '</code>') ; 
-					   }
-					   if (this.fields.status == 'finished')  { 
-					    $('#photo-control').append('<input type="checkbox" checked /><code id="photo-id">' + this.pk  + '</code>') ;   
-					   }
-				       }
-				       if (this.fields.name == 'statement') { 
-					   if (this.fields.status == 'todo') {
-					       $('#statement-control').append('<input type="checkbox" /><code id="statment-control">' + this.pk  + '</code>') ; 
-					   }
-					   if (this.fields.status == 'finished')  { 
-					       $('#statement-control').append('<input type="checkbox" checked /><code id="statment-control">' + this.pk  + '</code>') ; 
-					   }
-					   					  
-				       }
-				       
-				   }); 
-			   });  
-
-
-                 $('#size-up-control').click(function () {                        
-			 var id = $('#size-id').text();
-			 $.post("change-status/", {
-				   id: id, 
-				     }); 
-			 
-                   });
-
-                 $('#photo-control').click(function () {                        
-			 var id = $('#photo-id').text();
-			 $.post("change-status/", {
-				   id: id, 
-				     }); 
-			 
-                   });
-
-                 $('#statement-control').click(function () {                        
-			 var id = $('#statment-control').text();
-			 $.post("change-status/", {
-				   id: id, 
-				     }); 
-			 
-                   });
-
-
-
-
-                }); 
-
-
 
     var map, layer, select;
     var options = {
@@ -148,7 +73,13 @@
     var center = new OpenLayers.LonLat(-73.94,40.63);  
     center.transform(map.displayProjection, map.projection);
     map.zoomToExtent(bounds);
-}
+
+
+  if (jQuery.browser.msie) {
+   jQuery(window).load(function() {loadMap();});
+  } else {
+  jQuery(document).ready(function() {loadMap();});
+  }
 
 </script>    
 
@@ -159,61 +90,17 @@
 
 {% block content %}
 
-<div class="verify">
 <div id="page-title">
   <h2 class="title">{{rack.title}} |  {{rack.address}} | SUBMITED BY {{rack.user}} </h2>
-  {% if user.is_authenticated %} 
- <ul class="tab-status">
-   <!--
-    <li><h3><a href="#" class="active" >VIEW</a></h3></li>
-    <li><h3><a href="/admin/bmabr/rack/{{rack.id}}">EDIT RACK</a></h3></li>
-    <li><h3><a href="status/">EDIT STATUS</a></h3></li>
-    -->
-  </ul>
+  {% if user.is_authenticated %}
+  <a href="/admin/bmabr/rack/{{rack.id}}/edit">Edit</a>
   {% else %}
-  <ul class="tab-status">
-    <li><h3><a href="#"> View</a></h3></li> 
-  </ul>
- {% endif %}
+  <a href="/accounts/login">Edit</a>
+  {% endif %}
 </div>
-<div id="overview-top">
-  <h3 id="steps-message"> Here's what needs to be done</h3>
-  <div class="error_rack error">
-    <img src="/site_media/images/under-con.png" /><h3> This page is not full functional, please check by in a few days.</h3>
-  </div>
-<div id="tab-container">
- <a name="tabs">
-   <ul>
-     <li class="" class="size-up">
-       <h2><a href="#tabs">(1) SIZE IT UP</a></h2>
-       <hr />
-       <div id="size-up-control" class="step-control">         
-       </div>
-     </li>
-     
-   </ul>  
-   <div class="tab-content">
-     <div class="tip">      
-       <p> The first step is to visit the site and see if it’s appropriate for bike rack placement. Print out this diagram and watch the StreetFilm PSA to find out how. If the original address listed isn’t appropriate, try around the corner or across the street. If there’s something you’re unsure about or a very minor issue, go ahead and approve the spot, including your concerns in the comments. Click edit to adjust the address or name and add comments.</p>
-     </div>
-     <div id="overview-map"></div>
-     <div id="size-up-text">
+
        <h4>Description:</h4>
        <p>{{rack.description}}</p>
-     </div>
-    </div>
-  <ul>
-    <li class="" id="photo-tab">
-       <h2><a href="#tabs">(2) PHOTOGRAPH</a></h2>
-       <hr />
-       <div id="photo-control" class="step-control"> </div>
-    </li>
-  </ul>  
-  <div id="photo-content" class="tab-content">
-     <div class="tip">
-       <p> Second, you’ll need a photograph of the location. If the original suggester included an appropriate photo, that’s great. But if the location has been adjusted or doesn’t adequately identify the proposed rack location, you’ll need to update it. </p>
-
-     </div>
 
     {% if rack.photo %}
     <img src="{{rack.photo.extra_thumbnails.large}}" />
@@ -223,27 +110,7 @@
       </div>
    {% endif %}
 
-  </div>
-  <ul>
-    <li class="" id="photo-tab"><h2><a href="#tabs">(2) GET SUPPORT</a></h2>
-    <hr />
-      <div id="statement-control" class="step-control"> </div>
-    </li>
-  </ul>  
-
-  <div id="support-content" class="tab-content">
-     <div class="tip">
-       <p>Third, you’ll need to reach out to a property/business owner or worker and get their support. Once completed and signed, take a picture of the Statement of Support and upload here as a photo. Please note that public spaces do not require a statement of support. </p>
-     </div>
-    
-    <form enctype="multipart/form-data" method="POST" action="support/">
-       <label>Statement of support (PDF)</label> 
-       <input type="file" name="file" id="support-doc" />
-       <label>Email</label>
-       <input type="text" name="email"   id="email-doc" />
-       <input type="hidden" value="{{rack.id}}" name="s_rack" />
-       <input type="submit" value="Add a statement of support" />
-    </form>
+ 
     <h3>Current statement(s) of support </h3>
     {% for object in statement_query %}
     <div class="statement">
@@ -254,18 +121,7 @@
     </div>
     {% endfor %} 
     
-  </div>
-  <div id="comments-content" style="display:none" class="tab-content">
-    <h3> Please leave your comments here </h3>
-    <form method="POST"> 
-         <textarea id="id_comment" rows="6" cols="55" name="comment"></textarea> <br />
-         <input type="radio" name="supportyes" id="support-yes" /><label> Do you support this rack - yes</label> <br />
-         <input type="radio" name="support-no" id="support-no" /><label>Do you support this rack - no </label> <br />
-         <input type="submit" vaule="Post your comment" /> 
-    </form>
-  </div>
-</div>
-</div>
+
 
 {% endblock %} 
 

@@ -112,7 +112,7 @@
 {% block extra_footer %}
 <script type="text/javascript">
 //<![CDATA[
-  $(document).ready(function() {
+  jQuery(document).ready(function($) {
     $('input#address, input#title, textarea#description, input#email, input#fakebrowseinput').inlineInfoTextify();
     $('input#browse').change(function( objEvent ){$('#fakebrowseinput').val($(this).val()).removeClass("overlabel");});
     $('input#statement').change(function( objEvent ){$('#fakestatementinput').val($(this).val()).removeClass("overlabel");});

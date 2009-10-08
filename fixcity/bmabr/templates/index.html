@@ -5,11 +5,6 @@
 <script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
 
 <script defer="defer" type="text/javascript">
-    var map, layer, select, select_vector ; 
-	 $(document).ready(function() {		
-		 loadMap(); 		 
-	     }); 
-
 
     var options = {
             projection: new OpenLayers.Projection("EPSG:900913"),
@@ -22,7 +17,7 @@
 	   };
 
         function loadMap(){
-	map = new OpenLayers.Map('home-map',options);
+	var map = new OpenLayers.Map('home-map',options);
 
 	var osm = new OpenLayers.Layer.WMS(
                  "OpenStreetMap",
@@ -35,21 +30,21 @@
             {wrapDateLine: true} 
         );
     
-	select_style = new OpenLayers.Style({
+	var select_style = new OpenLayers.Style({
                     pointRadius: "30",
 		    externalGraphic: "/site_media/images/marker.png"		    
 	    })
 	var select_vector = new OpenLayers.Layer.Vector("Selector Marker"); 
-	$('.mapevent').toggle( 
+	jQuery('.mapevent').toggle( 
 	      function (){
 		  var location =  $(this).find("code").html() ; 	       
-		  wkt_f = new OpenLayers.Format.WKT(
+		  var wkt_f = new OpenLayers.Format.WKT(
 			{
 			  internalProjection: map.projection,
 		       	  externalProjection: map.displayProjection
 			}
                        ); 
-		  features = wkt_f.read(location) ;
+		  var features = wkt_f.read(location) ;
  		  select_vector.removeFeatures();  
 		  select_vector.addFeatures(features); 
 		  map.addLayer(select_vector); 
@@ -94,7 +89,11 @@
         map.zoomToExtent(bounds); 
         }
 
-
+  if (jQuery.browser.msie) {
+   jQuery(window).load(function() {loadMap();});
+  } else {
+  jQuery(document).ready(function() {loadMap();});
+  }
 </script>
 {% endblock %}
 
@@ -129,7 +128,7 @@
 {% block extra_footer %}
 <script type="text/javascript">
 //<![CDATA[
-  $(document).ready(function() {
+  jQuery(document).ready(function($) {
     $('#ss-form').submit(function() {
       $('#ss-form').attr('action', 'http://spreadsheets.google.com/formResponse?formkey=dGFZSVNvWURoQTR4dnptU1d4YUgydlE6MA..').hide().after('<strong id="ss-form-confirmation">Thank you for joining!</strong>');
       $('#ss-form-confirmation').fadeIn("slow");
