@@ -4,7 +4,7 @@
 {% block extra_header %}
 <script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
 
-<script defer="defer" type="text/javascript">
+<script type="text/javascript">
 
     var options = {
             projection: new OpenLayers.Projection("EPSG:900913"),
@@ -65,7 +65,7 @@
 	var racks = new OpenLayers.Layer.Vector("Racks", {
 		    projection: map.displayProjection,
                     strategies: [
-                        new OpenLayers.Strategy.Fixed(),
+                        new OpenLayers.Strategy.Fixed()
                     ],		  
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: "./rack/requested.kml",

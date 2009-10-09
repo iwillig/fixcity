@@ -3,7 +3,7 @@
 
 {% block extra_header %} 
 <script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
-<script defer="defer" type="text/javascript">
+<script type="text/javascript">
     var map, layer, select;
     var options = {
             projection: new OpenLayers.Projection("EPSG:900913"),
@@ -133,7 +133,7 @@
 	var communityboard = new OpenLayers.Layer.Vector("Community Board 1", {
                    projection: map.displayProjection,
                    strategies: [
-                        new OpenLayers.Strategy.Fixed(),
+                        new OpenLayers.Strategy.Fixed()
                     ],
                     protocol: new OpenLayers.Protocol.HTTP({
                           url: "./communityboards.kml",
@@ -159,7 +159,7 @@
 
 </script>
 
-<script defer="defer" type="text/javascript"> 
+<script type="text/javascript"> 
   if (jQuery.browser.msie) {
    jQuery(window).load(function() {loadMap();});
   } else {
