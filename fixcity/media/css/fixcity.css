@@ -460,7 +460,8 @@ font-family: helvetica,verdana,sans-serif;
 }
 
 #content form input.text,
-#content form input.password {
+#content form input.password,
+#content form textarea {
 background: #fff;
 display: block;
 width: 362px;
@@ -485,7 +486,8 @@ padding: 0.5em;
 }
 
 #content form input.button,
-#content form input.submit {
+#content form input.submit,
+.fakebutton {
 background: #00b0f1;
 border: 0 none transparent;
 color: #fff;

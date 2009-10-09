@@ -1,6 +1,8 @@
-jQuery(document).ready(function ($) {
-  loadMap();
-});
+if (jQuery.browser.msie) {
+ jQuery(window).load(function() {loadMap();});
+} else {
+jQuery(document).ready(function() {loadMap();});
+}
 
 var map, layer;
 var options = {
