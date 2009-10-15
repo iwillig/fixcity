@@ -343,37 +343,6 @@ border-bottom: 0 none transparent;
 text-decoration: underline;
 }
 
-#ss-form input#entry_0 {
-background: #fff;
-border: 1px solid #5c8699;
-padding: 0.5em;
-font-family: helvetica,verdana,sans-serif;
-}
-
-#ss-form input[type="submit"] {
-background: #00b0f1;
-border: 0 none transparent;
-color: #fff;
-padding: 0.5em;
-}
-
-#ss-form input.submit {
-background: #00b0f1;
-border: 0 none transparent;
-color: #fff;
-padding: 0.5em;
-}
-
-#ss-form-confirmation {
-background: #00b0f1;
-border: 0 none transparent;
-color: #fff;
-padding: 0.5em;
-float: left;
-margin: 0 0 1.6em;
-display: none;
-}
-
 /* - */
 #racks {
 float: left;
@@ -511,6 +480,10 @@ margin: 1em 0;
 
 #content form #email {
 margin: 0 0 1em;
+}
+
+#content form #title {
+font-size: 0.95em;
 }
 
 .overlabel {
