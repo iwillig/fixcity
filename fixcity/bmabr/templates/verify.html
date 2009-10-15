@@ -74,9 +74,10 @@
              extent = racks.getDataExtent(); 
              map.zoomToExtent(extent);   
 	 };
-        racks.events.on({
-        "featuresadded": findBounds
-	});  
+        // For now, just zoom to default bounds (brooklyn cb1).
+        //racks.events.on({
+        //"featuresadded": findBounds
+	//});  
         }
 
 
