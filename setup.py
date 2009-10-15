@@ -19,7 +19,7 @@ setup(name='fixcity',
       install_requires=[
         'geopy==dev,>=0.93dev-r84',
         'sorl-thumbnail>=3.2.2',
-        'Django>=1.1',
+        'Django>=1.1.1',
         'django-registration>=0.7',
         'psycopg2>=2.0.12',
         'PIL==1.1.6',
