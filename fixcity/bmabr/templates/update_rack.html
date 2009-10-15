@@ -60,27 +60,17 @@
       <div id="fakestatement" class="selfclear"><input name="fakestatementinput" id="fakestatementinput" type="text" title="" /><span class="fakebutton">browse</span></div>
     </div><!-- /#statement-wrap -->
      
-    {% if user.is_authenticated %}
-    <label for="email">Your Email</label>
-    <div class="required">
-       <input id="email" type="text" name="email"
-            value="{{rack.email}}" title="This will not be shared, but we may wish to contact you." />
-     {{ form.email.errors }}
-     {% else %} 
-    <div>
-      <input id="email" type="hidden" name="email"
-            value="{{rack.email}}" title="This will not be shared, but we may wish to contact you." />
-  
-     {% endif %}    
-     <input type="hidden" name="user" value="{{request.POST.user|default:rack.user}}" />
-     {{ form.user.errors }}
-    </div>
     <!-- XXX Do we want to update date on edit? -->
     <input type="hidden" name="date" value="{{rack.date}}"/>
 
     <!-- <input type="text" id="cb_show" value="1" /> -->
-    <input type="hidden" id="id_communityboard" name="communityboard" value="" />
+    <input type="hidden" id="id_communityboard" name="communityboard" value="{{rack.communityboard_id}}" />
 
+
+    <div id="email-wrap">
+     <label>Created By</label>
+     <div>{{creator}}</div>
+    </div>
     <!-- These flags will trigger server-side processing of location &
     communityboard if they're set to zero. We use this to hack around
     the impossibility of knowing if asynch functions have finished

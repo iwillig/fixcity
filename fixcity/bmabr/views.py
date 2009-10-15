@@ -262,7 +262,7 @@ def _maybe_geocode(request):
     if request.POST[u'got_communityboard'] != u'1' \
            or not request.POST[u'communityboard']:
         pnt = fromstr(request.POST['location'], srid=SRID)
-        request.POST['id_communityboard'] = _get_communityboard_id(pnt.x, pnt.y)
+        request.POST['communityboard'] = _get_communityboard_id(pnt.x, pnt.y)
         
 
 def newrack_form(request):
@@ -334,6 +334,9 @@ def support(request, rack_id):
 def rack_edit(request,rack_id):
     rack = Rack.objects.get(id=rack_id)
     if request.method == 'POST':
+        # For now, preserve the original creator.
+        request.POST[u'email'] = rack.email
+        request.POST[u'user'] = rack.user
         _maybe_geocode(request)
         form = RackForm(request.POST, request.FILES, instance=rack)
         if form.is_valid():
@@ -344,9 +347,20 @@ def rack_edit(request,rack_id):
             flash('Please correct the following errors.', request)
     else: 
         form = RackForm()
+
+    # Who created this rack?
+    if rack.user == request.user.username or rack.email == request.user.email:
+        creator = rack.user
+    else:
+        # Don't reveal email address to other users.
+        # Instead show a username, or a truncated address if submitted
+        # anonymously.
+        creator = rack.user or "anonymous" # (%s@...)" % (rack.email.split('@', 1)[0]))
     return render_to_response('update_rack.html', 
           {"rack": rack,
-           "form": form },
+           "form": form ,
+           "creator": creator,
+           },
           context_instance=RequestContext(request, processors=[user_context]))
 
 def rack(request,rack_id): 
