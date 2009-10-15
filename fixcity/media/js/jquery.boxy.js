@@ -125,7 +125,8 @@ jQuery.extend(Boxy, {
         afterDrop:              Boxy.EF,        // callback fired after dialog is dropped. executes in context of Boxy instance.
         afterShow:              Boxy.EF,        // callback fired after dialog becomes visible. executes in context of Boxy instance.
         afterHide:              Boxy.EF,        // callback fired after dialog is hidden. executed in context of Boxy instance.
-        beforeUnload:           Boxy.EF         // callback fired after dialog is unloaded. executed in context of Boxy instance.
+        beforeUnload:           Boxy.EF,        // callback fired after dialog is unloaded. executed in context of Boxy instance.
+				contentClass: 					'question'			// added to allow override of class for custom styling
     },
     
     DEFAULT_X:          50,
@@ -200,11 +201,12 @@ jQuery.extend(Boxy, {
     // you'll get the corresponding key.
     ask: function(question, answers, callback, options) {
         
-        options = jQuery.extend({modal: true, closeable: false},
+        options = jQuery.extend(Boxy.DEFAULTS,
+																{modal: true, closeable: false},
                                 options || {},
                                 {show: true, unloadOnHide: true});
         
-        var body = jQuery('<div></div>').append(jQuery('<div class="question"></div>').html(question));
+        var body = jQuery('<div></div>').append(jQuery('<div class="' + options.contentClass + '"></div>').html(question));
         
         // ick
         var map = {}, answerStrings = [];

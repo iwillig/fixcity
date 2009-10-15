@@ -232,6 +232,17 @@ text-decoration: underline;
 #home-map {
 height: 300px;
 border: 1px solid #8fb9cc;
+position: relative;
+}
+
+#map-legend {
+position: absolute;
+bottom: 10px;
+left: 10px;
+width: 186px;
+height: 23px;
+background: url(/site_media/img/map-legend-bg.png) no-repeat;
+z-index: 5000;
 }
 
 #home-callouts {
@@ -330,37 +341,6 @@ border-bottom: 0 none transparent;
 
 #home-sidebar #recent-racks li:last-child a:hover {
 text-decoration: underline;
-}
-
-#ss-form input#entry_0 {
-background: #fff;
-border: 1px solid #5c8699;
-padding: 0.5em;
-font-family: helvetica,verdana,sans-serif;
-}
-
-#ss-form input[type="submit"] {
-background: #00b0f1;
-border: 0 none transparent;
-color: #fff;
-padding: 0.5em;
-}
-
-#ss-form input.submit {
-background: #00b0f1;
-border: 0 none transparent;
-color: #fff;
-padding: 0.5em;
-}
-
-#ss-form-confirmation {
-background: #00b0f1;
-border: 0 none transparent;
-color: #fff;
-padding: 0.5em;
-float: left;
-margin: 0 0 1.6em;
-display: none;
 }
 
 /* - */
@@ -502,6 +482,10 @@ margin: 1em 0;
 margin: 0 0 1em;
 }
 
+#content form #title {
+font-size: 0.95em;
+}
+
 .overlabel {
 color: #5c8699;
 }
@@ -571,6 +555,7 @@ margin-left: 10px;
 #request-map {
 height: 360px;
 border: 1px solid #8fb9cc;
+position: relative;
 }
 
 #quick-check {

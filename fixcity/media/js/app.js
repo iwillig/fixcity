@@ -1,5 +1,7 @@
 jQuery(document).ready(function($) {
   $(document).superSelectify({manualSelectors: '#nav li:first-child, #nav li:last-child, #ss-form input[type="submit"], #content form>label:first-child, #content form input[type="text"], #content form input[type="password"], #content form input[type="button"], #content form input[type="submit"], .threewide>.col:last-child'});
+
+	OpenLayers.ImgPath = "/site_media/img/mapicons/";
 });
 
 function expandOnce(selector, text) {
@@ -10,7 +12,7 @@ function expandOnce(selector, text) {
 jQuery.fn.infoSuffixify = function() { //chainable
 	return this.each(function() {
 		var obj = jQuery(this);
-		jQuery('<img src="/site_media/img/info.png" alt="More information about this field" title="' + obj.attr('title') + '" />').appendTo('label[for="' + obj.attr('id') + '"]');
+		jQuery('<img src="/site_media/img/info.png" alt="More information about this field" title="' + obj.attr('title') + '" />').click(function () {return false;}).appendTo('label[for="' + obj.attr('id') + '"]');
 	});
 }
 

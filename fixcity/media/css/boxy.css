@@ -50,4 +50,5 @@
 	/* Question Boxes */
 
     .boxy-wrapper .question { width: 400px; min-height: 80px; }
+		.boxy-wrapper .photos { width: 620px; min-height: 80px; }
     .boxy-wrapper .answers { text-align: right; }
