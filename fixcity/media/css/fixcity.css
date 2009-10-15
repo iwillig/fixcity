@@ -232,6 +232,17 @@ text-decoration: underline;
 #home-map {
 height: 300px;
 border: 1px solid #8fb9cc;
+position: relative;
+}
+
+#map-legend {
+position: absolute;
+bottom: 10px;
+left: 10px;
+width: 186px;
+height: 23px;
+background: url(/site_media/img/map-legend-bg.png) no-repeat;
+z-index: 5000;
 }
 
 #home-callouts {
@@ -571,6 +582,7 @@ margin-left: 10px;
 #request-map {
 height: 360px;
 border: 1px solid #8fb9cc;
+position: relative;
 }
 
 #quick-check {
