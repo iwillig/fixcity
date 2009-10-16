@@ -3,10 +3,10 @@
 
 {% block extra_header %} 
 
-<script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
+<script type="text/javascript" src="/site_media/openlayers/lib/OpenLayers.js"></script>
 
 <script type="text/javascript">
-    var map, layer, select, select_vector, racks ; 
+    var map, layer, select, select_vector, racks, bounds; 
 
   if (jQuery.browser.msie) {
    jQuery(window).load(function() {loadMap();});
@@ -45,15 +45,27 @@
                   
                 });
 
-	racks = new OpenLayers.Layer.Vector("Racks", {
+        function replaceRacksList (response) {
+	    // this is apparently not called?
+	    // once we're sure this gets called,
+	    // this should replace the racklist ul.
+            x = response; 
+        };
+
+	function loadRacks () {
+	  extent = map.getExtent().transform(map.projection, map.displayProjection);
+	  racks = new OpenLayers.Layer.Vector("Racks", {
 		    projection: map.displayProjection,
                     strategies: [
                         new OpenLayers.Strategy.BBOX()
                     ],		  
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: "./rack/requested.kml",
-                        params: {		     
-				
+                        params: {
+                           // the default bbox param corresponds to
+                           // this layer's bbox, which is actually
+                           // bigger than the visible map.
+                           visible_bbox: extent.toArray().toString(),
                         },
                         format: new OpenLayers.Format.KML()
                     }),
@@ -63,13 +75,16 @@
                            fillColor: "#ff9e73",
                            strokeColor: "#80503b"
                         }
-                    })
+                    }),
+
+                    callback: replaceRacksList
 
                 });
-    
-        map.addLayers([osm,racks]);
+          return racks;
+        };
+
         var bounds = new OpenLayers.Bounds(-8234063.45026893, 4968638.33081464,-8230209.19302436, 4973585.50729644) ; 
-    	map.zoomToExtent(bounds);
+        map.addLayers([osm]);
 	var findBounds = function(e) {
              extent = racks.getDataExtent(); 
              map.zoomToExtent(extent);   
@@ -77,9 +92,30 @@
         // For now, just zoom to default bounds (brooklyn cb1).
         //racks.events.on({
         //"featuresadded": findBounds
-	//});  
-        }
+	//});
 
+        function reloadRacks() {
+            layers = map.getLayersByName("Racks");
+            while ( layers.length ) {
+                layers.pop().destroy();
+            };
+            racks = loadRacks();
+            map.addLayer(racks);
+            // Apparently when late-adding a layer to a map, we have
+            // to call this ...
+            racks.redraw();
+            // ... and this, to work around a possible openlayers bug
+            // with vectors that use a bbox strategy:
+            map.setCenter(map.getCenter());
+        };
+
+        map.events.on({
+           "zoomend": reloadRacks
+        });
+ 
+    	map.zoomToExtent(bounds);
+
+        }
 
 </script>
 

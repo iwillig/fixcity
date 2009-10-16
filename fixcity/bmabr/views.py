@@ -17,6 +17,7 @@ from django.utils.http import base36_to_int
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.geos import fromstr
 from django.contrib.gis.geos.point import Point
+from django.contrib.gis.geos.polygon import Polygon
 from django.contrib.gis.shortcuts import render_to_kml
 
 from fixcity.bmabr.models import Rack, Comment, Steps
@@ -401,10 +402,17 @@ def rack_all_kml(request):
     return render_to_kml("placemarkers.kml", {'racks' : racks}) 
 
 
-def rack_requested_kml(requst): 
-    racks = Rack.objects.all()
+def rack_requested_kml(request):
+    # Get bounds from request.
+    bbox = request.REQUEST.get('visible_bbox')
+    if bbox:
+        bbox = [float(n) for n in bbox.split(',')]
+        assert len(bbox) == 4
+        geom = Polygon.from_bbox(bbox)
+        racks = Rack.objects.filter(location__contained=geom)
+    else:
+        racks = Rack.objects.all()
     return render_to_kml("placemarkers.kml", {'racks' : racks}) 
-
 
 
 
