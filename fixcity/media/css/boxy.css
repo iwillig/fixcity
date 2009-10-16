@@ -42,10 +42,13 @@
 	
 	.boxy-inner { background-color: white; padding: 0 }
 	.boxy-content { padding: 15px; }
-	.boxy-content hr {
-	  display: block;
-	  margin: 0.5em 0;
-	}
+	.boxy-content h2 { font-size: 1.4em; text-align: center;}
+	
+	.boxy-content div.leftwise { border-right: 1px solid #5c8699; padding: 0 8px 0 0; margin: 0;}
+	.boxy-content div.leftwise,
+	.boxy-content div.rightwise { margin-top: 1em;}
+	.boxy-content .leftwise img,
+	.boxy-content .rightwise img { margin: 5px 0; border: 1px solid #5c8699;}
 	
 	/* Question Boxes */
 
