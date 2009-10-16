@@ -5,103 +5,38 @@
 
 {% block extra_header %} 
 <script src="/site_media/openlayers/OpenLayers.js"></script>
+<script type="text/javascript" src="/site_media/openlayers/OpenLayers.js"></script>
 <script type="text/javascript">
-
-    var map, layer, select;
-    var options = {
-            projection: new OpenLayers.Projection("EPSG:900913"),
-	    displayProjection: new OpenLayers.Projection("EPSG:4326"),
-	    units: "m",
-	    numZoomLevels:19,
-            maxResolution: 156543.03390625,
-	    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
-					     20037508.34, 20037508.34)
-	   };
-
-        function loadMap(){
-	map = new OpenLayers.Map('overview-map',options);
-
-	var osm = new OpenLayers.Layer.WMS(
-                 "OpenStreetMap",
-                 "http://maps.opengeo.org/geowebcache/service/wms",   
-       {
-            layers: "openstreetmap", 
-            format: "image/png",
-            bgcolor: '#A1BDC4'
-            }, 
-            {wrapDateLine: true} 
-        );
-
-
-	var style = new OpenLayers.Style({
-      		    label: "",
-		    fontColor: "#eee",
-                    pointRadius: "10",
-                    fillColor: "#ff9e73",
-                    strokeColor: "#80503b",
-                    strokeWidth: 2,
-                    strokeOpacity: 0.8
-                });
-
-
-
-        var rack = new OpenLayers.Layer.Vector("Racks", {
-                    projection: map.displayProjection,
-                    strategies: [
-                        new OpenLayers.Strategy.Fixed()
-                    ],  
-
-                    protocol: new OpenLayers.Protocol.HTTP({
-                        url: "/rack/{{rack.id}}.kml",
-                    params: {         
-                        },
-                        format: new OpenLayers.Format.KML()
-                    }),
-                   styleMap: new OpenLayers.StyleMap({
-                       "default": style,
-                        "select": {
-                            fillColor: "#ff9e73",
-                            strokeColor: "#925438"
-                        }
-                    })
-
-                });
-
-   var bounds = new OpenLayers.Bounds{{rack.location.extent}} ; 
-   bounds.transform(map.displayProjection, map.projection); 
-    map.addLayers([osm,rack]);
-    var center = new OpenLayers.LonLat(-73.94,40.63);  
-    center.transform(map.displayProjection, map.projection);
-    map.zoomToExtent(bounds);
-
-
-  if (jQuery.browser.msie) {
-   jQuery(window).load(function() {loadMap();});
-  } else {
-  jQuery(document).ready(function() {loadMap();});
-  }
-
-</script>    
+  // Settings needed by rackmap.js.
+  var pointRadius = "10";
+  var externalGraphic = "/site_media/img/rack.png";
+  var WKT = "{{ rack.location.wkt }}";
+  function post_loadmap(map, geom) {
+    map.setCenter(geom.getBounds().getCenterLonLat(), 16);
+  };
+</script>
+<script type="text/javascript" src="/site_media/js/rackmap.js"></script>
 
 {% endblock %}
 
 {% block menu %} 
 {% endblock %} 
 
+{% block lede %}
+<h1>View Rack</h1> <a href="/rack/new">Suggest a new Rack</a>
+{% endblock %}
+
 {% block content %}
-
-<div id="page-title">
-  <h2 class="title">{{rack.title}} |  {{rack.address}} | SUBMITED BY {{rack.user}} </h2>
-  {% if user.is_authenticated %}
-  <a href="/admin/bmabr/rack/{{rack.id}}/edit">Edit</a>
-  {% else %}
-  <a href="/accounts/login">Edit</a>
-  {% endif %}
-</div>
-
-       <h4>Description:</h4>
-       <p>{{rack.description}}</p>
-
+<div id="rackinfo">
+  <dl>
+    <dt>Street Address</dt>
+    <dd>{{rack.address}}</dd>
+    <dt>Establishment</dt>
+    <dd>{{rack.title}}</dd>
+    <dt>Description</dt>
+    <dd>{{rack.description}}</dd>
+    <dt>Photo</dt>
+    <dd>
     {% if rack.photo %}
     <img src="{{rack.photo.extra_thumbnails.large}}" />
     {% else %}
@@ -109,19 +44,25 @@
         <h2> No photos about this request </h2>
       </div>
    {% endif %}
-
- 
-    <h3>Current statement(s) of support </h3>
-    {% for object in statement_query %}
-    <div class="statement">
-      <a href="{{object.file.url}}">
-      <img src="/site_media/images/support.png" />
-      </a>
-      <p> Add by <strong>{{object.email}}</strong></p>
-    </div>
-    {% endfor %} 
+    </dd>
+  </dl>
+  <ul id="support-statements">
+  {% for object in statement_query %}
+    <li><a href="{{object.file.url}}">Statement of support</a></li>
+  {% endfor %}
+  </ul>
     
-
+  {% if user.is_authenticated %}
+  <a class="fakebigbutton" href="/admin/bmabr/rack/{{rack.id}}/edit">Edit this Rack</a>
+  {% else %}
+  <a class="fakebigbutton" href="/accounts/login">Log in to Edit</a>
+  {% endif %}
+  </div><!-- /#rackinfo -->
+    
+<div class="suggest">
+	<div id="request-map">
+	</div>
+</div><!-- /#suggest -->
 
 {% endblock %} 
 
