@@ -117,7 +117,7 @@
   <h2>Recently Added Racks</h2>
   <ul id="recent-racks">
    {% for rack in recent_racks %}
-    <li><a href="/rack/{{rack.id}}/edit"><strong>{{rack.title}}</strong>
+    <li><a href="/rack/{{rack.id}}"><strong>{{rack.title}}</strong>
       {{rack.address}}</a></li>
    {% endfor %}
    <li><a id="more-racks" href="/verify/">See All Suggested Racks</a></li>

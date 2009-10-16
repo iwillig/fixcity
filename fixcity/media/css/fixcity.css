@@ -401,13 +401,15 @@ border: 1px solid #8fb9cc;
 
 /* - */
 
-#content form {
+#content form,
+#content #rackinfo {
 width: 380px;
 overflow: hidden;
 float: left;
 }
 
-#content form label {
+#content form label,
+#content #rackinfo dt {
 background: #fff;
 display: block;
 font-size: 1.2em;
@@ -415,11 +417,13 @@ font-weight: bold;
 margin: 1em 0 0;
 }
 
-#content form>label:first-child {
+#content form>label:first-child,
+#content #rackinfo dl>dt:first-child {
 margin: 0;
 }
 
-#content form label.first-child {
+#content form label.first-child,
+#content #rackinfo dt.first-child {
 margin: 0;
 }
 
@@ -474,6 +478,17 @@ color: #fff;
 padding: 0.5em;
 }
 
+#content a.fakebigbutton {
+font-size: 1.2em;
+display: block;
+background: #00b0f1;
+border: 0 none transparent;
+color: #fff;
+padding: 0.5em;
+text-align: center;
+text-decoration: none;
+}
+
 #content form input.standalone {
 margin: 1em 0;
 }
@@ -484,6 +499,10 @@ margin: 0 0 1em;
 
 #content form #title {
 font-size: 0.95em;
+}
+
+#content #rackinfo dd {
+color: #5c8699;
 }
 
 .overlabel {
@@ -540,6 +559,26 @@ height: 1.2em;
 #fakestatement .fakebutton {
 float: left;
 padding: 0.44em 0.5em;
+}
+
+#support-statements {
+margin: 0;
+padding: 0;
+}
+
+#support-statements li {
+margin: 0 0 0.75em;
+padding: 0 0 0 22px;
+background: url(/site_media/img/pdf-icon.png) 0 50% no-repeat;
+}
+
+#support-statements li a {
+color: #5c8699;
+text-decoration: none;
+}
+
+#support-statements li a:hover {
+text-decoration: underline;
 }
 
 .suggest {
