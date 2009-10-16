@@ -561,6 +561,26 @@ float: left;
 padding: 0.44em 0.5em;
 }
 
+#support-statements {
+margin: 0;
+padding: 0;
+}
+
+#support-statements li {
+margin: 0 0 0.75em;
+padding: 0 0 0 22px;
+background: url(/site_media/img/pdf-icon.png) 0 50% no-repeat;
+}
+
+#support-statements li a {
+color: #5c8699;
+text-decoration: none;
+}
+
+#support-statements li a:hover {
+text-decoration: underline;
+}
+
 .suggest {
 float: left;
 width: 540px;
