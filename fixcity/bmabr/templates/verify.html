@@ -69,12 +69,15 @@
 
               if (attrs.thumbnail != null) {
                   this_li.find("a.rack-thumbnail img").attr("src", attrs.thumbnail);
-              }
+              };
 	      $("#racklist").append(this_li);
 
 	    };
         };
-
+        var load_rack_params = {
+          'pagesize': '10',  // Make this user-controllable.
+          'page': '1',
+        };
 	function loadRacks () {
           // We want the bbox to load only stuff that's actually
           // visible on the map. This is less efficient than the
@@ -91,7 +94,7 @@
                     ],
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: "./rack/requested.kml",
-                        params: {},
+                        params: load_rack_params,
                         format: new OpenLayers.Format.KML()
                     }),
                     styleMap: new OpenLayers.StyleMap({
@@ -139,7 +142,7 @@
     <ul id="racklist">
 
            <li class="selfclear" id="" style="display: none;">
-             <a class="rack-thumbnail" href="#"><img src="" /></a>
+             <a class="rack-thumbnail" href="#"><img /></a>
              <div class="rack-info">
                <h3><a href="#"> </a></h3>
                <h4> </h4>
@@ -162,6 +165,7 @@
         {% endfor %}
         </noscript>
     </ul><!-- #/racklist -->
+
 
 <!--
     <p id="pagination">

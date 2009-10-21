@@ -405,6 +405,14 @@ def rack_all_kml(request):
 
 
 def rack_requested_kml(request):
+    try:
+        page = int(request.REQUEST.get('page', '1'))
+    except ValueError:
+        page = 1
+    try:
+        pagesize = int(request.REQUEST.get('pagesize', sys.maxint))
+    except ValueError:
+        pagesize = sys.maxint
     # Get bounds from request.
     bbox = request.REQUEST.get('bbox')
     if bbox:
@@ -415,7 +423,11 @@ def rack_requested_kml(request):
     else:
         racks = Rack.objects.all()
     racks = racks.order_by(*DEFAULT_RACK_ORDER)
-    return render_to_kml("placemarkers.kml", {'racks' : racks}) 
+    paginator = Paginator(racks, pagesize)
+    page = paginator.page(page)
+    return render_to_kml("placemarkers.kml", {'racks' : racks,
+                                              'page': page,
+                                              'paginator': paginator}) 
 
 
 

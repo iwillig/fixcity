@@ -1,10 +1,10 @@
 {% extends "base.kml" %}
 {% block placemarks %}
 
-{% for rack in racks %}
+{% for rack in page.object_list %}
   <Placemark>
 
-    <id>{{rack.id}}</id>
+    <atom:id>{{rack.id}}</atom:id>
     <name>{{rack.title}}</name>
     <address>{{rack.address}}</address>
 
@@ -13,9 +13,8 @@
 
     {% if rack.photo %}
      <!-- can't find anything suitable in the kml spec... 
-          i guess i could shoehorn something into the description,
-          which can have embedded html, but for now we'll make tag soup -->
-     <thumbnail>{{rack.photo.thumbnail}}</thumbnail>
+          let's make some tag soup -->
+     <topp:thumbnail>{{rack.photo.thumbnail}}</topp:thumbnail>
     {% endif %}
 
     {% autoescape off %}
