@@ -5,8 +5,18 @@
   <Placemark>
 
     <id>{{rack.id}}</id>
-    <name>{{rack.address}}</name>
-    <description>{{rack.description}}</description>	
+    <name>{{rack.title}}</name>
+    <address>{{rack.address}}</address>
+
+    <description>{{rack.description|default:""}}</description>	
+    <Snippet>{{rack.description|default:""|truncatewords:12}}</Snippet>	
+
+    {% if rack.photo %}
+     <!-- can't find anything suitable in the kml spec... 
+          i guess i could shoehorn something into the description,
+          which can have embedded html, but for now we'll make tag soup -->
+     <thumbnail>{{rack.photo.thumbnail}}</thumbnail>
+    {% endif %}
 
     {% autoescape off %}
     {{rack.location.kml}}    

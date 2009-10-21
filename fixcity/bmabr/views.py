@@ -40,6 +40,8 @@ GKEY="ABQIAAAApLR-B_RMiEN2UBRoEWYPlhTmTlZhMVUZVOGFgSe6Omf4DswcaBSLmUPer5a9LF8EEW
 g = geocoders.Google(GKEY)
 SRID=4326
 
+# XXX Need to figure out what order we really want these in.
+DEFAULT_RACK_ORDER = ('-date', '-id')
 
 def flash(astring, request):
     """add a string to the session's flash store"""
@@ -74,7 +76,7 @@ def user_context(request):
     }
 
 def index(request):
-    racks_query = Rack.objects.order_by('-date', '-id')[:13]
+    racks_query = Rack.objects.order_by(*DEFAULT_RACK_ORDER)[:13]
     return render_to_response('index.html',
        {'request':request,
         'recent_racks': racks_query,
@@ -192,7 +194,7 @@ def submit(request):
 
 
 def verify(request): 
-    racks_query = Rack.objects.order_by('-date', '-id')
+    racks_query = Rack.objects.order_by(*DEFAULT_RACK_ORDER)
     paginator = Paginator(racks_query, 5)
 
     try:
@@ -404,7 +406,7 @@ def rack_all_kml(request):
 
 def rack_requested_kml(request):
     # Get bounds from request.
-    bbox = request.REQUEST.get('visible_bbox')
+    bbox = request.REQUEST.get('bbox')
     if bbox:
         bbox = [float(n) for n in bbox.split(',')]
         assert len(bbox) == 4
@@ -412,6 +414,7 @@ def rack_requested_kml(request):
         racks = Rack.objects.filter(location__contained=geom)
     else:
         racks = Rack.objects.all()
+    racks = racks.order_by(*DEFAULT_RACK_ORDER)
     return render_to_kml("placemarkers.kml", {'racks' : racks}) 
 
 
