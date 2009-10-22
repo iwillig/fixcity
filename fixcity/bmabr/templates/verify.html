@@ -91,7 +91,7 @@
           // but we show the list of racks in HTML too, so we need the
           // real list of visible stuff. 
           // But it's rumored that setting ratio to 1 triggers bugs.
-          bbox = new OpenLayers.Strategy.BBOX({ratio: 1.03});
+          var bbox = new OpenLayers.Strategy.BBOX({ratio: 1.03});
           bbox.invalidBounds = function () { return true };
 	  racks = new OpenLayers.Layer.Vector("Racks", {
 		    projection: map.displayProjection,
