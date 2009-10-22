@@ -37,7 +37,7 @@
         <topp:page_next>{{page.next_page_number}}</topp:page_next>
       {% endif %}
 
-      <topp:num_pages>{{paginator.num_pages}}</topp:num_pages>
+      <topp:num_pages>{{page.paginator.num_pages}}</topp:num_pages>
 
     {% endif %}
 

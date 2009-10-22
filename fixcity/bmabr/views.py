@@ -410,9 +410,9 @@ def rack_all_kml(request):
 @cache_page(60 * 10)
 def rack_requested_kml(request):
     try:
-        page = int(request.REQUEST.get('page_number', '1'))
+        page_number = int(request.REQUEST.get('page_number', '1'))
     except ValueError:
-        page = 1
+        page_number = 1
     try:
         page_size = int(request.REQUEST.get('page_size', sys.maxint))
     except ValueError:
@@ -428,11 +428,12 @@ def rack_requested_kml(request):
         racks = Rack.objects.all()
     racks = racks.order_by(*DEFAULT_RACK_ORDER)
     paginator = Paginator(racks, page_size)
-    page = paginator.page(page)
+    page_number = min(page_number, paginator.num_pages)
+    page = paginator.page(page_number)
     return render_to_kml("placemarkers.kml", {'racks' : racks,
                                               'page': page,
                                               'page_size': page_size,
-                                              'paginator': paginator}) 
+                                              }) 
 
 
 def community_board_kml(request): 

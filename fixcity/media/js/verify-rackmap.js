@@ -92,7 +92,9 @@ function loadMap() {
         // Update params for the next data load by the layers' strategy.
         load_rack_params.page_number = parseInt(info.page_number);
         var num_pages = parseInt(info.num_pages);
-        if (num_pages > 1) {
+        if (num_pages == 1) {
+            $("#pagination").hide();
+        } else if (num_pages > 1) {
             // Update links in the UI.
             $("#pagination").show();
             if (info.page_previous == null) {
