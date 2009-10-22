@@ -135,7 +135,7 @@ function loadMap() {
         // real list of visible stuff.
         // But it's rumored that setting ratio to 1 triggers bugs.
         var bbox = new OpenLayers.Strategy.BBOX({
-            ratio: 1.03
+            ratio: 1.01
         });
         bbox.invalidBounds = function () {
             // Force loading ALL the time.
