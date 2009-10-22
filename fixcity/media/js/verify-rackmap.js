@@ -71,7 +71,7 @@ function loadMap() {
     var load_rack_params = {
         'page_size': 10,
         // Make this user-controllable.
-        'page_number': 1,
+        'page_number': 1
     };
 
     function makeClickHandler(n) {
@@ -80,7 +80,7 @@ function loadMap() {
             evt.preventDefault();
             load_rack_params.page_number = n;
             racks.events.triggerEvent("moveend");
-        }
+        };
     };
 
     function updatePagination(features) {
@@ -138,7 +138,8 @@ function loadMap() {
             ratio: 1.03
         });
         bbox.invalidBounds = function () {
-            return true
+            // Force loading ALL the time.
+            return true;
         };
         racks = new OpenLayers.Layer.Vector("Racks", {
             projection: map.displayProjection,
@@ -155,8 +156,7 @@ function loadMap() {
                     fillColor: "#ff9e73",
                     strokeColor: "#80503b"
                 }
-            }),
-
+            })
         });
         return racks;
     };
