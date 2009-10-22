@@ -427,6 +427,7 @@ def rack_requested_kml(request):
     page = paginator.page(page)
     return render_to_kml("placemarkers.kml", {'racks' : racks,
                                               'page': page,
+                                              'pagesize': pagesize,
                                               'paginator': paginator}) 
 
 

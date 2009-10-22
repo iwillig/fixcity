@@ -22,7 +22,7 @@
             maxResolution: 156543.03390625,
 	    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
 					     20037508.34, 20037508.34)
-	   };
+          };
 
     function loadMap(){
 	map = new OpenLayers.Map('verify-map',options);
@@ -45,6 +45,11 @@
                 });
 
 	var li_template = $("#racklist li:first").clone();
+
+        function updatePagination(features) {
+          if ( features.length == 0) { return };
+          features[features.length - 1];
+        };
 
         function updateRackList (evt) {
 
@@ -73,6 +78,7 @@
 	      $("#racklist").append(this_li);
 
 	    };
+            updatePagination(layer.features);
         };
         var load_rack_params = {
           'pagesize': '10',  // Make this user-controllable.
@@ -111,13 +117,12 @@
         };
 
         var bounds = new OpenLayers.Bounds(-8234063.45026893, 4968638.33081464,-8230209.19302436, 4973585.50729644) ;
-        map.addLayers([osm]);
         racks = loadRacks();
-        map.addLayer(racks);
+        map.addLayers([osm, racks]);
 
         // Every time we load new features (via the BBOX strategy
         // above), we want to update the html list of racks.
-        racks.events.on({"loadend": updateRackList})
+        racks.events.on({"loadend": updateRackList});
         map.zoomToExtent(bounds);
 
         }
@@ -137,7 +142,6 @@
 {% block content %}
 
 <div id="racks">
-
 
     <ul id="racklist">
 
@@ -165,6 +169,23 @@
         {% endfor %}
         </noscript>
     </ul><!-- #/racklist -->
+
+    <p id="pagination" style="display: none;">
+        <a rel="prev" href="#">Previous Page</a>
+
+        <a rel="start" href="#">1</a>
+
+        <a rel="section" href="#">2</a>
+
+        <a id="current-page" rel="alternate">3</a>
+
+        <a rel="section" href="#">4</a>
+
+        <a rel="end" href="#">9999</a>
+
+        <a rel="next" href="#">4</a>
+
+    </p>
 
 
 <!--

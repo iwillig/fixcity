@@ -17,9 +17,27 @@
      <topp:thumbnail>{{rack.photo.thumbnail}}</topp:thumbnail>
     {% endif %}
 
+
     {% autoescape off %}
     {{rack.location.kml}}    
     {% endautoescape %}	
+
+    <!-- let's sneak pagination in here -->
+    {% if forloop.first %}
+      {% if page.has_previous %}
+        <atom:link
+          rel="previous"
+          href="/verify/rack/requested.kml?page={{page.previous_page_number}}&amp;pagesize={{pagesize}}" />
+      {% endif %}
+    {% endif %}
+
+    {% if forloop.last %}
+      {% if page.has_next %}
+        <atom:link
+          rel="next"
+          href="/verify/rack/requested.kml?page={{page.next_page_number}}&amp;pagesize={{pagesize}}" />
+      {% endif %}
+    {% endif %}
 
   </Placemark>
 {% endfor %}{% endblock %}
