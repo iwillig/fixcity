@@ -34,7 +34,7 @@ function loadMap() {
     styleMap: new OpenLayers.StyleMap({
       "default": {
         pointRadius: pointRadius,
-        externalGraphic: externalGraphic,
+        externalGraphic: externalGraphic
       }
     })
   };
