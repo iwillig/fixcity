@@ -20,6 +20,8 @@ from django.contrib.gis.geos.point import Point
 from django.contrib.gis.geos.polygon import Polygon
 from django.contrib.gis.shortcuts import render_to_kml
 
+from django.views.decorators.cache import cache_page
+
 from fixcity.bmabr.models import Rack, Comment, Steps
 from fixcity.bmabr.models import Neighborhoods
 from fixcity.bmabr.models import CommunityBoard
@@ -403,16 +405,18 @@ def rack_all_kml(request):
     racks = Rack.objects.all()
     return render_to_kml("placemarkers.kml", {'racks' : racks}) 
 
-
+# Cache hits are likely in a few cases: initial load of page;
+# or clicking pagination links; or zooming in/out.
+@cache_page(60 * 10)
 def rack_requested_kml(request):
     try:
-        page = int(request.REQUEST.get('page', '1'))
+        page = int(request.REQUEST.get('page_number', '1'))
     except ValueError:
         page = 1
     try:
-        pagesize = int(request.REQUEST.get('pagesize', sys.maxint))
+        page_size = int(request.REQUEST.get('page_size', sys.maxint))
     except ValueError:
-        pagesize = sys.maxint
+        page_size = sys.maxint
     # Get bounds from request.
     bbox = request.REQUEST.get('bbox')
     if bbox:
@@ -423,13 +427,12 @@ def rack_requested_kml(request):
     else:
         racks = Rack.objects.all()
     racks = racks.order_by(*DEFAULT_RACK_ORDER)
-    paginator = Paginator(racks, pagesize)
+    paginator = Paginator(racks, page_size)
     page = paginator.page(page)
     return render_to_kml("placemarkers.kml", {'racks' : racks,
                                               'page': page,
-                                              'pagesize': pagesize,
+                                              'page_size': page_size,
                                               'paginator': paginator}) 
-
 
 
 def community_board_kml(request): 

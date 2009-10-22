@@ -22,21 +22,23 @@
     {{rack.location.kml}}    
     {% endautoescape %}	
 
-    <!-- let's sneak pagination in here -->
     {% if forloop.first %}
-      {% if page.has_previous %}
-        <atom:link
-          rel="previous"
-          href="/verify/rack/requested.kml?page={{page.previous_page_number}}&amp;pagesize={{pagesize}}" />
-      {% endif %}
-    {% endif %}
+      <!-- let's sneak pagination in here. 
+           I tried to use http://tools.ietf.org/html/rfc5005#section-3
+           but the KML parser in OpenLayers doesn't handle it. 
+      -->
+      <topp:page_number>{{page.number}}</topp:page_number>
 
-    {% if forloop.last %}
-      {% if page.has_next %}
-        <atom:link
-          rel="next"
-          href="/verify/rack/requested.kml?page={{page.next_page_number}}&amp;pagesize={{pagesize}}" />
+      {% if page.has_previous %}
+        <topp:page_previous>{{page.previous_page_number}}</topp:page_previous>
       {% endif %}
+
+      {% if page.has_next %}
+        <topp:page_next>{{page.next_page_number}}</topp:page_next>
+      {% endif %}
+
+      <topp:num_pages>{{paginator.num_pages}}</topp:num_pages>
+
     {% endif %}
 
   </Placemark>
