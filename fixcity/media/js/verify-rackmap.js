@@ -61,7 +61,7 @@ function loadMap() {
             this_li.find("h3 a").attr("href", "/rack/" + attrs.id + "/");
 
             if (attrs.thumbnail != null) {
-                this_li.find("a.rack-thumbnail img").attr("src", attrs.thumbnail);
+                this_li.find("a.rack-thumbnail img").attr("src", attrs.thumbnail.value);
             };
             $("#racklist").append(this_li);
 
@@ -90,8 +90,8 @@ function loadMap() {
         var info = features[0].attributes;
 
         // Update params for the next data load by the layers' strategy.
-        load_rack_params.page_number = parseInt(info.page_number);
-        var num_pages = parseInt(info.num_pages);
+        load_rack_params.page_number = parseInt(info.page_number.value);
+        var num_pages = parseInt(info.num_pages.value);
         if (num_pages == 1) {
             $("#pagination").hide();
         } else if (num_pages > 1) {
@@ -101,14 +101,14 @@ function loadMap() {
                 $("#pagination a[rel=prev]").hide();
             } else {
                 $("#pagination a[rel=prev]").show();
-                $("#pagination a[rel=prev]").click(makeClickHandler(info.page_previous));
+                $("#pagination a[rel=prev]").click(makeClickHandler(info.page_previous.value));
             };
 
             if (info.page_next == null) {
                 $("#pagination a[rel=next]").hide();
             } else {
                 $("#pagination a[rel=next]").show();
-                $("#pagination a[rel=next]").click(makeClickHandler(info.page_next));
+                $("#pagination a[rel=next]").click(makeClickHandler(info.page_next.value));
             };
 
             // Simple pagination - just list all the pages.
