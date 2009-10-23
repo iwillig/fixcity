@@ -44,15 +44,15 @@ function loadMap() {
         layer = evt.object;
         $("#racklist").empty();
         if (layer.features.length == 0) {
-            this_li = li_template.clone();
+            var this_li = li_template.clone();
             this_li.find("h3").text("No racks in this area.");
-            this_li.attr("style", "");
+            this_li.show();
             $("#racklist").append(this_li);
         }
-        for (i = 0; i < layer.features.length; ++i) {
-            this_li = li_template.clone();
-            this_li.attr("style", ""); // Unhide.
-            attrs = layer.features[i].attributes;
+        for (var i = 0; i < layer.features.length; ++i) {
+            var this_li = li_template.clone();
+            this_li.show();
+            var attrs = layer.features[i].attributes;
             this_li.attr("id", "rack_" + attrs.id);
             this_li.find("h4").text(attrs.address);
             this_li.find("h3 a").text(attrs.name);
@@ -85,6 +85,7 @@ function loadMap() {
 
     function updatePagination(features) {
         if (features.length == 0) {
+            $("#pagination").hide();
             return;
         };
         var info = features[0].attributes;
