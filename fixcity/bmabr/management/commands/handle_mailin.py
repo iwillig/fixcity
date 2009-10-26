@@ -1,4 +1,4 @@
-# based on email2trac.py, which is Copyright (C) 2002 under the GPL v2 or later
+ # based on email2trac.py, which is Copyright (C) 2002 under the GPL v2 or later
 """
 How to use
 ----------
@@ -39,46 +39,19 @@ import mimetypes
 import traceback
 
 
-# Will fail where unavailable, e.g. Windows
-#
-try:
-    import syslog
-    SYSLOG_AVAILABLE = True
-except ImportError:
-    SYSLOG_AVAILABLE = False
+# XXX imports from trac we need to replace or remove:
+# from trac import attachment 
+# from trac import util
 
-from datetime import tzinfo, timedelta, datetime
-from trac import config as trac_config
-
-# Some global variables
-#
-trac_default_version = '0.11'
-m = None
-
-# A UTC class needed for trac version 0.11, added by
-# tbaschak at ktc dot mb dot ca
-#
-class UTC(tzinfo):
-    """UTC"""
-    ZERO = timedelta(0)
-    HOUR = timedelta(hours=1)
-
-    def utcoffset(self, dt):
-        return self.ZERO
-
-    def tzname(self, dt):
-        return "UTC"
-
-    def dst(self, dt):
-        return self.ZERO
+from datetime import datetime
 
 
-class TicketEmailParser(object):
+class EmailParser(object):
     env = None
     comment = '> '
-
-    def __init__(self, env, parameters, version):
-        self.env = env
+    msg = None
+    
+    def __init__(self, parameters):
 
         # Database connection
         #
@@ -95,7 +68,6 @@ class TicketEmailParser(object):
         self.email_from = None
         self.id = None
 
-        self.VERSION = version
         self.DRY_RUN = parameters['dry_run']
 
         self.get_config = self.env.config.get
@@ -381,25 +353,24 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             except OSError:
                 pass
 
-    def email_header_txt(self, m):
+    def email_header_txt(self):
         """
         Display To and CC addresses in description field
         """
-        str = ''
-        #if m['To'] and len(m['To']) > 0 and m['To'] != 'hic@sara.nl':
-        if m['To'] and len(m['To']) > 0:
-            str = "'''To:''' %s\r\n" %(m['To'])
-        if m['Cc'] and len(m['Cc']) > 0:
-            str = "%s'''Cc:''' %s\r\n" % (str, m['Cc'])
+        output = ''
+        if self.msg['To'] and len(self.msg['To']) > 0:
+            output = "'''To:''' %s\r\n" %(self.msg['To'])
+        if self.msg['Cc'] and len(self.msg['Cc']) > 0:
+            output = "%s'''Cc:''' %s\r\n" % (output, self.msg['Cc'])
 
-        return  self.email_to_unicode(str)
+        return  self.email_to_unicode(output)
 
 
-    def get_sender_info(self, message):
+    def get_sender_info(self):
         """
         Get the default author name and email address from the message
         """
-
+        message = self.msg
         self.email_to = self.email_to_unicode(message['to'])
         self.to_name, self.to_email_addr = email.Utils.parseaddr (self.email_to)
 
@@ -426,11 +397,11 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             self.email_from = users[0][0]
             self.author = users[0][0]
 
-    def set_reply_fields(self, ticket, message):
+    def set_reply_fields(self, ticket):
         """
         Set all the right fields for a new ticket
         """
-
+        message = self.msg
         ## Only use name or email adress
         #ticket['reporter'] = self.email_from
         ticket['reporter'] = self.author
@@ -559,7 +530,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
                 if self.DEBUG >= 10:
                     print  'ticket_field\t %s = %s' %(field,  ticket[field])
 
-    def ticket_update(self, m, id, spam):
+    def ticket_update(self, id, spam):
         """
         If the current email is a reply to an existing ticket, this function
         will append the contents of this email to that ticket, instead of
@@ -589,15 +560,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             self.id = int(id[1:-1])
 
 
-        # When is the change committed
-        #
-        #
-        if self.VERSION == 0.11:
-            utc = UTC()
-            when = datetime.now(utc)
-        else:
-            when = int(time.time())
-
         try:
             tkt = Ticket(self.env, self.id, self.db)
         except util.TracError, detail:
@@ -605,54 +567,16 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             self.id = None
             return False
 
-        # reopen the ticket if it is was closed
-        # We must use the ticket workflow framework
-        #
-        if tkt['status'] in ['closed']:
-
-            #print controller.actions['reopen']
-            #
-            # As reference
-            # req = Mock(href=Href('/'), abs_href=Href('http://www.example.com/'), authname='anonymous', perm=MockPerm(), args={})
-            #
-            #a = controller.render_ticket_action_control(req, tkt, 'reopen')
-            #print 'controller : ', a
-            #
-            #b = controller.get_all_status()
-            #print 'get all status: ', b
-            #
-            #b = controller.get_ticket_changes(req, tkt, 'reopen')
-            #print 'get_ticket_changes :', b
-
-            if self.WORKFLOW and (self.VERSION in ['0.11']) :
-                from trac.ticket.default_workflow import ConfigurableTicketWorkflow
-                from trac.test import Mock, MockPerm
-
-                req = Mock(authname='anonymous', perm=MockPerm(), args={})
-
-                controller = ConfigurableTicketWorkflow(self.env)
-                fields = controller.get_ticket_changes(req, tkt, self.WORKFLOW)
-
-                if self.DEBUG:
-                    print 'TD: Workflow ticket update fields: ', fields
-
-                for key in fields.keys():
-                    tkt[key] = fields[key]
-
-            else:
-                tkt['status'] = 'reopened'
-                tkt['resolution'] = ''
-
         # Must we update some ticket fields properties
         #
         if update_fields:
             self.update_ticket_fields(tkt, update_fields)
 
-        message_parts = self.get_message_parts(m)
+        message_parts = self.get_message_parts()
         message_parts = self.unique_attachment_names(message_parts)
 
         if self.EMAIL_HEADER:
-            message_parts.insert(0, self.email_header_txt(m))
+            message_parts.insert(0, self.email_header_txt())
 
         body_text = self.body_text(message_parts)
 
@@ -662,11 +586,8 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             else:
                 tkt.save_changes(self.author, body_text, when)
 
-        if self.VERSION  == 0.9:
-            str = self.attachments(message_parts, True)
-        else:
-            str = self.attachments(message_parts)
-
+        status = self.attachments(message_parts)
+            
         if self.notification and not spam:
             self.notify(tkt, False, when)
 
@@ -724,10 +645,11 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
 
 
 
-    def new_ticket(self, msg, subject, spam, set_fields = None):
+    def new_ticket(self, subject, spam, set_fields = None):
         """
         Create a new ticket
         """
+        msg = self.msg
         if self.DEBUG:
             print "TD: new_ticket"
 
@@ -747,7 +669,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         else:
             tkt['summary'] = subject
 
-        self.set_reply_fields(tkt, msg)
+        self.set_reply_fields(tkt)
 
         if set_fields:
             rest, keywords = string.split(set_fields, '?')
@@ -760,13 +682,13 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         #
         head = ''
         if self.EMAIL_HEADER > 0:
-            head = self.email_header_txt(msg)
+            head = self.email_header_txt()
 
-        message_parts = self.get_message_parts(msg)
+        message_parts = self.get_message_parts()
         message_parts = self.unique_attachment_names(message_parts)
 
         if self.EMAIL_HEADER > 0:
-            message_parts.insert(0, self.email_header_txt(msg))
+            message_parts.insert(0, self.email_header_txt())
 
         body_text = self.body_text(message_parts)
 
@@ -816,28 +738,27 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             self.notify(tkt, True)
 
     def parse(self, fp):
-        global m
 
-        m = email.message_from_file(fp)
+        self.msg = email.message_from_file(fp)
 
-        if not m:
+        if not self.msg:
             if self.DEBUG:
                 print "TD: This is not a valid email message format"
             return
 
         # Work around lack of header folding in Python; see http://bugs.python.org/issue4696
-        m.replace_header('Subject', m['Subject'].replace('\r', '').replace('\n', ''))
+        self.msg.replace_header('Subject', self.msg['Subject'].replace('\r', '').replace('\n', ''))
 
         if self.DEBUG > 1:        # save the entire e-mail message text
-            message_parts = self.get_message_parts(m)
+            message_parts = self.get_message_parts()
             message_parts = self.unique_attachment_names(message_parts)
-            self.save_email_for_debug(m, True)
+            self.save_email_for_debug(self.msg, True)
             body_text = self.body_text(message_parts)
             self.debug_body(body_text, True)
             self.debug_attachments(message_parts)
 
         self.db = self.env.get_db_cnx()
-        self.get_sender_info(m)
+        self.get_sender_info()
 
         if not self.email_header_acl('white_list', self.email_addr, True):
             if self.DEBUG > 1 :
@@ -856,10 +777,10 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
 
         # If drop the message
         #
-        if self.spam(m) == 'drop':
+        if self.spam(self.msg) == 'drop':
             return False
 
-        elif self.spam(m) == 'spam':
+        elif self.spam(self.msg) == 'spam':
             spam_msg = True
         else:
             spam_msg = False
@@ -869,10 +790,10 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         else:
             self.notification = 0
 
-        if not m['Subject']:
+        if not self.msg['Subject']:
             return False
         else:
-            subject  = self.email_to_unicode(m['Subject'])
+            subject  = self.email_to_unicode(self.msg['Subject'])
 
         #
         # [hic] #1529: Re: LRZ
@@ -890,22 +811,22 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             # update ticket + fields
             #
             if result.group('reply_fields') and self.TICKET_UPDATE:
-                self.ticket_update(m, result.group('reply_fields'), spam_msg)
+                self.ticket_update(result.group('reply_fields'), spam_msg)
 
             # Update ticket
             #
             elif result.group('reply') and self.TICKET_UPDATE:
-                self.ticket_update(m, result.group('reply'), spam_msg)
+                self.ticket_update(result.group('reply'), spam_msg)
 
             # New ticket + fields
             #
             elif result.group('new_fields'):
-                self.new_ticket(m, subject[:result.start('new_fields')], spam_msg, result.group('new_fields'))
+                self.new_ticket(subject[:result.start('new_fields')], spam_msg, result.group('new_fields'))
 
         # Create ticket
         #
         else:
-            self.new_ticket(m, subject, spam_msg)
+            self.new_ticket(subject, spam_msg)
 
     def strip_signature(self, text):
         """
@@ -993,11 +914,12 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         #
 
 
-    def get_message_parts(self, msg):
+    def get_message_parts(self):
         """
         parses the email message and returns a list of body parts and attachments
         body parts are returned as strings, attachments are returned as tuples of (filename, Message object)
         """
+        msg = self.msg
         message_parts = []
 
         # This is used to figure out when we are inside an AppleDouble container
@@ -1241,45 +1163,15 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
 
     def notify(self, tkt, new=True, modtime=0):
         """
-        A wrapper for the TRAC notify function. So we can use templates
+        send notification that we got an email. XXX delete this?
         """
         if self.DRY_RUN:
             print 'DRY_RUN: self.notify(tkt, True) ', self.author
             return
-        try:
-            # create false {abs_}href properties, to trick Notify()
-            #
-            if not self.VERSION == 0.11:
-                self.env.abs_href = Href(self.get_config('project', 'url'))
-                self.env.href = Href(self.get_config('project', 'url'))
-
-            tn = TicketNotifyEmail(self.env)
-
-            if self.notify_template:
-
-                if self.VERSION == 0.11:
-
-                    from trac.web.chrome import Chrome
-
-                    if self.notify_template_update and not new:
-                        tn.template_name = self.notify_template_update
-                    else:
-                        tn.template_name = self.notify_template
-
-                    tn.template = Chrome(tn.env).load_template(tn.template_name, method='text')
-
-                else:
-
-                    tn.template_name = self.notify_template;
-
-            tn.notify(tkt, new, modtime)
-
-        except Exception, e:
-            print 'TD: Failure sending notification on creation of ticket #%s: %s' %(self.id, e)
 
     def html_mailto_link(self, subject, body):
         """
-        This function returns a HTML mailto tag with the ticket id and author email address
+        This function returns a HTML mailto tag with the ticket id and author email address  XXX or some other params
         """
         if not self.author:
             author = self.email_addr
@@ -1288,18 +1180,18 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
 
         # use urllib to escape the chars
         #
-        str = 'mailto:%s?Subject=%s&Cc=%s' %(
+        output = 'mailto:%s?Subject=%s&Cc=%s' %(
                urllib.quote(self.email_addr),
                    urllib.quote('Re: #%s: %s' %(self.id, subject)),
                    urllib.quote(self.MAILTO_CC)
                    )
 
-        str = '\r\n{{{\r\n#!html\r\n<a\r\n href="%s">Reply to: %s\r\n</a>\r\n}}}\r\n' %(str, author)
-        return str
+        output = '<a href="%s">Reply to: %s</a>' %(output, author)
+        return output
 
     def attachments(self, message_parts, update=False):
 
-        """save any attachments as files in the ticket's directory
+        """save any attachments as XXX a single photo?
         """
         if self.DRY_RUN:
             print "DRY_RUN: no attachments saved"
@@ -1371,50 +1263,9 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         return status
 
 
-def mkdir_p(dir, mode):
-    '''do a mkdir -p'''
-
-    arr = string.split(dir, '/')
-    path = ''
-    for part in arr:
-        path = '%s/%s' % (path, part)
-        try:
-            stats = os.stat(path)
-        except OSError:
-            os.mkdir(path, mode)
-
-def ReadConfig(file, name):
-    """
-    Parse the config file
-    """
-    if not os.path.isfile(file):
-        print 'File %s does not exist' %file
-        sys.exit(1)
-
-    config = trac_config.Configuration(file)
-
-    # Use given project name else use defaults
-    #
-    if name:
-        sections = config.sections()
-        if not name in sections:
-            print "Not a valid project name: %s" %name
-            print "Valid names: %s" %sections
-            sys.exit(1)
-
-        project =  dict()
-        for option, value in  config.options(name):
-            project[option] = value
-
-    else:
-        # use some trac internals to get the defaults
-        #
-        project = config.parser.defaults()
-
-    return project
-
-
 from django.core.management.base import BaseCommand
+from fixcity.bmabr import models
+
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         #make_option("-d", "--daemon", dest="daemonize", action="store_true"),
@@ -1423,16 +1274,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         import pdb; pdb.set_trace()
         print "whee"
-        version = '0.1' #XXX
-        settings = {}
-        from trac.env import Environment
-        env = Environment(settings['project'], create=0)
-        tktparser = TicketEmailParser(env, settings, float(version))
+        settings = {'dry_run': True}
+        parser = EmailParser(settings)
         try:
-            tktparser.parse(sys.stdin)
+            parser.parse(sys.stdin)
         except Exception, error:
             traceback.print_exc()
-            if m:
-                tktparser.save_email_for_debug(m, True)
+            if parser.msg:
+                parser.save_email_for_debug(parser.msg, True)
 
             sys.exit(1)
