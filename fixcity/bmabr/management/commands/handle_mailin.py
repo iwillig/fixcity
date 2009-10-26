@@ -1,4 +1,4 @@
- # based on email2trac.py, which is Copyright (C) 2002 under the GPL v2 or later
+# based on email2trac.py, which is Copyright (C) 2002 under the GPL v2 or later
 """
 How to use
 ----------
@@ -38,6 +38,7 @@ from stat import S_IRWXU, S_IRWXG, S_IRWXO
 import mimetypes
 import traceback
 
+from fixcity.bmabr import models
 
 # XXX imports from trac we need to replace or remove:
 # from trac import attachment 
@@ -53,10 +54,6 @@ class EmailParser(object):
     
     def __init__(self, parameters):
 
-        # Database connection
-        #
-        self.db = None
-
         # Save parameters
         #
         self.parameters = parameters
@@ -70,7 +67,7 @@ class EmailParser(object):
 
         self.DRY_RUN = parameters['dry_run']
 
-        self.get_config = self.env.config.get
+        self.get_config = lambda self, key: None # XXX self.env.config.get
 
         if parameters.has_key('umask'):
             os.umask(int(parameters['umask'], 8))
@@ -390,6 +387,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         #   n : Name that the user has set in the settings tab
         #   e : email address that the user has set in the settings tab
         #
+        # XXX rewrite for Django, or delete?
         users = [ (u,n,e) for (u, n, e) in self.env.get_known_users(self.db)
                 if e and (e.lower() == self.email_addr.lower()) ]
 
@@ -740,6 +738,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
     def parse(self, fp):
 
         self.msg = email.message_from_file(fp)
+        import pdb; pdb.set_trace()
 
         if not self.msg:
             if self.DEBUG:
@@ -757,7 +756,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             self.debug_body(body_text, True)
             self.debug_attachments(message_parts)
 
-        self.db = self.env.get_db_cnx()
         self.get_sender_info()
 
         if not self.email_header_acl('white_list', self.email_addr, True):
@@ -1264,7 +1262,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
 
 
 from django.core.management.base import BaseCommand
-from fixcity.bmabr import models
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
@@ -1272,12 +1269,14 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        import pdb; pdb.set_trace()
         print "whee"
-        settings = {'dry_run': True}
+        settings = {'dry_run': True,
+                    'ignore_trac_user_settings': True,
+                    'debug': True,
+                    }
         parser = EmailParser(settings)
         try:
-            parser.parse(sys.stdin)
+            parser.parse(open('/home/pw/tmp/riley_turtle_small.jpg'))
         except Exception, error:
             traceback.print_exc()
             if parser.msg:
