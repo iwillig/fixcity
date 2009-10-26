@@ -1,48 +1,23 @@
 # based on email2trac.py, which is Copyright (C) 2002 under the GPL v2 or later
-"""
-How to use
-----------
- * See https://subtrac.sara.nl/oss/email2trac/
 
- * Create an config file:
-    [DEFAULT]                        # REQUIRED
-    project      : /data/trac/test   # REQUIRED
-    debug        : 1                 # OPTIONAL, if set print some DEBUG info
-    trac_version : 0.9               # OPTIONAL, default is 0.11
-
-    [jouvin]                         # OPTIONAL project declaration, if set both fields necessary
-    project      : /data/trac/jouvin # use -p|--project jouvin.
-
- * default config file is : /etc/email2trac.conf
-
- * Commandline opions:
-                -h,--help
-                -f,--file  <configuration file>
-                -n,--dry-run
-                -p, --project <project name>
-                -t, --ticket_prefix <name>
-
-"""
 import os
 import sys
 import string
-import stat
-import time
-#import email
 import email.Header
 import re
 import urllib
 import unicodedata
-#from stat import *
 from stat import S_IRWXU, S_IRWXG, S_IRWXO
 import mimetypes
 import traceback
 
 from fixcity.bmabr import models
+from fixcity.bmabr import views
+from django.contrib.gis.geos.point import Point
+from django.contrib.auth.models import User
 
 # XXX imports from trac we need to replace or remove:
 # from trac import attachment 
-# from trac import util
 
 from datetime import datetime
 
@@ -82,15 +57,6 @@ class EmailParser(object):
         else:
             self.DEBUG = 0
 
-        if parameters.has_key('mailto_link'):
-            self.MAILTO = int(parameters['mailto_link'])
-            if parameters.has_key('mailto_cc'):
-                self.MAILTO_CC = parameters['mailto_cc']
-            else:
-                self.MAILTO_CC = ''
-        else:
-            self.MAILTO = 0
-
         if parameters.has_key('spam_level'):
             self.SPAM_LEVEL = int(parameters['spam_level'])
         else:
@@ -126,20 +92,15 @@ class EmailParser(object):
         else:
             self.REPLY_ALL = 0
 
-        if parameters.has_key('ticket_update'):
-            self.TICKET_UPDATE = int(parameters['ticket_update'])
+        if parameters.has_key('rack_update'):
+            self.RACK_UPDATE = int(parameters['rack_update'])
         else:
-            self.TICKET_UPDATE = 0
+            self.RACK_UPDATE = 0
 
         if parameters.has_key('drop_spam'):
             self.DROP_SPAM = int(parameters['drop_spam'])
         else:
             self.DROP_SPAM = 0
-
-        if parameters.has_key('verbatim_format'):
-            self.VERBATIM_FORMAT = int(parameters['verbatim_format'])
-        else:
-            self.VERBATIM_FORMAT = 1
 
         if parameters.has_key('reflow'):
             self.REFLOW = int(parameters['reflow'])
@@ -226,7 +187,7 @@ class EmailParser(object):
         #
         if self.DROP_SPAM and spam:
             if self.DEBUG > 2 :
-                print 'This message is a SPAM. Automatic ticket insertion refused (SPAM level > %d' % self.SPAM_LEVEL
+                print 'This message is a SPAM. Automatic rack insertion refused (SPAM level > %d' % self.SPAM_LEVEL
 
             return 'drop'
 
@@ -241,7 +202,7 @@ class EmailParser(object):
     def email_header_acl(self, keyword, header_field, default):
         """
         This function wil check if the email address is allowed or denied
-        to send mail to the ticket list
+        to send mail to the rack list
     """
         try:
             mail_addresses = self.parameters[keyword]
@@ -350,18 +311,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             except OSError:
                 pass
 
-    def email_header_txt(self):
-        """
-        Display To and CC addresses in description field
-        """
-        output = ''
-        if self.msg['To'] and len(self.msg['To']) > 0:
-            output = "'''To:''' %s\r\n" %(self.msg['To'])
-        if self.msg['Cc'] and len(self.msg['Cc']) > 0:
-            output = "%s'''Cc:''' %s\r\n" % (output, self.msg['Cc'])
-
-        return  self.email_to_unicode(output)
-
 
     def get_sender_info(self):
         """
@@ -375,7 +324,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         self.author, self.email_addr  = email.Utils.parseaddr(self.email_from)
 
         # Trac can not handle author's name that contains spaces
-        #
+        # XXX do we care about author's name for fixcity? prob not.
         self.author = self.email_addr
 
         if self.IGNORE_TRAC_USER_SETTINGS:
@@ -395,43 +344,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             self.email_from = users[0][0]
             self.author = users[0][0]
 
-    def set_reply_fields(self, ticket):
-        """
-        Set all the right fields for a new ticket
-        """
-        message = self.msg
-        ## Only use name or email adress
-        #ticket['reporter'] = self.email_from
-        ticket['reporter'] = self.author
-
-
-        # Put all CC-addresses in ticket CC field
-        #
-        if self.REPLY_ALL:
-            #tos = message.get_all('to', [])
-            ccs = message.get_all('cc', [])
-
-            addrs = email.Utils.getaddresses(ccs)
-            if not addrs:
-                return
-
-            # Remove reporter email address if notification is
-            # on
-            #
-            if self.notification:
-                try:
-                    addrs.remove((self.author, self.email_addr))
-                except ValueError, detail:
-                    pass
-
-            for name,mail in addrs:
-                try:
-                    mail_list = '%s, %s' %(mail_list, mail)
-                except UnboundLocalError, detail:
-                    mail_list = mail
-
-            if mail_list:
-                ticket['cc'] = self.email_to_unicode(mail_list)
 
     def save_email_for_debug(self, message, tempfile=False):
         if tempfile:
@@ -450,296 +362,62 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         except OSError:
             pass
 
-    def str_to_dict(self, str):
+
+    def new_rack(self, title, address, spam):
         """
-        Transfrom a str of the form [<key>=<value>]+ to dict[<key>] = <value>
-        """
-
-        fields = string.split(str, ',')
-
-        result = dict()
-        for field in fields:
-            try:
-                index, value = string.split(field, '=')
-
-                # We can not change the description of a ticket via the subject
-                # line. The description is the body of the email
-                #
-                if index.lower() in ['description']:
-                    continue
-
-                if value:
-                    result[index.lower()] = value
-
-            except ValueError:
-                pass
-
-        return result
-
-    def update_ticket_fields(self, ticket, user_dict, use_default=None):
-        """
-        This will update the ticket fields. It will check if the
-        given fields are known and if the right values are specified
-        It will only update the ticket field value:
-                - If the field is known
-                - If the value supplied is valid for the ticket field.
-                  If not then there are two options:
-                   1) Skip the value (use_default=None)
-                   2) Set default value for field (use_default=1)
-        """
-
-        # Build a system dictionary from the ticket fields
-        # with field as index and option as value
-        #
-        sys_dict = dict()
-        for field in ticket.fields:
-            try:
-                sys_dict[field['name']] = field['options']
-
-            except KeyError:
-                sys_dict[field['name']] = None
-                pass
-
-        # Check user supplied fields an compare them with the
-        # system one's
-        #
-        for field,value in user_dict.items():
-            if self.DEBUG >= 10:
-                print  'user_field\t %s = %s' %(field,value)
-
-            if sys_dict.has_key(field):
-
-                # Check if value is an allowed system option, if TypeError then
-                # every value is allowed
-                #
-                try:
-                    if value in sys_dict[field]:
-                        ticket[field] = value
-                    else:
-                        # Must we set a default if value is not allowed
-                        #
-                        if use_default:
-                            value = self.get_config('ticket', 'default_%s' %(field) )
-                            ticket[field] = value
-
-                except TypeError:
-                    ticket[field] = value
-
-                if self.DEBUG >= 10:
-                    print  'ticket_field\t %s = %s' %(field,  ticket[field])
-
-    def ticket_update(self, id, spam):
-        """
-        If the current email is a reply to an existing ticket, this function
-        will append the contents of this email to that ticket, instead of
-        creating a new one.
-        """
-        if self.DEBUG:
-            print "TD: ticket_update: %s" %id
-
-        # Must we update ticket fields
-        #
-        update_fields = dict()
-        try:
-            id, keywords = string.split(id, '?')
-
-            # Skip the last ':' character
-            #
-            keywords = keywords[:-1]
-            update_fields = self.str_to_dict(keywords)
-
-            # Strip '#'
-            #
-            self.id = int(id[1:])
-
-        except ValueError:
-            # Strip '#' and ':'
-            #
-            self.id = int(id[1:-1])
-
-
-        try:
-            tkt = Ticket(self.env, self.id, self.db)
-        except util.TracError, detail:
-            # Not a valid ticket
-            self.id = None
-            return False
-
-        # Must we update some ticket fields properties
-        #
-        if update_fields:
-            self.update_ticket_fields(tkt, update_fields)
-
-        message_parts = self.get_message_parts()
-        message_parts = self.unique_attachment_names(message_parts)
-
-        if self.EMAIL_HEADER:
-            message_parts.insert(0, self.email_header_txt())
-
-        body_text = self.body_text(message_parts)
-
-        if body_text.strip() or update_fields:
-            if self.DRY_RUN:
-                print 'DRY_RUN: tkt.save_changes(self.author, comment) ', self.author
-            else:
-                tkt.save_changes(self.author, body_text, when)
-
-        status = self.attachments(message_parts)
-            
-        if self.notification and not spam:
-            self.notify(tkt, False, when)
-
-        return True
-
-    def set_ticket_fields(self, ticket):
-        """
-        set the ticket fields to value specified
-                - /etc/email2trac.conf with <prefix>_<field>
-                - trac default values, trac.ini
-        """
-        user_dict = dict()
-
-        for field in ticket.fields:
-
-            name = field['name']
-
-            # skip some fields like resolution
-            #
-            if name in [ 'resolution' ]:
-                continue
-
-            # default trac value
-            #
-            if not field.get('custom'):
-                value = self.get_config('ticket', 'default_%s' %(name) )
-            else:
-                value = field.get('value')
-                options = field.get('options')
-                if value and options and value not in options:
-                    value = options[int(value)]
-
-            if self.DEBUG > 10:
-                print 'trac.ini name %s = %s' %(name, value)
-
-            prefix = self.parameters['ticket_prefix']
-            try:
-                value = self.parameters['%s_%s' %(prefix, name)]
-                if self.DEBUG > 10:
-                    print 'email2trac.conf %s = %s ' %(name, value)
-
-            except KeyError, detail:
-                pass
-
-            if self.DEBUG:
-                print 'user_dict[%s] = %s' %(name, value)
-
-            user_dict[name] = value
-
-        self.update_ticket_fields(ticket, user_dict, use_default=1)
-
-        # Set status ticket
-        #`
-        ticket['status'] = 'new'
-
-
-
-    def new_ticket(self, subject, spam, set_fields = None):
-        """
-        Create a new ticket
+        Create a new rack
         """
         msg = self.msg
         if self.DEBUG:
-            print "TD: new_ticket"
-
-        tkt = Ticket(self.env)
-        self.set_ticket_fields(tkt)
-
-        # Old style setting for component, will be removed
-        #
-        if spam:
-            tkt['component'] = 'Spam'
-
-        elif self.parameters.has_key('component'):
-            tkt['component'] = self.parameters['component']
-
-        if not msg['Subject']:
-            tkt['summary'] = u'(No subject)'
-        else:
-            tkt['summary'] = subject
-
-        self.set_reply_fields(tkt)
-
-        if set_fields:
-            rest, keywords = string.split(set_fields, '?')
-
-            if keywords:
-                update_fields = self.str_to_dict(keywords)
-                self.update_ticket_fields(tkt, update_fields)
-
-        # produce e-mail like header
-        #
-        head = ''
-        if self.EMAIL_HEADER > 0:
-            head = self.email_header_txt()
+            print "TD: new_rack"
 
         message_parts = self.get_message_parts()
         message_parts = self.unique_attachment_names(message_parts)
 
-        if self.EMAIL_HEADER > 0:
-            message_parts.insert(0, self.email_header_txt())
+        # XXX handle multiple location results
+        try:
+            lat, lon = views._geocode(address)[0][1]
+        except IndexError:
+            raise ValueError("Could not geocode address %r" % address)
+        point = str(Point(lon, lat, srid=views.SRID))
+        communityboard = views._get_communityboard_id(lon, lat)
+        
+        description = self.body_text(message_parts)
+        attachments = self.attachments(message_parts)
 
-        body_text = self.body_text(message_parts)
+            
+        data = dict(title=title,
+                    description=description,
+                    date=datetime.now(),
+                    location=point,
+                    address=address,
+                    communityboard=communityboard,
+                    email=self.email_addr)
 
-        tkt['description'] = body_text
+        users = User.objects.filter(email=self.email_addr).all()
+        if len(users) == 1:
+            data['user'] = users[0].username
+        else:
+            # No user with that email address; or too many.
+            pass
 
-        #when = int(time.time())
-        #
-        utc = UTC()
-        when = datetime.now(utc)
+        rackform = models.RackForm(data, attachments)
 
-        if not self.DRY_RUN:
-            self.id = tkt.insert()
-
-        changed = False
-        comment = ''
-
-        # some routines in trac are dependend on ticket id
-        # like alternate notify template
-        #
-        if self.notify_template:
-            tkt['id'] = self.id
-            changed = True
-
-        # Rewrite the description if we have mailto enabled
-        #
-        if self.MAILTO:
-            changed = True
-            comment = u'\nadded mailto line\n'
-            mailto = self.html_mailto_link( m['Subject'], body_text)
-
-            tkt['description'] = u'%s\r\n%s%s\r\n' \
-                    %(head, mailto, body_text)
-
-        str =  self.attachments(message_parts)
-        if str:
-            changed = True
-            comment = '%s\n%s\n' %(comment, str)
-
-        if changed:
-            if self.DRY_RUN:
-                print 'DRY_RUN: tkt.save_changes(self.author, comment) ', self.author
+        if rackform.is_valid():
+            if self.DRY_RUN and self.DEBUG:
+                print "TD: would save rack here"
             else:
-                tkt.save_changes(self.author, comment)
-                #print tkt.get_changelog(self.db, when)
+                rack = rackform.save()
+                self.id = rack.id
+        elif rackform.errors and self.DEBUG:
+            print "TD: errors %s" % rackform.errors
 
         if self.notification and not spam:
-            self.notify(tkt, True)
+            self.notify(rack, True)
+
 
     def parse(self, fp):
-
         self.msg = email.message_from_file(fp)
-        import pdb; pdb.set_trace()
-
         if not self.msg:
             if self.DEBUG:
                 print "TD: This is not a valid email message format"
@@ -793,38 +471,17 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         else:
             subject  = self.email_to_unicode(self.msg['Subject'])
 
-        #
-        # [hic] #1529: Re: LRZ
-        # [hic] #1529?owner=bas,priority=medium: Re: LRZ
-        #
-        TICKET_RE = re.compile(r"""
-                |(?P<new_fields>[#][?].*)
-                |(?P<reply>[#][\d]+:)
-                |(?P<reply_fields>[#][\d]+\?.*?:)
-                """, re.VERBOSE)
 
-        result =  TICKET_RE.search(subject)
-
-        if result:
-            # update ticket + fields
-            #
-            if result.group('reply_fields') and self.TICKET_UPDATE:
-                self.ticket_update(result.group('reply_fields'), spam_msg)
-
-            # Update ticket
-            #
-            elif result.group('reply') and self.TICKET_UPDATE:
-                self.ticket_update(result.group('reply'), spam_msg)
-
-            # New ticket + fields
-            #
-            elif result.group('new_fields'):
-                self.new_ticket(subject[:result.start('new_fields')], spam_msg, result.group('new_fields'))
-
-        # Create ticket
-        #
+        subject_re = re.compile(r'(?P<title>[^\@]*)\s+(?P<address>@.*)')
+        subject_match = subject_re.search(subject)
+        if subject_match:
+            title = subject_match.group('title').strip()
+            address = subject_match.group('address').lstrip('@').strip()
+            self.new_rack(title, address, spam_msg)
         else:
-            self.new_ticket(subject, spam_msg)
+            raise ValueError(
+                "Could not parse title and location from subject %r" % subject)
+
 
     def strip_signature(self, text):
         """
@@ -1011,7 +668,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
                 format = email.Utils.collapse_rfc2231_value(part.get_param('Format', 'fixed')).lower()
                 delsp = email.Utils.collapse_rfc2231_value(part.get_param('DelSp', 'no')).lower()
 
-                if self.REFLOW and not self.VERBATIM_FORMAT and format == 'flowed':
+                if self.REFLOW and format == 'flowed':
                     body_text = self.reflow(body_text, delsp == 'yes')
 
                 if self.STRIP_SIGNATURE:
@@ -1038,16 +695,12 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
                 except LookupError, detail:
                     ubody_text = 'ERROR: Could not find charset: %s, please install' %(charset)
 
-                if self.VERBATIM_FORMAT:
-                    message_parts.append('{{{\r\n%s\r\n}}}' %ubody_text)
-                else:
-                    message_parts.append('%s' %ubody_text)
+                message_parts.append('%s' %ubody_text)
             else:
                 if self.DEBUG:
                     print 'TD:               Filename: %s' % part.get_filename()
 
                 message_parts.append((part.get_filename(), part))
-
         return message_parts
 
     def unique_attachment_names(self, message_parts):
@@ -1098,12 +751,12 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
                 except KeyError, detail:
                     filename = urllib.quote(filename.encode('utf-8'))
 
-            # Make the filename unique for this ticket
+            # Make the filename unique for this rack
             num = 0
             unique_filename = filename
             filename, ext = os.path.splitext(filename)
 
-            while unique_filename in attachment_names or self.attachment_exists(unique_filename):
+            while unique_filename in attachment_names:
                 num += 1
                 unique_filename = "%s-%s%s" % (filename, num, ext)
 
@@ -1120,21 +773,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         return part.get_param('inline', None, 'Content-Disposition') == '' or not part.has_key('Content-Disposition')
 
 
-    def attachment_exists(self, filename):
-
-        if self.DEBUG:
-            print "TD: attachment_exists: Ticket number : %s, Filename : %s" %(self.id, filename)
-
-        # We have no valid ticket id
-        #
-        if not self.id:
-            return False
-
-        try:
-            att = attachment.Attachment(self.env, 'ticket', self.id, filename)
-            return True
-        except attachment.ResourceNotFound:
-            return False
 
     def body_text(self, message_parts):
         body_text = []
@@ -1146,119 +784,54 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
                 body_text.append("")
                 continue
 
-            (original, filename, part) = part
-            inline = self.inline_part(part)
-
-            if part.get_content_maintype() == 'image' and inline:
-                body_text.append('[[Image(%s)]]' % filename)
-                body_text.append("")
-            else:
-                body_text.append('[attachment:"%s"]' % filename)
-                body_text.append("")
-
         body_text = '\r\n'.join(body_text)
         return body_text
 
-    def notify(self, tkt, new=True, modtime=0):
+    def notify(self, rack, new=True, modtime=0):
         """
         send notification that we got an email. XXX delete this?
         """
         if self.DRY_RUN:
-            print 'DRY_RUN: self.notify(tkt, True) ', self.author
+            print 'DRY_RUN: self.notify(rack, True) ', self.author
             return
 
-    def html_mailto_link(self, subject, body):
+
+    def attachments(self, message_parts):
+        """save an attachment as a single photo
         """
-        This function returns a HTML mailto tag with the ticket id and author email address  XXX or some other params
-        """
-        if not self.author:
-            author = self.email_addr
-        else:
-            author = self.author
-
-        # use urllib to escape the chars
-        #
-        output = 'mailto:%s?Subject=%s&Cc=%s' %(
-               urllib.quote(self.email_addr),
-                   urllib.quote('Re: #%s: %s' %(self.id, subject)),
-                   urllib.quote(self.MAILTO_CC)
-                   )
-
-        output = '<a href="%s">Reply to: %s</a>' %(output, author)
-        return output
-
-    def attachments(self, message_parts, update=False):
-
-        """save any attachments as XXX a single photo?
-        """
-        if self.DRY_RUN:
-            print "DRY_RUN: no attachments saved"
-            return ''
-
-        count = 0
-
         # Get Maxium attachment size
         #
-        max_size = int(self.get_config('attachment', 'max_size'))
+        max_size = int(self.get_config('attachment', 'max_size') or -1)
         status   = ''
-
+        results = {}
+        
         for part in message_parts:
-            # Skip body parts
+            # Skip text body parts
             if not isinstance(part, tuple):
                 continue
 
             (original, filename, part) = part
-            #
-            # Must be tuneables HvB
-            #
-            path, fd =  util.create_unique_file(os.path.join(self.TMPDIR, filename))
             text = part.get_payload(decode=1)
             if not text:
-                text = '(None)'
-            fd.write(text)
-            fd.close()
-
-            # get the file_size
-            #
-            stats = os.lstat(path)
-            file_size = stats[stat.ST_SIZE]
+                continue
+            file_size = len(text)
 
             # Check if the attachment size is allowed
             #
             if (max_size != -1) and (file_size > max_size):
                 status = '%s\nFile %s is larger then allowed attachment size (%d > %d)\n\n' \
                         %(status, original, file_size, max_size)
-
-                os.unlink(path)
                 continue
-            else:
-                count = count + 1
 
-            # Insert the attachment
-            #
-            fd = open(path, 'rb')
-            att = attachment.Attachment(self.env, 'ticket', self.id)
+            from django.core.files.uploadedfile import SimpleUploadedFile
+            results[u'photo'] = SimpleUploadedFile.from_dict(
+                {'filename': filename, 'content': text,
+                 'content-type': 'image/jpeg'})
+            # XXX what to do if there's more than one attachment?
+            # we just ignore 'em.
+            break
+        return results
 
-            # This will break the ticket_update system, the body_text is vaporized
-            # ;-(
-            #
-            if not update:
-                att.author = self.author
-                att.description = self.email_to_unicode('Added by email2trac')
-
-            att.insert(filename, fd, file_size)
-            #except  util.TracError, detail:
-            #       print detail
-
-            # Remove the created temporary filename
-            #
-            fd.close()
-            os.unlink(path)
-
-        # Return how many attachments
-        #
-        status = 'This message has %d attachment(s)\n%s' %(count, status)
-        return status
 
 
 from django.core.management.base import BaseCommand
@@ -1269,14 +842,14 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        print "whee"
-        settings = {'dry_run': True,
+        settings = {'dry_run': False,
                     'ignore_trac_user_settings': True,
+                    'strip_signature': True,
                     'debug': True,
                     }
         parser = EmailParser(settings)
         try:
-            parser.parse(open('/home/pw/tmp/riley_turtle_small.jpg'))
+            parser.parse(open('/home/pw/tmp/test_mailin.txt'))
         except Exception, error:
             traceback.print_exc()
             if parser.msg:
