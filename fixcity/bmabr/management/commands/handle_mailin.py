@@ -1,25 +1,23 @@
 # based on email2trac.py, which is Copyright (C) 2002 under the GPL v2 or later
 
-import os
-import sys
-import string
-import email.Header
-import re
-import urllib
-import unicodedata
+from datetime import datetime
+from optparse import make_option
 from stat import S_IRWXU, S_IRWXG, S_IRWXO
+import email.Header
 import mimetypes
+import os
+import re
+import string
+import sys
 import traceback
+import unicodedata
 
+from django.contrib.auth.models import User
+from django.contrib.gis.geos.point import Point
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management.base import BaseCommand
 from fixcity.bmabr import models
 from fixcity.bmabr import views
-from django.contrib.gis.geos.point import Point
-from django.contrib.auth.models import User
-
-# XXX imports from trac we need to replace or remove:
-# from trac import attachment 
-
-from datetime import datetime
 
 
 class EmailParser(object):
@@ -40,17 +38,12 @@ class EmailParser(object):
         self.email_from = None
         self.id = None
 
+        # XXX Cull stuff that just stores a value, we should just
+        # store all the parameters instead.
         self.DRY_RUN = parameters['dry_run']
-
-        self.get_config = lambda self, key: None # XXX self.env.config.get
 
         if parameters.has_key('umask'):
             os.umask(int(parameters['umask'], 8))
-
-        if parameters.has_key('quote_attachment_filenames'):
-            self.QUOTE_ATTACHMENT_FILENAMES = int(parameters['quote_attachment_filenames'])
-        else:
-            self.QUOTE_ATTACHMENT_FILENAMES = 1
 
         if parameters.has_key('debug'):
             self.DEBUG = int(parameters['debug'])
@@ -77,16 +70,6 @@ class EmailParser(object):
         else:
             self.EMAIL_HEADER = 0
 
-        if parameters.has_key('alternate_notify_template'):
-            self.notify_template = str(parameters['alternate_notify_template'])
-        else:
-            self.notify_template = None
-
-        if parameters.has_key('alternate_notify_template_update'):
-            self.notify_template_update = str(parameters['alternate_notify_template_update'])
-        else:
-            self.notify_template_update = None
-
         if parameters.has_key('reply_all'):
             self.REPLY_ALL = int(parameters['reply_all'])
         else:
@@ -102,11 +85,6 @@ class EmailParser(object):
         else:
             self.DROP_SPAM = 0
 
-        if parameters.has_key('reflow'):
-            self.REFLOW = int(parameters['reflow'])
-        else:
-            self.REFLOW = 1
-
         if parameters.has_key('drop_alternative_html_version'):
             self.DROP_ALTERNATIVE_HTML_VERSION = int(parameters['drop_alternative_html_version'])
         else:
@@ -121,11 +99,6 @@ class EmailParser(object):
             self.STRIP_QUOTES = int(parameters['strip_quotes'])
         else:
             self.STRIP_QUOTES = 0
-
-        if parameters.has_key('use_textwrap'):
-            self.USE_TEXTWRAP = int(parameters['use_textwrap'])
-        else:
-            self.USE_TEXTWRAP = 0
 
         if parameters.has_key('binhex'):
             self.BINHEX = parameters['binhex']
@@ -146,20 +119,14 @@ class EmailParser(object):
             self.python_egg_cache = str(parameters['python_egg_cache'])
             os.environ['PYTHON_EGG_CACHE'] = self.python_egg_cache
 
-        self.WORKFLOW = None
-        if parameters.has_key('workflow'):
-            self.WORKFLOW = parameters['workflow']
-
         # Use OS independend functions
         #
         self.TMPDIR = os.path.normcase('/tmp')
         if parameters.has_key('tmpdir'):
             self.TMPDIR = os.path.normcase(str(parameters['tmpdir']))
 
-        if parameters.has_key('ignore_trac_user_settings'):
-            self.IGNORE_TRAC_USER_SETTINGS = int(parameters['ignore_trac_user_settings'])
-        else:
-            self.IGNORE_TRAC_USER_SETTINGS = 0
+
+        self.MAX_ATTACHMENT_SIZE = int(parameters.get('max-attachment-size', -1))
 
     def spam(self, message):
         """
@@ -232,8 +199,7 @@ class EmailParser(object):
     def email_to_unicode(self, message_str):
         """
         Email has 7 bit ASCII code, convert it to unicode with the charset
-that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
-        understands it.
+that is encoded in 7-bit ASCII code and encode it as utf-8.
         """
         results =  email.Header.decode_header(message_str)
         str = None
@@ -265,7 +231,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
     def debug_body(self, message_body, tempfile=False):
         if tempfile:
             import tempfile
-            body_file = tempfile.mktemp('.email2trac')
+            body_file = tempfile.mktemp('.handle_mailin')
         else:
             body_file = os.path.join(self.TMPDIR, 'body.txt')
 
@@ -327,22 +293,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         # XXX do we care about author's name for fixcity? prob not.
         self.author = self.email_addr
 
-        if self.IGNORE_TRAC_USER_SETTINGS:
-            return
-
-        # Is this a registered user, use email address as search key:
-        # result:
-        #   u : login name
-        #   n : Name that the user has set in the settings tab
-        #   e : email address that the user has set in the settings tab
-        #
-        # XXX rewrite for Django, or delete?
-        users = [ (u,n,e) for (u, n, e) in self.env.get_known_users(self.db)
-                if e and (e.lower() == self.email_addr.lower()) ]
-
-        if len(users) == 1:
-            self.email_from = users[0][0]
-            self.author = users[0][0]
 
 
     def save_email_for_debug(self, message, tempfile=False):
@@ -384,7 +334,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         
         description = self.body_text(message_parts)
         attachments = self.attachments(message_parts)
-
             
         data = dict(title=title,
                     description=description,
@@ -412,8 +361,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         elif rackform.errors and self.DEBUG:
             print "TD: errors %s" % rackform.errors
 
-        if self.notification and not spam:
-            self.notify(rack, True)
 
 
     def parse(self, fp):
@@ -461,11 +408,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         else:
             spam_msg = False
 
-        if self.get_config('notification', 'smtp_enabled') in ['true']:
-            self.notification = 1
-        else:
-            self.notification = 0
-
         if not self.msg['Subject']:
             return False
         else:
@@ -495,43 +437,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
 
         return ('\n'.join(body))
 
-    def reflow(self, text, delsp = 0):
-        """
-        Reflow the message based on the format="flowed" specification (RFC 3676)
-        """
-        flowedlines = []
-        quotelevel = 0
-        prevflowed = 0
-
-        for line in text.splitlines():
-            from re import match
-
-            # Figure out the quote level and the content of the current line
-            m = match('(>*)( ?)(.*)', line)
-            linequotelevel = len(m.group(1))
-            line = m.group(3)
-
-            # Determine whether this line is flowed
-            if line and line != '-- ' and line[-1] == ' ':
-                flowed = 1
-            else:
-                flowed = 0
-
-            if flowed and delsp and line and line[-1] == ' ':
-                line = line[:-1]
-
-            # If the previous line is flowed, append this line to it
-            if prevflowed and line != '-- ' and linequotelevel == quotelevel:
-                flowedlines[-1] += line
-            # Otherwise, start a new line
-            else:
-                flowedlines.append('>' * linequotelevel + line)
-
-            prevflowed = flowed
-
-
-        return '\n'.join(flowedlines)
-
     def strip_quotes(self, text):
         """
         Strip quotes from message by Nicolas Mendoza
@@ -543,30 +448,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
             body.append(line)
 
         return ('\n'.join(body))
-
-    def wrap_text(self, text, replace_whitespace = False):
-        """
-        Will break a lines longer then given length into several small
-        lines of size given length
-        """
-        import textwrap
-
-        LINESEPARATOR = '\n'
-        reformat = ''
-
-        for s in text.split(LINESEPARATOR):
-            tmp = textwrap.fill(s,self.USE_TEXTWRAP)
-            if tmp:
-                reformat = '%s\n%s' %(reformat,tmp)
-            else:
-                reformat = '%s\n' %reformat
-
-        return reformat
-
-        # Python2.4 and higher
-        #
-        #return LINESEPARATOR.join(textwrap.fill(s,width) for s in str.split(LINESEPARATOR))
-        #
 
 
     def get_message_parts(self):
@@ -668,17 +549,11 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
                 format = email.Utils.collapse_rfc2231_value(part.get_param('Format', 'fixed')).lower()
                 delsp = email.Utils.collapse_rfc2231_value(part.get_param('DelSp', 'no')).lower()
 
-                if self.REFLOW and format == 'flowed':
-                    body_text = self.reflow(body_text, delsp == 'yes')
-
                 if self.STRIP_SIGNATURE:
                     body_text = self.strip_signature(body_text)
 
                 if self.STRIP_QUOTES:
                     body_text = self.strip_quotes(body_text)
-
-                if self.USE_TEXTWRAP:
-                    body_text = self.wrap_text(body_text)
 
                 # Get contents charset (iso-8859-15 if not defined in mail headers)
                 #
@@ -745,12 +620,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
                 except TypeError:
                     pass
 
-            if self.QUOTE_ATTACHMENT_FILENAMES:
-                try:
-                    filename = urllib.quote(filename)
-                except KeyError, detail:
-                    filename = urllib.quote(filename.encode('utf-8'))
-
             # Make the filename unique for this rack
             num = 0
             unique_filename = filename
@@ -787,21 +656,13 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
         body_text = '\r\n'.join(body_text)
         return body_text
 
-    def notify(self, rack, new=True, modtime=0):
-        """
-        send notification that we got an email. XXX delete this?
-        """
-        if self.DRY_RUN:
-            print 'DRY_RUN: self.notify(rack, True) ', self.author
-            return
-
 
     def attachments(self, message_parts):
         """save an attachment as a single photo
         """
         # Get Maxium attachment size
         #
-        max_size = int(self.get_config('attachment', 'max_size') or -1)
+        max_size = self.MAX_ATTACHMENT_SIZE
         status   = ''
         results = {}
         
@@ -823,7 +684,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
                         %(status, original, file_size, max_size)
                 continue
 
-            from django.core.files.uploadedfile import SimpleUploadedFile
             results[u'photo'] = SimpleUploadedFile.from_dict(
                 {'filename': filename, 'content': text,
                  'content-type': 'image/jpeg'})
@@ -834,25 +694,38 @@ that is encoded in 7-bit ASCII code and encode it as utf-8 so Trac
 
 
 
-from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        #make_option("-d", "--daemon", dest="daemonize", action="store_true"),
+        make_option('--dry-run', action="store_true",
+                    help="Don't save any data.", dest="dry_run"),
+        make_option('--debug', type="int", default=0,
+                    help="Add some verbosity and save any problematic data."),
+        make_option('--egg-cache', action="store", dest="python_egg_cache",
+                    help="Cache for python eggs to make pkg_resources happy"),
+        make_option('--strip-signature', action="store_true", default=True,
+                    help="Remove signatures from incoming mail"),
+        make_option('--max-attachment-size', type="int",
+                    help="Max size of uploaded files."),
+
     )
 
     def handle(self, *args, **options):
-        settings = {'dry_run': False,
-                    'ignore_trac_user_settings': True,
-                    'strip_signature': True,
-                    'debug': True,
-                    }
-        parser = EmailParser(settings)
-        try:
-            parser.parse(open('/home/pw/tmp/test_mailin.txt'))
-        except Exception, error:
-            traceback.print_exc()
-            if parser.msg:
-                parser.save_email_for_debug(parser.msg, True)
+        parser = EmailParser(options)
+        did_stdin = False
+        for filename in args:
+            if filename == '-':
+                if did_stdin:
+                    continue
+                thisfile = sys.stdin
+                did_stdin = True
+            else:
+                thisfile = open(filename)
+            try:
+                parser.parse(thisfile)
+            except Exception, error:
+                traceback.print_exc()
+                if parser.msg:
+                    parser.save_email_for_debug(parser.msg, True)
 
-            sys.exit(1)
+                sys.exit(1)
