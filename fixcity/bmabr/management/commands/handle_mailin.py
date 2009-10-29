@@ -279,7 +279,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
                 # And getting postfix to run this script as another user
                 # seems to be a PITA.
                 #rack = rackform.save()
-                
+
                 # So instead, let's POST our data to some URL...
                 url = self.parameters['url']
                 jsondata = json.dumps(data)
@@ -295,21 +295,22 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
                 if self.DEBUG:
                     print content
                 result = json.loads(content)
-                parsed_url = urlparse.urlparse(url)
-                base_url = parsed_url.scheme + '://' + parsed_url.netloc
-                photo_url = base_url + result['photo_url']
-                
-                datagen, headers = multipart_encode({'photo':
-                                                     attachments['photo']})
-                # httplib2 doesn't like poster's integer headers.
-                headers['Content-Length'] = str(headers['Content-Length'])
-                body = ''.join([s for s in datagen])
-                response, content = http.request(photo_url, 'POST',
-                                                 headers=headers, body=body)
-                # XXX handle errors
-                if self.DEBUG:
-                    print "TD: result from photo upload:"
-                    print content
+                if attachments.has_key('photo'):
+                    parsed_url = urlparse.urlparse(url)
+                    base_url = parsed_url[0] + '://' + parsed_url[1]
+                    photo_url = base_url + result['photo_url']
+
+                    datagen, headers = multipart_encode({'photo':
+                                                         attachments['photo']})
+                    # httplib2 doesn't like poster's integer headers.
+                    headers['Content-Length'] = str(headers['Content-Length'])
+                    body = ''.join([s for s in datagen])
+                    response, content = http.request(photo_url, 'POST',
+                                                     headers=headers, body=body)
+                    # XXX handle errors
+                    if self.DEBUG:
+                        print "TD: result from photo upload:"
+                        print content
 
                 
         elif rackform.errors:
