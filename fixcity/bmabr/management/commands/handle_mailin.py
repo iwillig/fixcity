@@ -45,23 +45,10 @@ class EmailParser(object):
 
         # XXX Cull stuff that just stores a value, we should just
         # store all the parameters instead.
-        if parameters.has_key('umask'):
-            os.umask(int(parameters['umask'], 8))
-
         if parameters.has_key('debug'):
             self.DEBUG = int(parameters['debug'])
         else:
             self.DEBUG = 0
-
-        if parameters.has_key('spam_level'):
-            self.SPAM_LEVEL = int(parameters['spam_level'])
-        else:
-            self.SPAM_LEVEL = 0
-
-        if parameters.has_key('spam_header'):
-            self.SPAM_HEADER = parameters['spam_header']
-        else:
-            self.SPAM_HEADER = 'X-Spam-Score'
 
         if parameters.has_key('email_quote'):
             self.EMAIL_QUOTE = str(parameters['email_quote'])
@@ -83,11 +70,6 @@ class EmailParser(object):
         else:
             self.RACK_UPDATE = 0
 
-        if parameters.has_key('drop_spam'):
-            self.DROP_SPAM = int(parameters['drop_spam'])
-        else:
-            self.DROP_SPAM = 0
-
         if parameters.has_key('drop_alternative_html_version'):
             self.DROP_ALTERNATIVE_HTML_VERSION = int(parameters['drop_alternative_html_version'])
         else:
@@ -97,11 +79,6 @@ class EmailParser(object):
             self.STRIP_SIGNATURE = int(parameters['strip_signature'])
         else:
             self.STRIP_SIGNATURE = 0
-
-        if parameters.has_key('strip_quotes'):
-            self.STRIP_QUOTES = int(parameters['strip_quotes'])
-        else:
-            self.STRIP_QUOTES = 0
 
         if parameters.has_key('binhex'):
             self.BINHEX = parameters['binhex']
@@ -127,73 +104,6 @@ class EmailParser(object):
 
         self.MAX_ATTACHMENT_SIZE = int(parameters.get('max-attachment-size', -1))
 
-    def spam(self, message):
-        """
-        # X-Spam-Score: *** (3.255) BAYES_50,DNS_FROM_AHBL_RHSBL,HTML_
-        # Note if Spam_level then '*' are included
-        """
-        spam = False
-        if message.has_key(self.SPAM_HEADER):
-            spam_l = string.split(message[self.SPAM_HEADER])
-
-            try:
-                number = spam_l[0].count('*')
-            except IndexError, detail:
-                number = 0
-
-            if number >= self.SPAM_LEVEL:
-                spam = True
-
-        # treat virus mails as spam
-        #
-        elif message.has_key('X-Virus-found'):
-            spam = True
-
-        # How to handle SPAM messages
-        #
-        if self.DROP_SPAM and spam:
-            if self.DEBUG > 2 :
-                print 'This message is a SPAM. Automatic rack insertion refused (SPAM level > %d' % self.SPAM_LEVEL
-
-            return 'drop'
-
-        elif spam:
-
-            return 'Spam'
-
-        else:
-
-            return False
-
-    def email_header_acl(self, keyword, header_field, default):
-        """
-        This function wil check if the email address is allowed or denied
-        to send mail to the rack list
-    """
-        try:
-            mail_addresses = self.parameters[keyword]
-
-            # Check if we have an empty string
-            #
-            if not mail_addresses:
-                return default
-
-        except KeyError, detail:
-            if self.DEBUG > 2 :
-                print 'TD: %s not defined, all messages are allowed.' %(keyword)
-
-            return default
-
-        mail_addresses = string.split(mail_addresses, ',')
-
-        for entry in mail_addresses:
-            entry = entry.strip()
-            TO_RE = re.compile(entry, re.VERBOSE|re.IGNORECASE)
-            result =  TO_RE.search(header_field)
-            if result:
-                return True
-
-        return False
 
     def email_to_unicode(self, message_str):
         """
@@ -429,36 +339,12 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
 
         self.get_sender_info()
 
-        if not self.email_header_acl('white_list', self.email_addr, True):
-            if self.DEBUG > 1 :
-                print 'Message rejected : %s not in white list' %(self.email_addr)
-            return False
-
-        if self.email_header_acl('black_list', self.email_addr, False):
-            if self.DEBUG > 1 :
-                print 'Message rejected : %s in black list' %(self.email_addr)
-            return False
-
-        if not self.email_header_acl('recipient_list', self.to_email_addr, True):
-            if self.DEBUG > 1 :
-                print 'Message rejected : %s not in recipient list' %(self.to_email_addr)
-            return False
-
-        # If drop the message
-        #
-        if self.spam(self.msg) == 'drop':
-            return False
-
-        elif self.spam(self.msg) == 'spam':
-            spam_msg = True
-        else:
-            spam_msg = False
-
         if not self.msg['Subject']:
             return False
         else:
             subject  = self.email_to_unicode(self.msg['Subject'])
 
+        spam_msg = False
 
         subject_re = re.compile(r'(?P<title>[^\@]*)\s+(?P<address>@.*)')
         subject_match = subject_re.search(subject)
@@ -479,18 +365,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         for line in text.splitlines():
             if line == '-- ':
                 break
-            body.append(line)
-
-        return ('\n'.join(body))
-
-    def strip_quotes(self, text):
-        """
-        Strip quotes from message by Nicolas Mendoza
-        """
-        body = []
-        for line in text.splitlines():
-            if line.startswith(self.EMAIL_QUOTE):
-                continue
             body.append(line)
 
         return ('\n'.join(body))
@@ -597,9 +471,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
 
                 if self.STRIP_SIGNATURE:
                     body_text = self.strip_signature(body_text)
-
-                if self.STRIP_QUOTES:
-                    body_text = self.strip_quotes(body_text)
 
                 # Get contents charset (iso-8859-15 if not defined in mail headers)
                 #
