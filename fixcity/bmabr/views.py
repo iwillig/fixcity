@@ -1,5 +1,6 @@
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseNotAllowed
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core import serializers
@@ -270,25 +271,34 @@ def _maybe_geocode(request):
         request.POST['communityboard'] = _get_communityboard_id(pnt.x, pnt.y)
         
 
+def _newrack(data, files):
+    form = RackForm(data, files)
+    new_rack = None
+    message = ''
+    if form.is_valid():
+        new_rack = form.save()
+        # create steps status for new rack suggestion
+        size_up = Steps(step_rack=new_rack,name="size-up",status="todo")
+        size_up.save()
+        photo_status = Steps(step_rack=new_rack,name="photo",status='todo')
+        photo_status.save()
+        statement = Steps(step_rack=new_rack,name="statement",status='todo')
+        statement.save()
+        message = '''
+        Thank you for your suggestion! Racks can take six months
+        or more for the DOT to install, but we\'ll be in touch
+        about its progress.
+        '''
+    return {'rack': new_rack, 'message': message, 'form': form,
+            'errors': form.errors}
+    
 def newrack_form(request):
     if request.method == 'POST':
         _maybe_geocode(request)
-        form = RackForm(request.POST,request.FILES)
-        if form.is_valid():
-            new_rack = form.save()
-            # create steps status for new rack suggestion
-            size_up = Steps(step_rack=new_rack,name="size-up",status="todo")
-            size_up.save()
-            photo_status = Steps(step_rack=new_rack,name="photo",status='todo')
-            photo_status.save()
-            statement = Steps(step_rack=new_rack,name="statement",status='todo')
-            statement.save()
-            message = '''
-            Thank you for your suggestion! Racks can take six months
-            or more for the DOT to install, but we\'ll be in touch
-            about its progress. <a href="/rack/new/">Add another
-            rack</a> or continue to see other suggestions.
-            '''
+        result = _newrack(request.POST, request.FILES)
+        form = result['form']
+        if not result['errors']:
+            message = result['message'] + '''<a href="/rack/new/">Add another rack</a> or continue to see other suggestions.'''
             flash(message, request)
             return HttpResponseRedirect('/verify/')
         else:
@@ -300,6 +310,37 @@ def newrack_form(request):
            },
            context_instance=RequestContext(request, processors=[user_context])) 
 
+
+def rack_index(request):
+    if request.method == 'POST':
+        return newrack_json(request)
+    else:
+        return HttpResponseRedirect('/verify/')
+
+
+def newrack_json(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    # I would think there'd be a more useful way to get Django to
+    # treat an entire POST body as JSON, but I haven't found it.
+    args = json.loads(request.raw_post_data)
+    post = request.POST.copy()
+    post.clear()  # it doesn't have anything in useful form..
+    post.update(args)
+    result = _newrack(post, files={})
+    if result['errors']:
+        # Annoyingly, the errors thingy is made of weird dict & list
+        # subclasses that I can't simply serialize.
+        errors = {}
+        for key, val in result['errors'].items():
+            # it's a list subclass containing string subclasses.
+            errors[key] = [s[:] for s in val]
+        output = json.dumps({'errors': errors})
+    else:
+        output = {'rack': result['rack'].id, 'message': result['message'],
+                  'photo_url': '/rack/%d/photos/' % result['rack'].id}
+
+    return HttpResponse(json.dumps(output), mimetype='application/json')
 
 
 @login_required
@@ -393,12 +434,11 @@ def add_comment(request):
         return HttpResponseRedirect('/error/comment') 
 
 
-def updatephoto(request,rack_id): 
-    rack_query = Rack.objects.get(id=rack_id) 
-    rack_photo = request.FILES['photo']
-    rack = Rack(id=rack_query.id,address=rack_query.address,title=rack_query.title,date=rack_query.date,description=rack_query.description,email=rack_query.email,communityboard=rack_query.communityboard,photo=rack_photo,status=rack_query.status,location=rack_query.location)
+def updatephoto(request,rack_id):
+    rack = Rack.objects.get(id=rack_id) 
+    rack.photo = request.FILES['photo']
     rack.save()
-    return HttpResponse(rack)
+    return HttpResponse('ok')
 
     
 def rack_all_kml(request): 

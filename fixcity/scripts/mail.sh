@@ -49,4 +49,6 @@ whoami >> /tmp/mail-sh-runs.log
 
 #./manage.py handle_mailin /home/pw/tmp/test_mailin.txt
 # Read one message from stdin.
-./manage.py handle_mailin --egg-cache=/tmp/fixcity_mailin_egg_cache $@ - >> /tmp/mail-sh-runs.log 2>&1
+
+PYTHON_EGG_CACHE=/tmp/$USER-fixcity_mailin_egg_cache ./manage.py handle_mailin \
+ $@ #>> /tmp/mail-sh-runs.log 2>&1

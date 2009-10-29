@@ -55,9 +55,13 @@ urlpatterns = patterns(
     (r'communityboards.kml','fixcity.bmabr.views.community_board_kml'),
     (r'communityboard/(?P<cb_id>\d+).kml','fixcity.bmabr.views.community_board_kml_by_id'),
 
-    # different views for adding infomation, rack, comments. 
+    # different views for adding infomation, rack, comments, photos.
 
-    (r'^rack/new/$', 'fixcity.bmabr.views.newrack_form'), # view for rack request form. 
+    (r'^rack/new/$', 'fixcity.bmabr.views.newrack_form'), # view for rack request form.
+    (r'^rack/(?P<rack_id>\d+)/photos/', 'fixcity.bmabr.views.updatephoto'),
+    (r'^rack/', 'fixcity.bmabr.views.rack_index'),
+    
+
     (r'^comment/add/$', 'fixcity.bmabr.views.add_comment'), 
                        
     # different ways of viewing information                   
