@@ -1,3 +1,5 @@
+# -*- mode: python ;-*-
+
 import os
 import sys
 import site
@@ -40,5 +42,8 @@ application = django.core.handlers.wsgi.WSGIHandler()
 # out how to get this working before I hooked up logging in that
 # view.)
 
-application = WsgiLog(application, tohtml=False, tofile=False,
-                      tostream=True, toprint=False)
+# WsgiLog is a bit funny about keyword args: it checks for presence,
+# not value, so passing eg. tofile=False means "log to the default
+# file", not "don't do file logging".  So I'm not passing any of those
+# args.
+application = WsgiLog(application, tostream=True)
