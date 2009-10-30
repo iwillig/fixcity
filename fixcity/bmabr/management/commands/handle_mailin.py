@@ -1,3 +1,12 @@
+'''
+This is a manage.py command for django which handles incoming email,
+typically via stdin.
+
+To hook this up with postfix, set up an alias along the lines of:
+
+myaddress: "|PYTHON_EGG_CACHE=/tmp/my-egg-cache /PATH/TO/VENV/bin/python /PATH/TO/VENV/src/fixcity/fixcity/manage.py handle_mailin -u http://MYDOMAIN/rack/ --debug=9 - >> /var/log/MYLOGS/mailin.log 2>&1""
+'''
+
 # based on email2trac.py, which is Copyright (C) 2002 under the GPL v2 or later
 
 from datetime import datetime
@@ -347,17 +356,22 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
 
         spam_msg = False
 
-        subject_re = re.compile(r'(?P<title>[^\@]*)\s+(?P<address>@.*)')
+        subject_re = re.compile(r'(?P<title>[^\@]*)\s*@(?P<address>.*)')
         subject_match = subject_re.search(subject)
         if subject_match:
             title = subject_match.group('title').strip()
-            address = subject_match.group('address').lstrip('@').strip()
-            self.new_rack(title, address, spam_msg)
+            address = subject_match.group('address')
         else:
-            raise ValueError(
-                "Could not parse title and location from subject %r" % subject)
+            address_re = re.compile(r'@(?P<address>.+)$', re.MULTILINE)
+            address_match = address_re.search(body_text)
+            if not address_match:
+                raise ValueError("Could not parse location from subject or body")
+            address = address_match.group('address')
+            title = subject
 
-
+        address = address.strip()
+        self.new_rack(title, address, spam_msg)
+            
     def strip_signature(self, text):
         """
         Strip signature from message, inspired by Mailman software
