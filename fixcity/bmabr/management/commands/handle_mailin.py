@@ -275,7 +275,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         except socket.error:
             self.bounce('Sorry, the FixCity server appears to be down',
                         'Please try again later.')
-            sys.exit(1)
+            return
 
         if self.DEBUG:
             print "TD: server responded with:\n%s" % content
@@ -286,7 +286,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
             msg += '\n\nResponse from the server:\n\n'
             msg += content  # XXX This isn't very useful, as it's raw HTML
             self.bounce('Server error! Could not add your bike rack', msg)
-            sys.exit(1)
+            return
 
         result = json.loads(content)
         if result.has_key('errors'):
@@ -295,7 +295,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
                 err_msg += "%s: %s\n" % (k, '; '.join(v))
             self.bounce("Please correct errors in your bike rack submission.",
                         err_msg)
-            sys.exit(1)
+            return
 
         if attachments.has_key('photo'):
             parsed_url = urlparse.urlparse(url)
@@ -328,7 +328,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         if not self.msg:
             if self.DEBUG:
                 print "TD: This is not a valid email message format"
-            sys.exit(1)
+            return
 
         # Work around lack of header folding in Python; see http://bugs.python.org/issue4696
         self.msg.replace_header('Subject', self.msg['Subject'].replace('\r', '').replace('\n', ''))
@@ -666,5 +666,4 @@ class Command(BaseCommand):
                 traceback.print_exc()
                 if parser.msg:
                     parser.save_email_for_debug(parser.msg, True)
-
-                sys.exit(1)
+                sys.exit(1) # XXX do a more informative bounce?
