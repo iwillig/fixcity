@@ -18,21 +18,17 @@ import httplib2
 import mimetypes
 import os
 import re
+import socket
 import string
 import sys
+import time
 import traceback
 import unicodedata
 import urlparse
 
-from django.contrib.auth.models import User
-from django.contrib.gis.geos.point import Point
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management.base import BaseCommand
 from django.utils import simplejson as json
-
-from fixcity.bmabr import models
-from fixcity.bmabr import views
-
 
 class EmailParser(object):
     env = None
@@ -242,90 +238,74 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         message_parts = self.get_message_parts()
         message_parts = self.unique_attachment_names(message_parts)
 
-        # XXX handle multiple location results
-        try:
-            lat, lon = views._geocode(address)[0][1]
-        except IndexError:
-            raise ValueError("Could not geocode address %r" % address)
-        point = str(Point(lon, lat, srid=views.SRID))
-        communityboard = views._get_communityboard_id(lon, lat)
-        
         description = self.body_text(message_parts)
         attachments = self.attachments(message_parts)
         # We don't bother with microsecond precision because
         # Django datetime fields can't parse it anyway.
-        import time
         now = datetime.fromtimestamp(int(time.time()))
         data = dict(title=title,
                     description=description,
                     date=now.isoformat(' '),
-                    location=point,
                     address=address,
-                    communityboard=communityboard,
-                    got_communityboard=1,
-                    geocoded=1,
-                    email=self.email_addr)
-
-        users = User.objects.filter(email=self.email_addr).all()
-        if len(users) == 1:
-            data['user'] = users[0].username
-        else:
-            # No user with that email address; or too many.
-            pass
+                    geocoded=0,  # Do server-side location processing.
+                    got_communityboard=0,   # Ditto.
+                    email=self.email_addr,
+                    )
         
-        # XXX Is there any point building a RackForm on the client side
-        # when I'm just going to POST it to the server anyway?
-        # I guess it's nice to do error-checking here instead of having
-        # to parse whatever I get back...
-        rackform = models.RackForm(data, attachments)
+        if self.parameters.get('dry-run') and self.DEBUG:
+            print "TD: would save rack here"
+        else:
+            # XXX This is the one thing i apparently can't do
+            # when running as `nobody`.
+            # And getting postfix to run this script as another user
+            # seems to be a PITA.
+            #rack = rackform.save()
 
-        if rackform.is_valid():
-            if self.parameters.get('dry-run') and self.DEBUG:
-                print "TD: would save rack here"
-            else:
-                # XXX This is the one thing i apparently can't do
-                # when running as `nobody`.
-                # And getting postfix to run this script as another user
-                # seems to be a PITA.
-                #rack = rackform.save()
-
-                # So instead, let's POST our data to some URL...
-                url = self.parameters['url']
-                jsondata = json.dumps(data)
-                http = httplib2.Http()
-                headers = {'Content-type': 'application/json'}
-                try:
-                    response, content = http.request(url, 'POST',
-                                                     headers=headers,
-                                                     body=jsondata)
-                except:
-                    # XXX server not up maybe?
-                    raise
-                if self.DEBUG:
-                    print content
-                result = json.loads(content)
-                if attachments.has_key('photo'):
-                    parsed_url = urlparse.urlparse(url)
-                    base_url = parsed_url[0] + '://' + parsed_url[1]
-                    photo_url = base_url + result['photo_url']
-
-                    datagen, headers = multipart_encode({'photo':
-                                                         attachments['photo']})
-                    # httplib2 doesn't like poster's integer headers.
-                    headers['Content-Length'] = str(headers['Content-Length'])
-                    body = ''.join([s for s in datagen])
-                    response, content = http.request(photo_url, 'POST',
-                                                     headers=headers, body=body)
-                    # XXX handle errors
-                    if self.DEBUG:
-                        print "TD: result from photo upload:"
-                        print content
-
-                
-        elif rackform.errors:
-            # XXX Notify the sender via email.
+            # So instead, let's POST our data to some URL...
+            url = self.parameters['url']
+            jsondata = json.dumps(data)
+            http = httplib2.Http()
+            headers = {'Content-type': 'application/json'}
+            try:
+                response, content = http.request(url, 'POST',
+                                                 headers=headers,
+                                                 body=jsondata)
+            except socket.error:
+                # XXX Alert user the server is not up.
+                raise
             if self.DEBUG:
-                print "TD: errors %s" % rackform.errors
+                print "TD: server responded with:\n%s" % content
+
+            if response.status >= 500:
+                err_msg = "Couldn't handle your mail! A server error occured.\n"
+                err_msg += content + "\n"
+                sys.stderr.write(err_msg)
+                sys.exit(1)
+
+            result = json.loads(content)
+            if result.has_key('errors'):
+                err_msg = "Please correct these errors:\n"
+                for k, v in sorted(result['errors'].items()):
+                    err_msg += "%s: %s\n" % (k, '; '.join(v))
+                sys.stderr.write(err_msg)
+                sys.exit(1)
+            
+            if attachments.has_key('photo'):
+                parsed_url = urlparse.urlparse(url)
+                base_url = parsed_url[0] + '://' + parsed_url[1]
+                photo_url = base_url + result['photo_url']
+
+                datagen, headers = multipart_encode({'photo':
+                                                     attachments['photo']})
+                # httplib2 doesn't like poster's integer headers.
+                headers['Content-Length'] = str(headers['Content-Length'])
+                body = ''.join([s for s in datagen])
+                response, content = http.request(photo_url, 'POST',
+                                                 headers=headers, body=body)
+                # XXX handle errors
+                if self.DEBUG:
+                    print "TD: result from photo upload:"
+                    print content
 
 
 
@@ -354,7 +334,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         else:
             subject  = self.email_to_unicode(self.msg['Subject'])
 
-        spam_msg = False
+        spam_msg = False #XXX not sure what this should be
 
         subject_re = re.compile(r'(?P<title>[^\@]*)\s*@(?P<address>.*)')
         subject_match = subject_re.search(subject)

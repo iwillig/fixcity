@@ -254,21 +254,31 @@ def verify_by_communityboard(request,cb_id):
             },
             context_instance=RequestContext(request, processors=[user_context]))
 
-def _maybe_geocode(request):
+def _preprocess_rack_form(postdata):
     """Handle an edge case where the form is submitted before the
     client-side ajax code finishes setting the location and/or
     community board.  This can easily happen eg. if the user types an
     address and immediately hits return or clicks submit.
-    """ 
-    if request.POST[u'geocoded'] != u'1':
-        results = _geocode(request.POST['address'])
+
+    Also do any other preprocessing needed.
+    """
+
+    if postdata[u'geocoded'] != u'1':
+        results = _geocode(postdata['address'])
         # XXX handle multiple (or zero) results.
         lat, lon = results[0][1]
-        request.POST[u'location'] = str(Point(lon, lat, srid=SRID))
-    if request.POST[u'got_communityboard'] != u'1' \
-           or not request.POST[u'communityboard']:
-        pnt = fromstr(request.POST['location'], srid=SRID)
-        request.POST['communityboard'] = _get_communityboard_id(pnt.x, pnt.y)
+        postdata[u'location'] = str(Point(lon, lat, srid=SRID))
+    if postdata[u'got_communityboard'] != u'1' \
+           or not postdata[u'communityboard']:
+        pnt = fromstr(postdata['location'], srid=SRID)
+        postdata['communityboard'] = _get_communityboard_id(pnt.x, pnt.y)
+
+    user = postdata.get('user', '').strip()
+    email = postdata.get('email', '').strip()
+    if email and not user:
+        users = User.objects.filter(email=email).all()
+        if len(users) == 1:
+            postdata['user'] = users[0].username
         
 
 def _newrack(data, files):
@@ -294,7 +304,7 @@ def _newrack(data, files):
     
 def newrack_form(request):
     if request.method == 'POST':
-        _maybe_geocode(request)
+        _preprocess_rack_form(request)
         result = _newrack(request.POST, request.FILES)
         form = result['form']
         if not result['errors']:
@@ -327,20 +337,27 @@ def newrack_json(request):
     post = request.POST.copy()
     post.clear()  # it doesn't have anything in useful form..
     post.update(args)
-    result = _newrack(post, files={})
-    if result['errors']:
-        # Annoyingly, the errors thingy is made of weird dict & list
-        # subclasses that I can't simply serialize.
-        errors = {}
-        for key, val in result['errors'].items():
-            # it's a list subclass containing string subclasses.
-            errors[key] = [s[:] for s in val]
-        output = json.dumps({'errors': errors})
+    try:
+        _preprocess_rack_form(post)
+    except CommunityBoard.DoesNotExist:
+        output = {'errors': {'communityboard': ['Sorry, we only support Brooklyn Community Board 1 at this time.']}}
+        status = 400
     else:
-        output = {'rack': result['rack'].id, 'message': result['message'],
-                  'photo_url': '/rack/%d/photos/' % result['rack'].id}
-
-    return HttpResponse(json.dumps(output), mimetype='application/json')
+        rackresult = _newrack(post, files={})
+        if rackresult['errors']:
+            status = 400
+            # Annoyingly, the errors thingy is made of weird dict & list
+            # subclasses that I can't simply serialize.
+            errors = {}
+            for key, val in rackresult['errors'].items():
+                # it's a list subclass containing string subclasses.
+                errors[key] = [s[:] for s in val]
+            output = {'errors': errors}
+        else:
+            status = 200
+            output = {'rack': rackresult['rack'].id, 'message': rackresult['message'],
+                       'photo_url': '/rack/%d/photos/' % rackresult['rack'].id}
+    return HttpResponse(json.dumps(output), mimetype='application/json', status=status)
 
 
 @login_required
@@ -383,7 +400,7 @@ def rack_edit(request,rack_id):
         # For now, preserve the original creator.
         request.POST[u'email'] = rack.email
         request.POST[u'user'] = rack.user
-        _maybe_geocode(request)
+        _preprocess_rack_form(request)
         form = RackForm(request.POST, request.FILES, instance=rack)
         if form.is_valid():
             form.save()
