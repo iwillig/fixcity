@@ -358,9 +358,10 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         else:
             address_re = re.compile(r'@(?P<address>.+)$', re.MULTILINE)
             address_match = address_re.search(body_text)
-            if not address_match:
-                raise ValueError("Could not parse location from subject or body")
-            address = address_match.group('address')
+            if address_match:
+                address = address_match.group('address')
+            else:
+                address = ''  # Let the server deal with lack of address.
             title = subject
 
         address = address.strip()
