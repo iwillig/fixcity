@@ -27,6 +27,7 @@ import unicodedata
 import urlparse
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
 from django.utils import simplejson as json
 
@@ -238,7 +239,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         message_parts = self.get_message_parts()
         message_parts = self.unique_attachment_names(message_parts)
 
-        description = self.body_text(message_parts)
+        description = self.description = self.body_text(message_parts)
         attachments = self.attachments(message_parts)
         # We don't bother with microsecond precision because
         # Django datetime fields can't parse it anyway.
@@ -254,59 +255,74 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         
         if self.parameters.get('dry-run') and self.DEBUG:
             print "TD: would save rack here"
-        else:
-            # XXX This is the one thing i apparently can't do
-            # when running as `nobody`.
-            # And getting postfix to run this script as another user
-            # seems to be a PITA.
-            #rack = rackform.save()
+            return
 
-            # So instead, let's POST our data to some URL...
-            url = self.parameters['url']
-            jsondata = json.dumps(data)
-            http = httplib2.Http()
-            headers = {'Content-type': 'application/json'}
-            try:
-                response, content = http.request(url, 'POST',
-                                                 headers=headers,
-                                                 body=jsondata)
-            except socket.error:
-                # XXX Alert user the server is not up.
-                raise
+        # This is the one thing i apparently can't do
+        # when running as `nobody`.
+        # And getting postfix to run this script as another user
+        # seems to be a PITA.
+        #rack = rackform.save()
+
+        # So instead, let's POST our data to some URL...
+        url = self.parameters['url']
+        jsondata = json.dumps(data)
+        http = httplib2.Http()
+        headers = {'Content-type': 'application/json'}
+        try:
+            response, content = http.request(url, 'POST',
+                                             headers=headers,
+                                             body=jsondata)
+        except socket.error:
+            self.bounce('Sorry, the FixCity server appears to be down',
+                        'Please try again later.')
+            sys.exit(1)
+
+        if self.DEBUG:
+            print "TD: server responded with:\n%s" % content
+
+        if response.status >= 500:
+            msg = 'Sorry, the server gave a %d error while handling your email.' % response.status
+            msg += '\nThis is our fault, not yours!\n'
+            msg += '\n\nResponse from the server:\n\n'
+            msg += content  # XXX This isn't very useful, as it's raw HTML
+            self.bounce('Server error! Could not add your bike rack', msg)
+            sys.exit(1)
+
+        result = json.loads(content)
+        if result.has_key('errors'):
+            err_msg = "Please correct these errors and try again:\n"
+            for k, v in sorted(result['errors'].items()):
+                err_msg += "%s: %s\n" % (k, '; '.join(v))
+            self.bounce("Please correct errors in your bike rack submission.",
+                        err_msg)
+            sys.exit(1)
+
+        if attachments.has_key('photo'):
+            parsed_url = urlparse.urlparse(url)
+            base_url = parsed_url[0] + '://' + parsed_url[1]
+            photo_url = base_url + result['photo_url']
+
+            datagen, headers = multipart_encode({'photo':
+                                                 attachments['photo']})
+            # httplib2 doesn't like poster's integer headers.
+            headers['Content-Length'] = str(headers['Content-Length'])
+            body = ''.join([s for s in datagen])
+            response, content = http.request(photo_url, 'POST',
+                                             headers=headers, body=body)
+            # XXX handle errors
             if self.DEBUG:
-                print "TD: server responded with:\n%s" % content
-
-            if response.status >= 500:
-                err_msg = "Couldn't handle your mail! A server error occured.\n"
-                err_msg += content + "\n"
-                sys.stderr.write(err_msg)
-                sys.exit(1)
-
-            result = json.loads(content)
-            if result.has_key('errors'):
-                err_msg = "Please correct these errors:\n"
-                for k, v in sorted(result['errors'].items()):
-                    err_msg += "%s: %s\n" % (k, '; '.join(v))
-                sys.stderr.write(err_msg)
-                sys.exit(1)
-            
-            if attachments.has_key('photo'):
-                parsed_url = urlparse.urlparse(url)
-                base_url = parsed_url[0] + '://' + parsed_url[1]
-                photo_url = base_url + result['photo_url']
-
-                datagen, headers = multipart_encode({'photo':
-                                                     attachments['photo']})
-                # httplib2 doesn't like poster's integer headers.
-                headers['Content-Length'] = str(headers['Content-Length'])
-                body = ''.join([s for s in datagen])
-                response, content = http.request(photo_url, 'POST',
-                                                 headers=headers, body=body)
-                # XXX handle errors
-                if self.DEBUG:
-                    print "TD: result from photo upload:"
-                    print content
-
+                print "TD: result from photo upload:"
+                print content
+        # XXX need to add links per https://projects.openplans.org/fixcity/wiki/EmailText
+        import pdb; pdb.set_trace()
+        
+        reply = "Thanks for your rack suggestion!\n\n"
+        reply += "You must verify that your spot meets DOT requirements\n"
+        reply += "before we can submit it.\n"
+        reply += "To verify, go to: http://fixcity.org/verify\n\n"
+        reply += "Thanks!\n\n"
+        reply += "-The Open Planning Project & Livable Streets Initiative\n"
+        self.reply("Thanks for your bike rack suggestion!", reply)
 
 
     def parse(self, fp):
@@ -314,7 +330,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         if not self.msg:
             if self.DEBUG:
                 print "TD: This is not a valid email message format"
-            return
+            sys.exit(1)
 
         # Work around lack of header folding in Python; see http://bugs.python.org/issue4696
         self.msg.replace_header('Subject', self.msg['Subject'].replace('\r', '').replace('\n', ''))
@@ -566,6 +582,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
                 continue
 
         body_text = '\r\n'.join(body_text)
+        self._body_text = body_text
         return body_text
 
 
@@ -605,6 +622,18 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         return results
 
 
+    def bounce(self, subject, body):
+        if self.DEBUG:
+            print "TD: Bouncing message to %s" % self.email_addr
+        body += '\n\n------------ original message follows ---------\n\n'
+        body += '\n'.join(['%s: %s' % h for h in self.msg._headers])
+        body += '\n\n' + self.description  # XXX what else do we want?
+        return self.reply(subject, body)
+        
+    def reply(self, subject, body):
+        send_mail(subject, body, self.msg['to'], [self.email_addr],
+                  fail_silently=False)
+        
 
 
 class Command(BaseCommand):

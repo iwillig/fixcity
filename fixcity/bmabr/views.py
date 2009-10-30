@@ -1,6 +1,7 @@
 # Create your views here.
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseServerError
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core import serializers
@@ -20,6 +21,8 @@ from django.contrib.gis.geos import fromstr
 from django.contrib.gis.geos.point import Point
 from django.contrib.gis.geos.polygon import Polygon
 from django.contrib.gis.shortcuts import render_to_kml
+
+from django.template import Context, loader
 
 from django.views.decorators.cache import cache_page
 
@@ -304,7 +307,7 @@ def _newrack(data, files):
     
 def newrack_form(request):
     if request.method == 'POST':
-        _preprocess_rack_form(request)
+        _preprocess_rack_form(request.POST)
         result = _newrack(request.POST, request.FILES)
         form = result['form']
         if not result['errors']:
@@ -340,7 +343,7 @@ def newrack_json(request):
     try:
         _preprocess_rack_form(post)
     except CommunityBoard.DoesNotExist:
-        output = {'errors': {'communityboard': ['Sorry, we only support Brooklyn Community Board 1 at this time.']}}
+        output = {'errors': {'communityboard': ['Sorry, we only handle addresses inside Brooklyn Community Board 1 at this time.']}}
         status = 400
     else:
         rackresult = _newrack(post, files={})
@@ -674,10 +677,8 @@ def server_error(request, template_name='500.html'):
     # This is fairly ugly in the apache error log, as each line gets
     # its own log entry, but hey it's way better than nothing.
     logger.error(traceback.format_exc())
-    return render_to_response(
-        template_name,
-        {'exc_type': exc_type, 
-         'exc_value': exc_value,
-         },
-        context_instance = RequestContext(request)
-    )
+    template = loader.get_template(template_name)
+    context = Context({'exc_type': exc_type, 'exc_value': exc_value})
+    return HttpResponseServerError(template.render(context),
+                                   mimetype="application/xhtml+xml")
+
