@@ -314,8 +314,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
                 print "TD: result from photo upload:"
                 print content
         # XXX need to add links per https://projects.openplans.org/fixcity/wiki/EmailText
-        import pdb; pdb.set_trace()
-        
         reply = "Thanks for your rack suggestion!\n\n"
         reply += "You must verify that your spot meets DOT requirements\n"
         reply += "before we can submit it.\n"
