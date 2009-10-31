@@ -414,7 +414,7 @@ def support(request, rack_id):
 
 @login_required
 def rack_edit(request,rack_id):
-    rack = Rack.objects.get(id=rack_id)
+    rack = get_object_or_404(Rack, id=rack_id)
     if request.method == 'POST':
         # For now, preserve the original creator.
         request.POST[u'email'] = rack.email
@@ -446,7 +446,7 @@ def rack_edit(request,rack_id):
           context_instance=RequestContext(request, processors=[user_context]))
 
 def rack(request,rack_id): 
-    rack = Rack.objects.get(id=rack_id)    
+    rack = get_object_or_404(Rack, id=rack_id)
     steps_query = Steps.objects.filter(step_rack=rack_id)
     comment_query = Comment.objects.filter(rack=rack_id)
     statement_query = StatementOfSupport.objects.filter(s_rack=rack_id)
