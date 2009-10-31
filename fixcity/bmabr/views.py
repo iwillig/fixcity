@@ -267,15 +267,24 @@ def _preprocess_rack_form(postdata):
     """
 
     if postdata[u'geocoded'] != u'1':
-        results = _geocode(postdata['address'])
-        # XXX handle multiple (or zero) results.
-        lat, lon = results[0][1]
-        postdata[u'location'] = str(Point(lon, lat, srid=SRID))
+        if postdata['address'].strip():
+            results = _geocode(postdata['address'])
+            # XXX handle multiple (or zero) results.
+            try:
+                lat, lon = results[0][1]
+            except IndexError:
+                # no results. XXX what to do here?
+                postdata[u'location'] = u''
+            else:
+                postdata[u'location'] = str(Point(lon, lat, srid=SRID))
+            
     if postdata[u'got_communityboard'] != u'1' \
            or not postdata[u'communityboard']:
-        pnt = fromstr(postdata['location'], srid=SRID)
-        postdata['communityboard'] = _get_communityboard_id(pnt.x, pnt.y)
-
+        if postdata.get('location', '').strip():
+            pnt = fromstr(postdata['location'], srid=SRID)
+            postdata['communityboard'] = _get_communityboard_id(pnt.x, pnt.y)
+    # Handle a registered user submitting without logging in...
+    # eg. via email.
     user = postdata.get('user', '').strip()
     email = postdata.get('email', '').strip()
     if email and not user:
@@ -358,9 +367,16 @@ def newrack_json(request):
             output = {'errors': errors}
         else:
             status = 200
-            output = {'rack': rackresult['rack'].id, 'message': rackresult['message'],
-                       'photo_url': '/rack/%d/photos/' % rackresult['rack'].id}
-    return HttpResponse(json.dumps(output), mimetype='application/json', status=status)
+            rack = rackresult['rack']
+            output = {'rack': rack.id,
+                      'message': rackresult['message'],
+                      'photo_post_url': '/rack/%d/photos/' % rack.id,
+                      'rack_url': '/rack/%d/' % rack.id,
+                      'user': rack.user,
+                      'email': rack.email,
+                      }
+    return HttpResponse(json.dumps(output), mimetype='application/json',
+                        status=status)
 
 
 @login_required

@@ -268,40 +268,56 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         jsondata = json.dumps(data)
         http = httplib2.Http()
         headers = {'Content-type': 'application/json'}
+        error_subject = "Unsuccessful Rack Request"
         try:
             response, content = http.request(url, 'POST',
                                              headers=headers,
                                              body=jsondata)
         except socket.error:
-            self.bounce('Sorry, the FixCity server appears to be down',
-                        'Please try again later.')
+            self.bounce(error_subject,
+                        "Thanks for trying to suggest a rack.\n"
+                        "We are unfortunately experiencing some difficulties\n"
+                        "at the moment -- please try again later!"
+                        )
             return
 
         if self.DEBUG:
             print "TD: server responded with:\n%s" % content
 
         if response.status >= 500:
-            msg = 'Sorry, the server gave a %d error while handling your email.' % response.status
-            msg += '\nThis is our fault, not yours!\n'
-            msg += '\n\nResponse from the server:\n\n'
-            msg += content  # XXX This isn't very useful, as it's raw HTML
-            self.bounce('Server error! Could not add your bike rack', msg)
+            err_msg = ("Thanks for trying to suggest a rack.\n"
+                       "We are unfortunately experiencing some difficulties\n"
+                       "at the moment -- please try again later!\n")
+            self.bounce(error_subject, err_msg)
             return
 
         result = json.loads(content)
         if result.has_key('errors'):
-            err_msg = "Please correct these errors and try again:\n"
+            errors = result['errors']
+            err_msg = ("Thanks for trying to suggest a rack through\n"
+                       "fixcity.org, but it won't go through without the\n"
+                       "proper information.\n\n")
+            if errors.pop('title', None):
+                err_msg += ("Your subject line should follow this format:\n\n"
+                            "Key Foods @224 McGuinness Blvd, Brooklyn NY\n\n"
+                            "First comes the name of the establishment\n"
+                            "(store, park, office etc.) you want a rack near.\n"
+                            "Then enter @ followed by the address.\n"
+                            "Please try again!\n"
+                            )
+
             for k, v in sorted(result['errors'].items()):
                 err_msg += "%s: %s\n" % (k, '; '.join(v))
-            self.bounce("Please correct errors in your bike rack submission.",
-                        err_msg)
+            self.bounce(error_subject, err_msg)
             return
 
-        if attachments.has_key('photo'):
-            parsed_url = urlparse.urlparse(url)
-            base_url = parsed_url[0] + '://' + parsed_url[1]
-            photo_url = base_url + result['photo_url']
+        parsed_url = urlparse.urlparse(url)
+        base_url = parsed_url[0] + '://' + parsed_url[1]
+        photo_url = base_url + result['photo_post_url']
+        rack_url = base_url + result['rack_url']
+        rack_user = result.get('user')
 
+        if attachments.has_key('photo'):
             datagen, headers = multipart_encode({'photo':
                                                  attachments['photo']})
             # httplib2 doesn't like poster's integer headers.
@@ -313,14 +329,20 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
             if self.DEBUG:
                 print "TD: result from photo upload:"
                 print content
-        # XXX need to add links per https://projects.openplans.org/fixcity/wiki/EmailText
+        # XXX need to add links per
+        # https://projects.openplans.org/fixcity/wiki/EmailText
+        # ... will need an HTML version.
         reply = "Thanks for your rack suggestion!\n\n"
         reply += "You must verify that your spot meets DOT requirements\n"
         reply += "before we can submit it.\n"
-        reply += "To verify, go to: http://fixcity.org/verify\n\n"
+        reply += "To verify, go to: %(rack_url)sedit/\n\n"
+        if not rack_user:
+            # XXX Create an inactive account and add a confirmation link.
+            reply += "To create an account, go to %(base_url)s/accounts/register/ .\n\n"  % locals()
         reply += "Thanks!\n\n"
-        reply += "-The Open Planning Project & Livable Streets Initiative\n"
-        self.reply("Thanks for your bike rack suggestion!", reply)
+        reply += "- The Open Planning Project & Livable Streets Initiative\n"
+        reply = reply % locals()
+        self.reply("FixCity Rack Confirmation", reply)
 
 
     def parse(self, fp):
@@ -342,11 +364,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
             self.debug_attachments(message_parts)
 
         self.get_sender_info()
-
-        if not self.msg['Subject']:
-            return False
-        else:
-            subject  = self.email_to_unicode(self.msg['Subject'])
+        subject  = self.email_to_unicode(self.msg.get('Subject', ''))
 
         spam_msg = False #XXX not sure what this should be
 
