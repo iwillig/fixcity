@@ -7,6 +7,8 @@ SECRET_KEY = YOU MUST CHANGE THIS
 
 DEFAULT_FROM_EMAIL = foo@example.com
 
+GOOGLE_ANALYTICS_KEY =
+
 [db]
 
 # Engine: 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.

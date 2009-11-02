@@ -26,6 +26,6 @@ setup(name='fixcity',
         'ctypes>=1.0.2',
         'wsgilog>=0.1',
         'httplib2',
-        'poster',          
+        'poster',
         ],
       )

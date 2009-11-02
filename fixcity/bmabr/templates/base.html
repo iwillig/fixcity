@@ -2,6 +2,7 @@
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
+{% load google_analytics %}
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>{% block title %} {% endblock %}</title> 
   <!-- Framework CSS -->
@@ -64,6 +65,7 @@
     </div><!-- /.wrap -->
   </div><!-- /#footer -->
 {% block extra_footer %}{% endblock %}
+{% google_analytics %}
 </body>
 </html> 
 

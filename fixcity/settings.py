@@ -69,6 +69,8 @@ MEDIA_URL = '/site_media/'
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
 
+GOOGLE_ANALYTICS_KEY = config.get('main', 'GOOGLE_ANALYTICS_KEY')
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = config.get('main', 'SECRET_KEY')
 
@@ -123,6 +125,14 @@ INSTALLED_APPS = (
     'fixcity.bmabr',
 )
 
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "bmabr.views.user_context",
+    )
 
 
 # Logging?

@@ -31,6 +31,8 @@ get started:
 
   createdb -T template_postgis bmabr
 
+  ... the last parameter should be the name of your database.
+
  3) Load the data:
 
    psql -d bmabr < fixcity/sql/gis_community_board.sql

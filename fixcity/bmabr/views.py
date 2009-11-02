@@ -87,7 +87,7 @@ def index(request):
        {'request':request,
         'recent_racks': racks_query,
         },
-       context_instance=RequestContext(request, processors=[user_context])
+       context_instance=RequestContext(request) #,processors=[user_context])
                               ) 
 def about(request):
     return render_to_response('about.html',
