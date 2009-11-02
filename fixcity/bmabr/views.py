@@ -87,18 +87,18 @@ def index(request):
        {'request':request,
         'recent_racks': racks_query,
         },
-       context_instance=RequestContext(request) #,processors=[user_context])
+       context_instance=RequestContext(request)
                               ) 
 def about(request):
     return render_to_response('about.html',
        {'request':request},
-       context_instance=RequestContext(request, processors=[user_context])
+       context_instance=RequestContext(request)
                               )
 
 def faq(request):
     return render_to_response('faq.html',
        {'request':request},
-       context_instance=RequestContext(request, processors=[user_context])
+       context_instance=RequestContext(request)
                               )
 
 @login_required
@@ -109,7 +109,7 @@ def profile(request):
        {'user': user,
        'racks': racks
         },
-       context_instance=RequestContext(request, processors=[user_context])
+       context_instance=RequestContext(request)
                               ) 
 
 def built(request): 
@@ -117,7 +117,7 @@ def built(request):
     rack_extent = rack.extent()
     return render_to_response('built.html',{ 
             'rack_extent': rack_extent},
-            context_instance=RequestContext(request, processors=[user_context])
+            context_instance=RequestContext(request)
             )
 
 
@@ -194,7 +194,7 @@ def submit(request):
             'racks_count': racks_count,
             'community_board_query_extent': community_board_query_extent,
             },
-             context_instance=RequestContext(request, processors=[user_context])            
+             context_instance=RequestContext(request)
              )
 
 
@@ -248,14 +248,14 @@ def verify(request):
             'racks_page': racks_page,
             'page_numbers': page_numbers,
             },
-            context_instance=RequestContext(request, processors=[user_context])) 
+            context_instance=RequestContext(request))
 
 def verify_by_communityboard(request,cb_id): 
     rack_query = Rack.objects.filter(communityboard=cb_id)    
     return render_to_response('verify_communityboard.html', { 
             'rack_query':rack_query
             },
-            context_instance=RequestContext(request, processors=[user_context]))
+            context_instance=RequestContext(request))
 
 def _preprocess_rack_form(postdata):
     """Handle an edge case where the form is submitted before the
@@ -330,7 +330,7 @@ def newrack_form(request):
     return render_to_response('newrack.html', { 
             'form': form,
            },
-           context_instance=RequestContext(request, processors=[user_context])) 
+           context_instance=RequestContext(request))
 
 
 def rack_index(request):
@@ -443,7 +443,7 @@ def rack_edit(request,rack_id):
            "form": form ,
            "creator": creator,
            },
-          context_instance=RequestContext(request, processors=[user_context]))
+          context_instance=RequestContext(request))
 
 def rack(request,rack_id): 
     rack = get_object_or_404(Rack, id=rack_id)
@@ -456,7 +456,7 @@ def rack(request,rack_id):
             'statement_query': statement_query,
             'steps_query': steps_query,
             },
-             context_instance=RequestContext(request, processors=[user_context])) 
+            context_instance=RequestContext(request))
            
     
 
@@ -552,14 +552,14 @@ def communityboard(request):
 def contact(request):
     return render_to_response(
         'contact.html', {},
-        context_instance=RequestContext(request, processors=[user_context]),
+        context_instance=RequestContext(request),
         )
 
 def verification_kit(request):
     return render_to_response(
         'verification-kit.html',
         {},
-        context_instance=RequestContext(request, processors=[user_context]),
+        context_instance=RequestContext(request),
         )
 
 def activate(request, activation_key,
