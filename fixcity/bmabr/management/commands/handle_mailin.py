@@ -286,10 +286,15 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
             print "TD: server responded with:\n%s" % content
 
         if response.status >= 500:
-            err_msg = ("Thanks for trying to suggest a rack.\n"
-                       "We are unfortunately experiencing some difficulties\n"
-                       "at the moment -- please try again later!\n")
-            self.bounce(error_subject, err_msg)
+            err_msg = (
+                "Thanks for trying to suggest a rack.\n"
+                "Unfortunately there was a server error and your rack could\n"
+                "not be processed. The fixcity staff are being notified and\n"
+                "will fix the problem as soon as possible.\n"
+                )
+            admin_body = content
+            self.bounce(error_subject, err_msg, notify_admin='500 Server error',
+                        notify_admin_body=content)
             return
 
         result = json.loads(content)
@@ -627,7 +632,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
             # Check if the attachment size is allowed
             #
             if (max_size != -1) and (file_size > max_size):
-                status = '%s\nFile %s is larger then allowed attachment size (%d > %d)\n\n' \
+                status = '%s\nFile %s is larger than allowed attachment size (%d > %d)\n\n' \
                         %(status, original, file_size, max_size)
                 continue
 
@@ -640,18 +645,29 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         return results
 
 
-    def bounce(self, subject, body, notify_admin):
+    def bounce(self, subject, body, notify_admin='', notify_admin_body=''):
+        """Bounce a message to the sender, with additional subject
+        and body for explanation.
+
+        If the notify_admin string is non-empty, the site admin will
+        be notified, with that string appended to the subject.
+        If notify_admin_body is non-empty, it will be added to the body
+        sent to the admin.
+        """
         if self.DEBUG:
             print "TD: Bouncing message to %s" % self.email_addr
         body += '\n\n------------ original message follows ---------\n\n'
+        # TO DO: use attachments rather than inline.
         body += self.msg.as_string()
         if notify_admin:
             admin_subject = 'FixCity handle_mailin bounce! %s' % notify_admin
             admin_body = 'Bouncing to: %s\n' % self.msg['to']
             admin_body += 'Bounce subject: %r\n' % subject
             admin_body += 'Time: %s\n' % datetime.now().isoformat(' ')
-            admin_body += '--- Bounce message follows --------\n'
-            admin_body += body
+            admin_body += 'Not attaching original body, check the log file.'
+            if notify_admin_body:
+                admin_body += 'Additional info:\n'
+                admin_body += notify_admin_body
             self.notify_admin(admin_subject, admin_body)
         return self.reply(subject, body)
         

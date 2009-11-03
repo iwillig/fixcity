@@ -341,6 +341,7 @@ def rack_index(request):
 
 
 def newrack_json(request):
+    raise ValueError("Bwahahaha")
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     # I would think there'd be a more useful way to get Django to
