@@ -277,7 +277,8 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
             self.bounce(error_subject,
                         "Thanks for trying to suggest a rack.\n"
                         "We are unfortunately experiencing some difficulties\n"
-                        "at the moment -- please try again later!"
+                        "at the moment -- please try again later!",
+                        notify_admin='Server down??'
                         )
             return
 
@@ -345,8 +346,8 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         self.reply("FixCity Rack Confirmation", reply)
 
 
-    def parse(self, fp):
-        self.msg = email.message_from_file(fp)
+    def parse(self, s):
+        self.msg = email.message_from_string(s)
         if not self.msg:
             if self.DEBUG:
                 print "TD: This is not a valid email message format"
@@ -639,18 +640,35 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         return results
 
 
-    def bounce(self, subject, body):
+    def bounce(self, subject, body, notify_admin):
         if self.DEBUG:
             print "TD: Bouncing message to %s" % self.email_addr
         body += '\n\n------------ original message follows ---------\n\n'
-        body += '\n'.join(['%s: %s' % h for h in self.msg._headers])
-        body += '\n\n' + self.description  # XXX what else do we want?
+        body += self.msg.as_string()
+        if notify_admin:
+            admin_subject = 'FixCity handle_mailin bounce! %s' % notify_admin
+            admin_body = 'Bouncing to: %s\n' % self.msg['to']
+            admin_body += 'Bounce subject: %r\n' % subject
+            admin_body += 'Time: %s\n' % datetime.now().isoformat(' ')
+            admin_body += '--- Bounce message follows --------\n'
+            admin_body += body
+            self.notify_admin(admin_subject, admin_body)
         return self.reply(subject, body)
         
     def reply(self, subject, body):
         send_mail(subject, body, self.msg['to'], [self.email_addr],
                   fail_silently=False)
-        
+
+    def notify_admin(self, subject, body):
+        admin_email = self.parameters.get('admin_email')
+        if admin_email:
+            if self.msg and self.msg.get('to'):
+                from_addr = self.msg['to']
+            else:
+                from_addr = 'racks@fixcity.org'
+            send_mail(subject, body, from_addr,
+                      [self.parameters['admin_email']],
+                      fail_silently=False)
 
 
 class Command(BaseCommand):
@@ -664,7 +682,8 @@ class Command(BaseCommand):
                     help="Remove signatures from incoming mail"),
         make_option('--max-attachment-size', type="int",
                     help="Max size of uploaded files."),
-
+        make_option('--admin-email', help="Address to notify of errors.",
+                    action="store"),
     )
 
     def handle(self, *args, **options):
@@ -672,6 +691,8 @@ class Command(BaseCommand):
         parser = EmailParser(options)
         did_stdin = False
         for filename in args:
+            now = datetime.now().isoformat(' ')
+            print "------------- %s ------------" % now
             if filename == '-':
                 if did_stdin:
                     continue
@@ -680,9 +701,15 @@ class Command(BaseCommand):
             else:
                 thisfile = open(filename)
             try:
-                parser.parse(thisfile)
-            except Exception, error:
-                traceback.print_exc()
+                raw_msg = thisfile.read()
+                parser.parse(raw_msg)
+            except:
+                tb_msg = "Exception at %s follows:\n------------\n" % now
+                tb_msg += traceback.format_exc()
+                tb_msg += "\n -----Original message follows ----------\n\n"
+                tb_msg += raw_msg
                 if parser.msg:
                     parser.save_email_for_debug(parser.msg, True)
-                sys.exit(1) # XXX do a more informative bounce?
+                parser.notify_admin('Unexpected traceback in handle_mailin',
+                                    tb_msg)
+                raise
