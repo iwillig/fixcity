@@ -664,7 +664,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
             admin_body = 'Bouncing to: %s\n' % self.msg['to']
             admin_body += 'Bounce subject: %r\n' % subject
             admin_body += 'Time: %s\n' % datetime.now().isoformat(' ')
-            admin_body += 'Not attaching original body, check the log file.'
+            admin_body += 'Not attaching original body, check the log file.\n'
             if notify_admin_body:
                 admin_body += 'Additional info:\n'
                 admin_body += notify_admin_body
