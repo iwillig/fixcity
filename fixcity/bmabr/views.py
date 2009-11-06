@@ -146,8 +146,6 @@ def _geocode(text):
     key = ('_geocode', text)
     result = cache.get(key)
     if result is None:
-        import pdb; pdb.set_trace()
-        
         result = list(g.geocode(text, exactly_one=False))
         cache.set(key, result, 60 * 10)
     return result
@@ -343,8 +341,6 @@ def rack_index(request):
 
 
 def newrack_json(request):
-    raise IndexError("ha!")
-    
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
     # I would think there'd be a more useful way to get Django to

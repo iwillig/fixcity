@@ -303,7 +303,6 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
 
         result = json.loads(content)
         if result.has_key('errors'):
-            import pdb; pdb.set_trace()
 
             err_msg = (
                 "Thanks for trying to suggest a rack through fixcity.org,\n"
