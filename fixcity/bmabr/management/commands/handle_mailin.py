@@ -274,12 +274,13 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
                                              headers=headers,
                                              body=jsondata)
         except socket.error:
-            self.bounce(error_subject,
-                        "Thanks for trying to suggest a rack.\n"
-                        "We are unfortunately experiencing some difficulties\n"
-                        "at the moment -- please try again later!",
-                        notify_admin='Server down??'
-                        )
+            self.bounce(
+                error_subject,
+                "Thanks for trying to suggest a rack.\n"
+                "We are unfortunately experiencing some difficulties at the\n"
+                "moment -- please try again in an hour or two!",
+                notify_admin='Server down??'
+                )
             return
 
         if self.DEBUG:
@@ -288,9 +289,12 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         if response.status >= 500:
             err_msg = (
                 "Thanks for trying to suggest a rack.\n"
-                "Unfortunately there was a server error and your rack could\n"
-                "not be processed. The fixcity staff are being notified and\n"
-                "will fix the problem as soon as possible.\n"
+                "We are unfortunately experiencing some difficulties at the\n"
+                "moment. Please check to make sure your subject line follows\n"
+                "this format exactly:\n\n"
+                "  Key Foods @224 McGuinness Blvd Brooklyn NY\n\n"
+                "If you've made an error, please resubmit. Otherwise we'll\n"
+                "look into this issue and get back to you as soon as we can.\n"
                 )
             admin_body = content
             self.bounce(error_subject, err_msg, notify_admin='500 Server error',
@@ -299,21 +303,18 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
 
         result = json.loads(content)
         if result.has_key('errors'):
-            errors = result['errors']
-            err_msg = ("Thanks for trying to suggest a rack through\n"
-                       "fixcity.org, but it won't go through without the\n"
-                       "proper information.\n\n")
-            if errors.pop('title', None):
-                err_msg += ("Your subject line should follow this format:\n\n"
-                            "Key Foods @224 McGuinness Blvd, Brooklyn NY\n\n"
-                            "First comes the name of the establishment\n"
-                            "(store, park, office etc.) you want a rack near.\n"
-                            "Then enter @ followed by the address.\n"
-                            "Please try again!\n"
-                            )
+            import pdb; pdb.set_trace()
 
-            for k, v in sorted(result['errors'].items()):
+            err_msg = (
+                "Thanks for trying to suggest a rack through fixcity.org,\n"
+                "but it won't go through without the proper information.\n\n"
+                "Please correct the following errors:\n\n")
+
+            errors = adapt_errors(result['errors'])
+            for k, v in sorted(errors.items()):
                 err_msg += "%s: %s\n" % (k, '; '.join(v))
+
+            err_msg += "\nPlease try again!\n"
             self.bounce(error_subject, err_msg)
             return
 
@@ -361,11 +362,12 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         # Work around lack of header folding in Python; see http://bugs.python.org/issue4696
         self.msg.replace_header('Subject', self.msg['Subject'].replace('\r', '').replace('\n', ''))
 
+        message_parts = self.get_message_parts()
+        message_parts = self.unique_attachment_names(message_parts)
+        body_text = self.body_text(message_parts)
+
         if self.DEBUG > 1:        # save the entire e-mail message text
-            message_parts = self.get_message_parts()
-            message_parts = self.unique_attachment_names(message_parts)
             self.save_email_for_debug(self.msg, True)
-            body_text = self.body_text(message_parts)
             self.debug_body(body_text, True)
             self.debug_attachments(message_parts)
 
@@ -685,6 +687,51 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
             send_mail(subject, body, from_addr,
                       [self.parameters['admin_email']],
                       fail_silently=False)
+
+
+def _find_in_list(astr, alist):
+    alist = alist or []
+    for s in alist:
+        if s.count(astr):
+            return True
+    return False
+
+def adapt_errors(errors):
+    """Convert the form field names in the errors dict into things
+    that are meaningful via the email workflow, and adjust error
+    messages appropriately too.
+    """
+    adapted = {}
+    key_mapping = {
+        'title': 'subject',
+        'address': 'subject',
+        'description': 'body',
+        }
+
+    val_mapping = {
+        ('subject', 'This field is required.'): 
+        ("Your subject line should follow this format:\n\n"
+         "  Key Foods @224 McGuinness Blvd, Brooklyn NY\n\n"
+         "First comes the name of the establishment"
+         "(store, park, office etc.) you want a rack near.\n"
+         "Then enter @ followed by the address.\n"
+         ),
+
+        ("location", "No geometry value provided."):
+        ("The address didn't come through properly. Your subject line\n"
+         "should follow this format:\n\n"
+         "  Key Foods @224 McGuinness Blvd, Brooklyn NY\n\n"
+         "Make sure you have the street, city, and state listed after\n"
+         "the @ sign in this exact format.\n"),
+        }
+
+    for key, vals in errors.items():
+        for val in vals:
+            key = key_mapping.get(key, key)
+            val = val_mapping.get((key, val), val)
+            adapted[key] = adapted.get(key, ()) + (val,)
+    
+    return adapted
 
 
 class Command(BaseCommand):
