@@ -362,7 +362,21 @@ padding: 20px 0;
 border-bottom: 1px solid #edf2f5;
 }
 
-#racklist .rack-thumbnail img {
+#racklist li .rack-thumbnail {
+float: left;
+}
+
+#racklist li.new .rack-thumbnail {
+padding: 0 0 12px 0;
+background: url(/site_media/img/new-flag.png) 50% 100% no-repeat;
+}
+
+#racklist li.damaged .rack-thumbnail {
+padding: 0 0 12px 0;
+background: url(/site_media/img/damaged-flag.png) 50% 100% no-repeat;
+}
+
+#racklist li .rack-thumbnail img {
 width: 60px;
 float: left;
 }
@@ -376,6 +390,13 @@ color: #5f5f5f;
 font-size: 1.1em;
 color: #57bbf1;
 margin: 0;
+display: inline;
+}
+
+#racklist .rack-verified {
+color: #a5c665;
+padding: 0 0 0 22px;
+background: url(/site_media/img/tick.png) 3px 50% no-repeat;
 }
 
 #racklist .rack-info h4 {

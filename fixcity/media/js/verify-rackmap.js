@@ -59,6 +59,10 @@ function loadMap() {
             this_li.find("p").text(attrs.Snippet);
             this_li.find("a.rack-thumbnail").attr("href", "/rack/" + attrs.id + "/");
             this_li.find("h3 a").attr("href", "/rack/" + attrs.id + "/");
+
+			// Once we support multiple statuses this will need to be updated
+			this_li.addClass("new");
+			
             if ( attrs.verified == null ) {
 	          // XXX this always executes, even when the conditional is false!!
 	          // why???
