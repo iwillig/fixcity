@@ -1,6 +1,6 @@
 from django.contrib.gis import admin
 from django.contrib import admin as oldAdmin 
-from fixcity.bmabr.models import Rack, Comment, Neighborhoods, CommunityBoard, SubwayStations, Steps
+from fixcity.bmabr.models import Rack, Comment, Neighborhoods, CommunityBoard, SubwayStations
 from fixcity.bmabr.models import  StatementOfSupport
 
 
@@ -17,9 +17,6 @@ admin.site.register(StatementOfSupport,StatementOfSupportAdmin)
 class StatementInline(oldAdmin.StackedInline): 
     model = StatementOfSupport
 
-class StepsInline(oldAdmin.StackedInline): 
-    model = Steps
-
 class SubwayAdmin(admin.GeoModelAdmin): 
     list_display = ('name','borough')
     search_fields = ('name','borough')
@@ -31,7 +28,6 @@ admin.site.register(Comment,CommentAdmin)
 
 class RackAdmin(admin.GeoModelAdmin): 
     list_display = ('address','location')
-    inlines = [StepsInline]
 admin.site.register(Rack, RackAdmin)
 
 

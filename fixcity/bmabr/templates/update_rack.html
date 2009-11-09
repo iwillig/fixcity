@@ -80,6 +80,16 @@
     <input type="hidden" id="geocoded" name="geocoded" value="0" />
     <input type="hidden" id="got_communityboard" name="got_communityboard" value="0" />
 
+    <div id="verified-wrap">
+     <label for="verified">Verified</label>
+    
+    {% if rack.verified %}
+     <input type="checkbox" name="verified" checked="checked" />
+    {% else %}
+     <input type="checkbox" name="verified" />
+    {% endif %}
+    </div>
+
     <input type="submit" value="Save" />
 
 <!--  errors for debugging

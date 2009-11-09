@@ -28,6 +28,7 @@
              <a class="rack-thumbnail" href="#"><img /></a>
              <div class="rack-info">
                <h3><a href="#"> </a></h3>
+	       <span class="rack-verified">verified</span>
                <h4> </h4>
                <p> </p>
              </div>
@@ -41,6 +42,9 @@
              href="/rack/{{rack.id}}">{% if rack.photo %}<img src="{{rack.photo.thumbnail}}" alt="{{rack.title}} Photo" />{% endif %}</a>
              <div class="rack-info">
                <h3><a href="/rack/{{rack.id}}">{{rack.title}}</a></h3>
+	       {% if rack.verified %}
+	        <span class="rack-verified">verified</span>
+	       {% endif %}
                <h4>{{rack.address}}</h4>
                <p>{{rack.description|truncatewords:10}}</p>
              </div>
