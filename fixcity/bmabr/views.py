@@ -420,7 +420,7 @@ def rack_edit(request,rack_id):
         # For now, preserve the original creator.
         request.POST[u'email'] = rack.email
         request.POST[u'user'] = rack.user
-        _preprocess_rack_form(request)
+        _preprocess_rack_form(request.POST)
         form = RackForm(request.POST, request.FILES, instance=rack)
         if form.is_valid():
             form.save()
