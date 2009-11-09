@@ -39,7 +39,7 @@
          {% for rack in racks_page.object_list %}
            <li class="selfclear" id="rack_{{rack.id}}">
              <a class="rack-thumbnail"
-             href="/rack/{{rack.id}}">{% if rack.photo %}<img src="{{rack.photo.thumbnail}}" alt="{{rack.title}} Photo" />{% endif %}</a>
+             href="/rack/{{rack.id}}">{% if rack.photo %}<img src="{{rack.photo.thumbnail}}" alt="{{rack.title}} Photo" />{% else %}<img src="/site_media/img/default-rack.jpg" alt="No photo for this rack yet" />{% endif %}</a>
              <div class="rack-info">
                <h3><a href="/rack/{{rack.id}}">{{rack.title}}</a></h3>
 	       {% if rack.verified %}
