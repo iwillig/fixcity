@@ -38,17 +38,32 @@ class Rack(models.Model):
     # it's optional.
     user = models.CharField(max_length=20, blank=True, null=True)
     location = models.PointField(srid=4326)
-
-    verified = models.BooleanField(default=False, blank=True)
-    
     objects = models.GeoManager()
-
 
     class Meta:
         ordering = ['communityboard']
 
     def __unicode__(self):
         return self.address
+
+
+class Steps(models.Model): 
+
+    step_rack = models.ForeignKey(Rack)
+    STEP_TYPE = ( 
+        ('size-up' , 'Size Up'), 
+        ('photo' , 'Photo'),
+        ('statement','Statement of Support'),
+        )
+    name = models.CharField(max_length=10, choices=STEP_TYPE) 
+    STATUS = ( 
+        ('finished','finished'),
+        ('todo','todo'), 
+        )
+    status = models.CharField(max_length=10,choices=STATUS)
+
+    def __unicode__(self): 
+        return self.status
 
 
 class StatementOfSupport(models.Model): 
@@ -61,6 +76,14 @@ class StatementOfSupport(models.Model):
 
     def __unicode__(self):
         return self.email
+
+
+#class Photo(models.Model): 
+#    image = models.ImageField(upload_to='images/racks/', blank=True, null=True)
+#    email = models.EmailField()
+#    ph_rack = models.ForeignKey(Rack)        
+#    def __unicode__(self):
+#        return self.contact_email
 
 
 

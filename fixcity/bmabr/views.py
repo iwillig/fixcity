@@ -4,6 +4,7 @@ from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseServerError
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.core import serializers
 from django.core.cache import cache
 from django.core.files.uploadhandler import FileUploadHandler
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -25,7 +26,7 @@ from django.template import Context, loader
 
 from django.views.decorators.cache import cache_page
 
-from fixcity.bmabr.models import Rack, Comment
+from fixcity.bmabr.models import Rack, Comment, Steps
 from fixcity.bmabr.models import Neighborhoods
 from fixcity.bmabr.models import CommunityBoard
 from fixcity.bmabr.models import RackForm, CommentForm, SupportForm
@@ -212,7 +213,6 @@ def verify(request):
     except (EmptyPage, InvalidPage):
         racks_page = paginator.page(paginator.num_pages)
 
-    # XXX Do we still need this awfulness?
     # Pagination link clustering logic. Tried doing this purely in the
     # template, it was hideous.  The goal is to have page links like
     # (when eg. viewing page 7): '1 ... 5 6 7 8 9 ... 18' with a
@@ -299,6 +299,13 @@ def _newrack(data, files):
     message = ''
     if form.is_valid():
         new_rack = form.save()
+        # create steps status for new rack suggestion
+        size_up = Steps(step_rack=new_rack,name="size-up",status="todo")
+        size_up.save()
+        photo_status = Steps(step_rack=new_rack,name="photo",status='todo')
+        photo_status.save()
+        statement = Steps(step_rack=new_rack,name="statement",status='todo')
+        statement.save()
         message = '''
         Thank you for your suggestion! Racks can take six months
         or more for the DOT to install, but we\'ll be in touch
@@ -373,6 +380,26 @@ def newrack_json(request):
                         status=status)
 
 
+@login_required
+def rack_status(request,rack_id):
+    response = HttpResponse()
+    response['Content-Type'] = "text/javascript"
+    response.write(serializers.serialize('json', Steps.objects.filter(step_rack=rack_id)))    
+    return response
+
+@login_required
+def change_status(request,rack_id): 
+    id = request.POST['id']
+    step = Steps.objects.get(id=id)
+    if step.status == 'finished': 
+        new_step = Steps(id=id,step_rack=step.step_rack,name=step.name,status='todo')
+        new_step.save()
+    else: 
+        new_step = Steps(id=id,step_rack=step.step_rack,name=step.name,status='finished')
+        new_step.save()
+    return HttpResponse(step)
+
+
 
 def support(request, rack_id): 
     """Add a statement of support."""
@@ -380,7 +407,7 @@ def support(request, rack_id):
         form_support = SupportForm(request.POST,request.FILES)
         if form_support.is_valid(): 
             new_support = form_support.save()
-            return HttpResponseRedirect('/rack/%s/' % rack_id)              
+            return HttpResponseRedirect('/rack/%s' % rack_id)              
         else: 
             return HttpResponse('something went wrong')              
     else:         
@@ -393,14 +420,12 @@ def rack_edit(request,rack_id):
         # For now, preserve the original creator.
         request.POST[u'email'] = rack.email
         request.POST[u'user'] = rack.user
-        _preprocess_rack_form(request.POST)
+        _preprocess_rack_form(request)
         form = RackForm(request.POST, request.FILES, instance=rack)
-        import pdb; pdb.set_trace()
-        
         if form.is_valid():
-            x = form.save()
+            form.save()
             flash('Your changes have been saved.', request)
-            return HttpResponseRedirect('/rack/%s/edit/' % rack.id)
+            return HttpResponseRedirect('/rack/%s/edit' % rack.id)
         else:
             flash('Please correct the following errors.', request)
     else: 
@@ -423,12 +448,14 @@ def rack_edit(request,rack_id):
 
 def rack(request,rack_id): 
     rack = get_object_or_404(Rack, id=rack_id)
+    steps_query = Steps.objects.filter(step_rack=rack_id)
     comment_query = Comment.objects.filter(rack=rack_id)
     statement_query = StatementOfSupport.objects.filter(s_rack=rack_id)
     return render_to_response('rack.html', { 
             'rack': rack,            
             'comment_query': comment_query,
             'statement_query': statement_query,
+            'steps_query': steps_query,
             },
             context_instance=RequestContext(request))
            
@@ -439,9 +466,9 @@ def add_comment(request):
     rack_id = request.POST['rack']
     if form.is_valid(): 
         new_comment = form.save()
-        return HttpResponseRedirect('/rack/%s/#comments'% rack_id )   
+        return HttpResponseRedirect('/rack/%s#comments'% rack_id )   
     else: 
-        return HttpResponseRedirect('/error/comment/') 
+        return HttpResponseRedirect('/error/comment') 
 
 
 def updatephoto(request,rack_id):

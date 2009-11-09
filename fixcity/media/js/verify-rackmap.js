@@ -59,11 +59,6 @@ function loadMap() {
             this_li.find("p").text(attrs.Snippet);
             this_li.find("a.rack-thumbnail").attr("href", "/rack/" + attrs.id + "/");
             this_li.find("h3 a").attr("href", "/rack/" + attrs.id + "/");
-            if ( attrs.verified == null ) {
-	      // XXX this always executes, even when the conditional is false!!
-	      // why???
-	      this_li.find("span.rack-verified").hide();
-	    };
 
             if (attrs.thumbnail != null) {
                 this_li.find("a.rack-thumbnail img").attr("src", attrs.thumbnail.value);
