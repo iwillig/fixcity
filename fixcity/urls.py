@@ -57,7 +57,7 @@ urlpatterns = patterns(
 
     (r'^rack/new/$', 'fixcity.bmabr.views.newrack_form'), # view for rack request form.
     (r'^rack/(?P<rack_id>\d+)/photos/', 'fixcity.bmabr.views.updatephoto'),
-    (r'^rack/', 'fixcity.bmabr.views.rack_index'),
+    (r'^rack/$', 'fixcity.bmabr.views.rack_index'),
     
 
     (r'^comment/add/$', 'fixcity.bmabr.views.add_comment'), 

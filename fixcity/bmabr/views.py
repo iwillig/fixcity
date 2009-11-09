@@ -330,6 +330,7 @@ def rack_index(request):
     if request.method == 'POST':
         return newrack_json(request)
     else:
+        # The /verify/ page serves as our main list of racks currently.
         return HttpResponseRedirect('/verify/')
 
 
