@@ -274,40 +274,46 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
                                              headers=headers,
                                              body=jsondata)
         except socket.error:
-            self.bounce(error_subject,
-                        "Thanks for trying to suggest a rack.\n"
-                        "We are unfortunately experiencing some difficulties\n"
-                        "at the moment -- please try again later!"
-                        )
+            self.bounce(
+                error_subject,
+                "Thanks for trying to suggest a rack.\n"
+                "We are unfortunately experiencing some difficulties at the\n"
+                "moment -- please try again in an hour or two!",
+                notify_admin='Server down??'
+                )
             return
 
         if self.DEBUG:
             print "TD: server responded with:\n%s" % content
 
         if response.status >= 500:
-            err_msg = ("Thanks for trying to suggest a rack.\n"
-                       "We are unfortunately experiencing some difficulties\n"
-                       "at the moment -- please try again later!\n")
-            self.bounce(error_subject, err_msg)
+            err_msg = (
+                "Thanks for trying to suggest a rack.\n"
+                "We are unfortunately experiencing some difficulties at the\n"
+                "moment. Please check to make sure your subject line follows\n"
+                "this format exactly:\n\n"
+                "  Key Foods @224 McGuinness Blvd Brooklyn NY\n\n"
+                "If you've made an error, please resubmit. Otherwise we'll\n"
+                "look into this issue and get back to you as soon as we can.\n"
+                )
+            admin_body = content
+            self.bounce(error_subject, err_msg, notify_admin='500 Server error',
+                        notify_admin_body=content)
             return
 
         result = json.loads(content)
         if result.has_key('errors'):
-            errors = result['errors']
-            err_msg = ("Thanks for trying to suggest a rack through\n"
-                       "fixcity.org, but it won't go through without the\n"
-                       "proper information.\n\n")
-            if errors.pop('title', None):
-                err_msg += ("Your subject line should follow this format:\n\n"
-                            "Key Foods @224 McGuinness Blvd, Brooklyn NY\n\n"
-                            "First comes the name of the establishment\n"
-                            "(store, park, office etc.) you want a rack near.\n"
-                            "Then enter @ followed by the address.\n"
-                            "Please try again!\n"
-                            )
 
-            for k, v in sorted(result['errors'].items()):
+            err_msg = (
+                "Thanks for trying to suggest a rack through fixcity.org,\n"
+                "but it won't go through without the proper information.\n\n"
+                "Please correct the following errors:\n\n")
+
+            errors = adapt_errors(result['errors'])
+            for k, v in sorted(errors.items()):
                 err_msg += "%s: %s\n" % (k, '; '.join(v))
+
+            err_msg += "\nPlease try again!\n"
             self.bounce(error_subject, err_msg)
             return
 
@@ -345,8 +351,8 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         self.reply("FixCity Rack Confirmation", reply)
 
 
-    def parse(self, fp):
-        self.msg = email.message_from_file(fp)
+    def parse(self, s):
+        self.msg = email.message_from_string(s)
         if not self.msg:
             if self.DEBUG:
                 print "TD: This is not a valid email message format"
@@ -355,11 +361,12 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         # Work around lack of header folding in Python; see http://bugs.python.org/issue4696
         self.msg.replace_header('Subject', self.msg['Subject'].replace('\r', '').replace('\n', ''))
 
+        message_parts = self.get_message_parts()
+        message_parts = self.unique_attachment_names(message_parts)
+        body_text = self.body_text(message_parts)
+
         if self.DEBUG > 1:        # save the entire e-mail message text
-            message_parts = self.get_message_parts()
-            message_parts = self.unique_attachment_names(message_parts)
             self.save_email_for_debug(self.msg, True)
-            body_text = self.body_text(message_parts)
             self.debug_body(body_text, True)
             self.debug_attachments(message_parts)
 
@@ -626,7 +633,7 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
             # Check if the attachment size is allowed
             #
             if (max_size != -1) and (file_size > max_size):
-                status = '%s\nFile %s is larger then allowed attachment size (%d > %d)\n\n' \
+                status = '%s\nFile %s is larger than allowed attachment size (%d > %d)\n\n' \
                         %(status, original, file_size, max_size)
                 continue
 
@@ -639,18 +646,91 @@ that is encoded in 7-bit ASCII code and encode it as utf-8.
         return results
 
 
-    def bounce(self, subject, body):
+    def bounce(self, subject, body, notify_admin='', notify_admin_body=''):
+        """Bounce a message to the sender, with additional subject
+        and body for explanation.
+
+        If the notify_admin string is non-empty, the site admin will
+        be notified, with that string appended to the subject.
+        If notify_admin_body is non-empty, it will be added to the body
+        sent to the admin.
+        """
         if self.DEBUG:
             print "TD: Bouncing message to %s" % self.email_addr
         body += '\n\n------------ original message follows ---------\n\n'
-        body += '\n'.join(['%s: %s' % h for h in self.msg._headers])
-        body += '\n\n' + self.description  # XXX what else do we want?
+        # TO DO: use attachments rather than inline.
+        body += self.msg.as_string()
+        if notify_admin:
+            admin_subject = 'FixCity handle_mailin bounce! %s' % notify_admin
+            admin_body = 'Bouncing to: %s\n' % self.msg['to']
+            admin_body += 'Bounce subject: %r\n' % subject
+            admin_body += 'Time: %s\n' % datetime.now().isoformat(' ')
+            admin_body += 'Not attaching original body, check the log file.\n'
+            if notify_admin_body:
+                admin_body += 'Additional info:\n'
+                admin_body += notify_admin_body
+            self.notify_admin(admin_subject, admin_body)
         return self.reply(subject, body)
         
     def reply(self, subject, body):
         send_mail(subject, body, self.msg['to'], [self.email_addr],
                   fail_silently=False)
-        
+
+    def notify_admin(self, subject, body):
+        admin_email = self.parameters.get('admin_email')
+        if admin_email:
+            if self.msg and self.msg.get('to'):
+                from_addr = self.msg['to']
+            else:
+                from_addr = 'racks@fixcity.org'
+            send_mail(subject, body, from_addr,
+                      [self.parameters['admin_email']],
+                      fail_silently=False)
+
+
+def _find_in_list(astr, alist):
+    alist = alist or []
+    for s in alist:
+        if s.count(astr):
+            return True
+    return False
+
+def adapt_errors(errors):
+    """Convert the form field names in the errors dict into things
+    that are meaningful via the email workflow, and adjust error
+    messages appropriately too.
+    """
+    adapted = {}
+    key_mapping = {
+        'title': 'subject',
+        'address': 'subject',
+        'description': 'body',
+        }
+
+    val_mapping = {
+        ('subject', 'This field is required.'): 
+        ("Your subject line should follow this format:\n\n"
+         "  Key Foods @224 McGuinness Blvd, Brooklyn NY\n\n"
+         "First comes the name of the establishment"
+         "(store, park, office etc.) you want a rack near.\n"
+         "Then enter @ followed by the address.\n"
+         ),
+
+        ("location", "No geometry value provided."):
+        ("The address didn't come through properly. Your subject line\n"
+         "should follow this format:\n\n"
+         "  Key Foods @224 McGuinness Blvd, Brooklyn NY\n\n"
+         "Make sure you have the street, city, and state listed after\n"
+         "the @ sign in this exact format.\n"),
+        }
+
+    for key, vals in errors.items():
+        for val in vals:
+            key = key_mapping.get(key, key)
+            val = val_mapping.get((key, val), val)
+            adapted[key] = adapted.get(key, ()) + (val,)
+    
+    return adapted
 
 
 class Command(BaseCommand):
@@ -664,7 +744,8 @@ class Command(BaseCommand):
                     help="Remove signatures from incoming mail"),
         make_option('--max-attachment-size', type="int",
                     help="Max size of uploaded files."),
-
+        make_option('--admin-email', help="Address to notify of errors.",
+                    action="store"),
     )
 
     def handle(self, *args, **options):
@@ -672,6 +753,8 @@ class Command(BaseCommand):
         parser = EmailParser(options)
         did_stdin = False
         for filename in args:
+            now = datetime.now().isoformat(' ')
+            print "------------- %s ------------" % now
             if filename == '-':
                 if did_stdin:
                     continue
@@ -680,9 +763,15 @@ class Command(BaseCommand):
             else:
                 thisfile = open(filename)
             try:
-                parser.parse(thisfile)
-            except Exception, error:
-                traceback.print_exc()
+                raw_msg = thisfile.read()
+                parser.parse(raw_msg)
+            except:
+                tb_msg = "Exception at %s follows:\n------------\n" % now
+                tb_msg += traceback.format_exc()
+                tb_msg += "\n -----Original message follows ----------\n\n"
+                tb_msg += raw_msg
                 if parser.msg:
                     parser.save_email_for_debug(parser.msg, True)
-                sys.exit(1) # XXX do a more informative bounce?
+                parser.notify_admin('Unexpected traceback in handle_mailin',
+                                    tb_msg)
+                raise

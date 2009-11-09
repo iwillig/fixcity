@@ -20,6 +20,10 @@
         <Data name="thumbnail"><value>{{rack.photo.thumbnail}}</value></Data>
       {% endif %}
 
+      {% if rack.verified %}
+        <Data name="verified"><value>true</value></Data>
+      {% endif %}
+
       {% if forloop.first %}
         <!-- let's sneak pagination in here. 
              I tried to use http://tools.ietf.org/html/rfc5005#section-3

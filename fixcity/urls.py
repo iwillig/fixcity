@@ -40,8 +40,6 @@ urlpatterns = patterns(
     (r'^rack/(?P<rack_id>\d+)/$', 'fixcity.bmabr.views.rack'),
     (r'^rack/(?P<rack_id>\d+)/edit/$', 'fixcity.bmabr.views.rack_edit'),
 
-    (r'^rack/(?P<rack_id>\d+)/status/$', 'fixcity.bmabr.views.rack_status'),
-    (r'^rack/(?P<rack_id>\d+)/change-status/$', 'fixcity.bmabr.views.change_status'),
     (r'^rack/(?P<rack_id>\d+)/support/$', 'fixcity.bmabr.views.support'),
 
 
@@ -59,7 +57,7 @@ urlpatterns = patterns(
 
     (r'^rack/new/$', 'fixcity.bmabr.views.newrack_form'), # view for rack request form.
     (r'^rack/(?P<rack_id>\d+)/photos/', 'fixcity.bmabr.views.updatephoto'),
-    (r'^rack/', 'fixcity.bmabr.views.rack_index'),
+    (r'^rack/$', 'fixcity.bmabr.views.rack_index'),
     
 
     (r'^comment/add/$', 'fixcity.bmabr.views.add_comment'), 
