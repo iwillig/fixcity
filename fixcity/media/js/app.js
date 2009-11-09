@@ -1,7 +1,11 @@
 jQuery(document).ready(function($) {
   $(document).superSelectify({manualSelectors: '#nav li:first-child, #nav li:last-child, #ss-form input[type="submit"], #content form>label:first-child, #content form input[type="text"], #content form input[type="password"], #content form input[type="button"], #content form input[type="submit"], .threewide>.col:last-child, #content #rackinfo dl>dt:first-child'});
-
-	OpenLayers.ImgPath = "/site_media/img/mapicons/";
+  try
+  {
+  OpenLayers.ImgPath = "/site_media/img/mapicons/";
+  } catch(err) {
+  // no OpenLayers - we're probably on a static, mapless page
+  }
 });
 
 function expandOnce(selector, text) {

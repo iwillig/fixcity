@@ -623,9 +623,13 @@ margin: 0;
 #bigmovie {
 width: 620px;
 height: 345px;
+background: #000;
+}
+
+#moviecontent {
+width: 620px;
 float: left;
 margin: 0 23px 0 0;
-background: #000;
 }
 
 #movietext {
@@ -638,10 +642,24 @@ margin-top: 0;
 color: #333;
 }
 
+#movietext ol li {
+color: #44c5f5;
+}
+
+#movietext ol li div {
+color: #333;
+}
+
+#movietext ol li ul {
+list-style-type: none;
+margin: 0 0 0 0.5em;
+}
+
 .threewide .col {
-width: 300px;
+width: 200px;
 float: left;
-margin: 0 20px 0 0;
+margin: 0 10px 0 0;
+font-size: 0.9em;
 }
 
 .threewide>.col:last-child {
@@ -652,10 +670,6 @@ margin: 0;
 margin: 0;
 }
 
-.resource-list a {
-font-size: 1.3em;
-vertical-align: middle;
-}
 
 /* - */
 

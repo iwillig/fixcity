@@ -23,7 +23,7 @@
 {% endblock %} 
 
 {% block lede %}
-<h1>View Rack</h1> <a href="/rack/new">Suggest a new Rack</a>
+<h1>View Rack</h1> <a href="/rack/new/">Suggest a new Rack</a>
 {% endblock %}
 
 {% block content %}
@@ -53,9 +53,9 @@
   </ul>
     
   {% if user.is_authenticated %}
-  <a class="fakebigbutton" href="/rack/{{rack.id}}/edit">Edit this Rack</a>
+  <a class="fakebigbutton" href="/rack/{{rack.id}}/edit/">Edit this Rack</a>
   {% else %}
-  <a class="fakebigbutton" href="/rack/{{rack.id}}/edit">Log in to Edit</a>
+  <a class="fakebigbutton" href="/rack/{{rack.id}}/edit/">Log in to Edit</a>
   {% endif %}
   </div><!-- /#rackinfo -->
     
