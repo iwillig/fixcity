@@ -23,7 +23,7 @@ class  CommunityBoard(models.Model):
 class Rack(models.Model): 
     address = models.CharField(max_length=200)
     title = models.CharField(max_length=50)
-    date = models.DateTimeField()    
+    date = models.DateTimeField()
     description = models.CharField(max_length=300, blank=True)
     email = models.EmailField()
     photo = ImageWithThumbnailsField(
