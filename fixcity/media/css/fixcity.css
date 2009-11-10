@@ -546,6 +546,15 @@ cursor: pointer;
 text-decoration: underline;
 }
 
+.optional {
+color: #e1ab25;
+font-weight: normal;
+}
+
+.optional a {
+color: #e1ab25;
+}
+
 #photo-wrap,
 #statement-wrap {
 margin: 1em 0 0;
