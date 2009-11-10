@@ -418,6 +418,7 @@ width: 540px;
 #verify-map {
 height: 420px;
 border: 1px solid #8fb9cc;
+position: relative;
 }
 
 /* - */
