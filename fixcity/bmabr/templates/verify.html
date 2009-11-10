@@ -54,11 +54,11 @@
     </ul><!-- #/racklist -->
 
     <p id="pagination" style="display: none;">
-        <a rel="prev" href="#">Previous Page</a>
+        <a class="prevlink" rel="prev" href="#">Previous Page</a>
 
         <span class="sectionlink"><a rel="section" href="#">X</a>&nbsp;</span>
 
-        <a rel="next" href="#">Next Page</a>
+        <a class="nextlink" rel="next" href="#">Next Page</a>
 
     </p>
 
@@ -91,8 +91,13 @@
 </div><!-- /#racks -->
 <div id="verify-map-wrap">
   <div id="verify-map"></div>
-	<div id="quick-check">
-	  <p>Browse rack suggestions through the map or list. A batch of spots in one district must be <a href="/verification-kit/">verified</a> before the Department of Transportation can install them--the pilot batch is in Brooklyn Community District 1 (Williamsburg &amp; Greenpoint). You must have an <a href="/accounts/register">account</a> to verify spots.</p>
-  </div><!-- /#quick-check -->
+  <div id="quick-sort">
+  	<h2>Sort Racks By</h2>
+  	<form action="#">
+  	  <div class="selfclear"><label for="communityboard">Community Board</label><select id="communityboard" name="communityboard"><option value="cb1">Community Board 1</option></select></div>
+  	  <div class="selfclear"><label for="sortorder">Sort by</label><select id="sortorder" name="sortorder"><option value="verified">Verified</option></select></div>
+  	  <a id="print-list" class="fakebigbutton" href="#">Print List <img src="/site_media/img/print-list-icon.png" alt="Print List icon" /></a>
+    </form>
+  </div><!-- /#quick-sort -->
 </div>
 {% endblock %}
