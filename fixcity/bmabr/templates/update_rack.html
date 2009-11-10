@@ -63,22 +63,17 @@
     <!-- XXX Do we want to update date on edit? -->
     <input type="hidden" name="date" value="{{rack.date}}"/>
 
-    <!-- <input type="text" id="cb_show" value="1" /> -->
-    <input type="hidden" id="id_communityboard" name="communityboard" value="{{rack.communityboard_id}}" />
-
-
     <div id="email-wrap">
      <label>Created By</label>
      <div>{{creator}}</div>
     </div>
-    <!-- These flags will trigger server-side processing of location &
-    communityboard if they're set to zero. We use this to hack around
+    <!-- These flags will trigger server-side processing of location
+    if set to zero. We use this to hack around
     the impossibility of knowing if asynch functions have finished
     when the form submits.  Also provides a bit of graceful
     degrading... not like we have a lot of that in a map-heavy
     site. -->
     <input type="hidden" id="geocoded" name="geocoded" value="0" />
-    <input type="hidden" id="got_communityboard" name="got_communityboard" value="0" />
 
     <div id="verified-wrap">
      <label for="verified">Verified</label>

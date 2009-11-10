@@ -52,7 +52,6 @@ function loadMap() {
     var xy = address_point.geometry.getBounds().getCenterLonLat();
     xy.transform(map.projection, map.displayProjection);
     getAddress(xy);
-    getCommunityBoard(xy);
     var location_wkt = "POINT(" + xy.lon + " " + xy.lat + ")";
     $("#location").val(location_wkt);
     xy.transform(map.displayProjection, map.projection);
@@ -84,7 +83,6 @@ function loadMap() {
   }
   function getPointsFromAddress(address) {
     $("#geocoded").val(0);
-    $("#got_communityboard").val(0);
     $.get("/geocode/", {
       geocode_text: address
     },
@@ -93,7 +91,6 @@ function loadMap() {
       var lon = results[0][1][1];
       var lat = results[0][1][0];
       var xy = new OpenLayers.LonLat(lon, lat);
-      getCommunityBoard(xy);
       var location_wkt = "POINT(" + lon.toString() + " " + lat.toString() + ")";
       $("#location").val(location_wkt);
       $("#geocoded").val(1);
@@ -109,23 +106,8 @@ function loadMap() {
     'json');
   }
 
-  function getCommunityBoard(lonlat) {
-    var lat = lonlat.lat;
-    var lon = lonlat.lon;
-    $("#got_communityboard").val(0);
-    $.get("/getcommunityboard/", {
-      lat: lat,
-      lon: lon
-    },
-    function (data) {
-      $("#id_communityboard").val(data);
-      $("#got_communityboard").val(1);
-    });
-  }
-
   // For users with JS, we only want to be forced to check on the back end if there's an unprocessed change
   $("#geocoded").val(1);
-  $("#got_communityboard").val(1);
 
   $("#address").blur(function () {
     getPointsFromAddress($("#address").val());
@@ -136,7 +118,6 @@ function loadMap() {
     // For some reason, doing this on focus doesn't seem
     // to be enough.
     $("#geocoded").val(0);
-    $("#got_communityboard").val(0);
   });
 
   var navControl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];

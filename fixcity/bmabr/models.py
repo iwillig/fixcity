@@ -26,7 +26,6 @@ class Rack(models.Model):
     date = models.DateTimeField()    
     description = models.CharField(max_length=300, blank=True)
     email = models.EmailField()
-    communityboard = models.ForeignKey(CommunityBoard)
     photo = ImageWithThumbnailsField(
                               upload_to='images/racks/', 
                               thumbnail={'size': (100, 100)},
@@ -44,8 +43,6 @@ class Rack(models.Model):
     objects = models.GeoManager()
 
 
-    class Meta:
-        ordering = ['communityboard']
 
     def __unicode__(self):
         return self.address
