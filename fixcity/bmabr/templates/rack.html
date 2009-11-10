@@ -17,6 +17,15 @@
 </script>
 <script type="text/javascript" src="/site_media/js/rackmap.js"></script>
 
+<script type="text/javascript">
+//<![CDATA[
+if (jQuery.browser.msie) {
+ jQuery(window).load(function() {loadMap(false);});
+} else {
+jQuery(document).ready(function() {loadMap(false);});
+}
+//]]>
+</script>
 {% endblock %}
 
 {% block menu %} 
