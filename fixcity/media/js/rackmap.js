@@ -75,7 +75,7 @@ function loadMap(draggable) {
       lon: lon
     },
     function (data) {
-      $("#address").val(data);
+      $("#address").val(data).change().addClass("monkey");
       $("#geocoded").val(1);
     });
   }
@@ -118,17 +118,18 @@ function loadMap(draggable) {
       $("#id_communityboard").val(data);
       $("#got_communityboard").val(1);
     });
+
   }
 
   // For users with JS, we only want to be forced to check on the back end if there's an unprocessed change
   $("#geocoded").val(1);
   $("#got_communityboard").val(1);
 
-  $("#address").blur(function () {
+  $("#address").bind("blur", function(event) {
     getPointsFromAddress($("#address").val());
   });
 
-  $("#address").change(function () {
+  $("#address").bind("focus change", function(event) {
     // Be paranoid and assume we're going to reverse-geocode...
     // For some reason, doing this on focus doesn't seem
     // to be enough.
