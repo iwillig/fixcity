@@ -75,7 +75,7 @@ function loadMap(draggable) {
       lon: lon
     },
     function (data) {
-      $("#address").val(data).change().addClass("monkey");
+      $("#address").val(data).change();
       $("#geocoded").val(1);
     });
   }
