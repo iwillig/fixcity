@@ -39,6 +39,14 @@ function loadMap() {
 
     var li_template = $("#racklist li:first").clone();
 
+    function isSelected(layer, feature) {
+      for (var index=0; index<layer.selectedFeatures.length; ++index) {
+        if (feature === layer.selectedFeatures[index]) {
+	  return true;
+	}
+      }
+      return false;
+    }
     function updateRackList(evt) {
 
         layer = evt.object;
@@ -59,6 +67,9 @@ function loadMap() {
             this_li.find("p").text(attrs.Snippet);
             this_li.find("a.rack-thumbnail").attr("href", "/rack/" + attrs.id + "/");
             this_li.find("h3 a").attr("href", "/rack/" + attrs.id + "/");
+	    if (isSelected(layer, layer.features[i])) {
+	      this_li.addClass('selected');
+	    }
 
 			// Once we support multiple statuses this will need to be updated
 			this_li.addClass("new");
@@ -237,6 +248,7 @@ function loadMap() {
           }
         });
         var featureSelected = function(feature) {
+	  $('ul#racklist li').removeClass('selected').filter('#rack_' + feature.attributes.id).addClass('selected');
           var popup = new FixcityPopup(null, feature.geometry.getBounds().getCenterLonLat(),
                                        null, feature.attributes.description,
                                        {size: new OpenLayers.Size(1, 1), offset: new OpenLayers.Pixel(-40, 48)},

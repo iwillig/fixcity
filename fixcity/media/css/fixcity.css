@@ -357,9 +357,13 @@ list-style-type: none;
 }
 
 #racklist li {
-margin: 0;
-padding: 20px 0;
+margin: 0 -10px;
+padding: 15px;
 border-bottom: 1px solid #edf2f5;
+}
+
+#racklist li.selected {
+background: #f2f3ed;
 }
 
 #racklist li .rack-thumbnail {
@@ -420,6 +424,8 @@ height: 420px;
 border: 1px solid #8fb9cc;
 position: relative;
 }
+
+
 
 /* - */
 
