@@ -1,4 +1,4 @@
-var map, layer, select, select_vector, racks, bounds;
+var map, layer, select, select_vector, racks, bounds, selectControl;
 
 if (jQuery.browser.msie) {
     jQuery(window).load(function () {
@@ -141,6 +141,44 @@ function loadMap() {
         };
     };
 
+    function replaceFeatures(layer, newfeatures) {
+      // Remove old features
+      for (var index=0; index<layer.features.length; ++index) {
+          var oldf = layer.features[index];
+          var found = false;
+          for (var search=0; search<newfeatures.length; ++search) {
+              var newf = newfeatures[search];
+              if (newf.attributes.id == oldf.attributes.id) {
+                // We found it... If the description changed, we'll remove it anyway.
+                if (newf.attributes.description != oldf.attributes.description) {
+                  break;
+                }
+                found = true;
+                break;
+              }
+          }
+          if (!found) {
+            layer.removeFeatures(oldf);
+          }
+      }
+      // Add new features
+      for (var index=0; index<newfeatures.length; ++index) {
+          var newf = newfeatures[index];
+          var found = false;
+          for (var search=0; search<layer.features.length; ++search) {
+              var oldf = layer.features[search];
+              if (newf.attributes.id == oldf.attributes.id) {
+                // We've handled this already, skip it.
+                found = true;
+                break;
+              }
+          }
+          if (!found) {
+            layer.addFeatures(newf);
+          }
+      }
+    }
+
     function loadRacks() {
         // We want the bbox to load only stuff that's actually
         // visible on the map. This is less efficient than the
@@ -155,6 +193,24 @@ function loadMap() {
             // Force loading ALL the time.
             return true;
         };
+	var oldMerge = bbox.merge;
+	bbox.merge = function(resp) {
+	  var remote = this.layer.projection;
+	  var local = this.layer.map.getProjectionObject();
+          if(!local.equals(remote)) {
+              var geom;
+              for(var i=0, len=resp.features.length; i<len; ++i) {
+                  geom = resp.features[i].geometry;
+                  if(geom) {
+                      geom.transform(remote, local);
+                  }
+              }
+          }
+	  
+	
+	  replaceFeatures(this.layer, resp.features);
+	  this.layer.events.triggerEvent("loadend");
+	}
         racks = new OpenLayers.Layer.Vector("Racks", {
             projection: map.displayProjection,
             strategies: [
@@ -172,6 +228,32 @@ function loadMap() {
                 }
             })
         });
+        // Big dirty hack!!!
+        var FixcityPopup = OpenLayers.Class(OpenLayers.Popup.FramedCloud, {
+  	  fixedRelativePosition: true,
+          relativePosition: "tl", 
+  	  initialize: function(id, lonlat, contentSize, contentHTML, anchor, closeBox, closeBoxCallback) {
+            OpenLayers.Popup.Framed.prototype.initialize.apply(this, arguments);
+          }
+        });
+        var featureSelected = function(feature) {
+          var popup = new FixcityPopup(null, feature.geometry.getBounds().getCenterLonLat(),
+                                       null, feature.attributes.description,
+                                       {size: new OpenLayers.Size(1, 1), offset: new OpenLayers.Pixel(-40, 48)},
+                                       true, function() { selectControl.unselect(feature); });
+          feature.popup = popup;
+          map.addPopup(popup);
+        };
+        var featureUnselected = function(feature) {
+          map.removePopup(feature.popup);
+          feature.popup.destroy();
+          feature.popup = null;
+        };
+        var selectControl = new OpenLayers.Control.SelectFeature(racks, {
+          onSelect: featureSelected, onUnselect: featureUnselected
+        });
+        map.addControl(selectControl);
+        selectControl.activate();
         return racks;
     };
 

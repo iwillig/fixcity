@@ -772,3 +772,20 @@ margin: 1em auto;
 text-align: right;
 
 }
+body .olPopup {
+background: transparent url(/site_media/img/map-popup-bg.png) no-repeat !important;
+width:243px !important;
+height: 88px !important;
+padding: 3px 14px 3px 3px !important;
+}
+
+body .olFramedCloudPopupContent {
+padding: 0 0 0 5px !important;
+}
+
+body .olPopupCloseBox {
+background:transparent url(/site_media/img/close.gif) no-repeat scroll 0 0;
+top: 10px !important;
+right: 15px !important;
+}
+
