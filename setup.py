@@ -2,6 +2,33 @@ from setuptools import setup, find_packages
 
 version='0.1dev'
 
+try:
+    import ctypes
+    install_requires=[
+      'geopy==dev,>=0.93dev-r84',
+      'sorl-thumbnail>=3.2.2',
+      'Django>=1.1.1',
+      'django-registration>=0.7',
+      'psycopg2>=2.0.12',
+      'PIL==1.1.6',
+      'wsgilog>=0.1',
+      'httplib2',
+      'poster',
+      ]
+except ImportError:
+    install_requires=[
+      'geopy==dev,>=0.93dev-r84',
+      'sorl-thumbnail>=3.2.2',
+      'Django>=1.1.1',
+      'django-registration>=0.7',
+      'psycopg2>=2.0.12',
+      'PIL==1.1.6',
+      'ctypes>=1.0.2',
+      'wsgilog>=0.1',
+      'httplib2',
+      'poster',
+      ]
+
 setup(name='fixcity',
       version=version,
       description="Build me a bike rack!",
@@ -16,16 +43,5 @@ setup(name='fixcity',
         'http://dist.repoze.org/PIL-1.1.6.tar.gz#egg=PIL-1.1.6',
         'http://sourceforge.net/projects/ctypes/files/ctypes/1.0.2/ctypes-1.0.2.tar.gz/download#egg=ctypes-1.0.2',
         ],
-      install_requires=[
-        'geopy==dev,>=0.93dev-r84',
-        'sorl-thumbnail>=3.2.2',
-        'Django>=1.1.1',
-        'django-registration>=0.7',
-        'psycopg2>=2.0.12',
-        'PIL==1.1.6',
-        'ctypes>=1.0.2',
-        'wsgilog>=0.1',
-        'httplib2',
-        'poster',
-        ],
+      install_requires=install_requires,
       )

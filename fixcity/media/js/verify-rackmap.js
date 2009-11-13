@@ -249,7 +249,7 @@ function loadMap() {
         var featureSelected = function(feature) {
 	  $('ul#racklist li').removeClass('selected').filter('#rack_' + feature.attributes.id).addClass('selected');
           var popup = new FixcityPopup(null, feature.geometry.getBounds().getCenterLonLat(),
-                                       null, feature.attributes.description,
+                                       null, '<strong>' + feature.attributes.name + '</strong><br />' + ((feature.attributes.description.length < 80 ) ? feature.attributes.description : feature.attributes.description.substr(0,80) + '…'),
                                        {size: new OpenLayers.Size(1, 1), offset: new OpenLayers.Pixel(-40, 48)},
                                        true, function() { selectControl.unselect(feature); });
           feature.popup = popup;
