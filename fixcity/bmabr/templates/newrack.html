@@ -70,17 +70,13 @@ jQuery(document).ready(function() {loadMap();});
     </div>
     <input type="hidden" name="date" value="{% now "Y-m-d H:i:s" %}"/>
 
-    <!-- <input type="text" id="cb_show" value="1" /> -->
-    <input type="hidden" id="id_communityboard" name="communityboard" value="" />
-
-    <!-- These flags will trigger server-side processing of location &
-    communityboard if they're set to zero. We use this to hack around
+    <!-- These flags will trigger server-side processing of location
+    if set to zero. We use this to hack around
     the impossibility of knowing if asynch functions have finished
     when the form submits.  Also provides a bit of graceful
     degrading... not like we have a lot of that in a map-heavy
     site. -->
     <input type="hidden" id="geocoded" name="geocoded" value="0" />
-    <input type="hidden" id="got_communityboard" name="got_communityboard" value="0" />
 
     <input type="submit" value="Add this rack!" />
 

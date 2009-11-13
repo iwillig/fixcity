@@ -120,24 +120,6 @@ def built(request):
             )
 
 
-def _get_communityboard_id(lon, lat):
-    # Cache a bit, since that's easier than ensuring that our AJAX
-    # code doesn't call it with the same params a bunch of times.
-    lon, lat = float(lon), float(lat)
-    key = ('_get_communityboard_id', lon, lat)
-    cb_id = cache.get(key)
-    if cb_id is None:
-        pnt = Point(lon, lat, srid=SRID)
-        cb = CommunityBoard.objects.get(the_geom__contains=pnt)
-        cb_id = cb.gid
-        cache.set(key, cb_id, 60 * 10)
-    return cb_id
-
-def get_communityboard(request):
-    lat = request.REQUEST['lat']
-    lon = request.REQUEST['lon']
-    return HttpResponse(_get_communityboard_id(lon, lat))
-
 def _geocode(text):
     # Cache a bit, since that's easier than ensuring that our AJAX
     # code doesn't call it with the same params a bunch of times.
@@ -259,8 +241,8 @@ def verify_by_communityboard(request,cb_id):
 
 def _preprocess_rack_form(postdata):
     """Handle an edge case where the form is submitted before the
-    client-side ajax code finishes setting the location and/or
-    community board.  This can easily happen eg. if the user types an
+    client-side ajax code finishes setting the location.
+    This can easily happen eg. if the user types an
     address and immediately hits return or clicks submit.
 
     Also do any other preprocessing needed.
@@ -278,11 +260,6 @@ def _preprocess_rack_form(postdata):
             else:
                 postdata[u'location'] = str(Point(lon, lat, srid=SRID))
             
-    if postdata[u'got_communityboard'] != u'1' \
-           or not postdata[u'communityboard']:
-        if postdata.get('location', '').strip():
-            pnt = fromstr(postdata['location'], srid=SRID)
-            postdata['communityboard'] = _get_communityboard_id(pnt.x, pnt.y)
     # Handle a registered user submitting without logging in...
     # eg. via email.
     user = postdata.get('user', '').strip()
@@ -343,32 +320,27 @@ def newrack_json(request):
     post = request.POST.copy()
     post.clear()  # it doesn't have anything in useful form..
     post.update(args)
-    try:
-        _preprocess_rack_form(post)
-    except CommunityBoard.DoesNotExist:
-        output = {'errors': {'communityboard': ['Sorry, we only handle addresses inside Brooklyn Community Board 1 at this time.']}}
+    _preprocess_rack_form(post)
+    rackresult = _newrack(post, files={})
+    if rackresult['errors']:
         status = 400
+        # Annoyingly, the errors thingy is made of weird dict & list
+        # subclasses that I can't simply serialize.
+        errors = {}
+        for key, val in rackresult['errors'].items():
+            # it's a list subclass containing string subclasses.
+            errors[key] = [s[:] for s in val]
+        output = {'errors': errors}
     else:
-        rackresult = _newrack(post, files={})
-        if rackresult['errors']:
-            status = 400
-            # Annoyingly, the errors thingy is made of weird dict & list
-            # subclasses that I can't simply serialize.
-            errors = {}
-            for key, val in rackresult['errors'].items():
-                # it's a list subclass containing string subclasses.
-                errors[key] = [s[:] for s in val]
-            output = {'errors': errors}
-        else:
-            status = 200
-            rack = rackresult['rack']
-            output = {'rack': rack.id,
-                      'message': rackresult['message'],
-                      'photo_post_url': '/rack/%d/photos/' % rack.id,
-                      'rack_url': '/rack/%d/' % rack.id,
-                      'user': rack.user,
-                      'email': rack.email,
-                      }
+        status = 200
+        rack = rackresult['rack']
+        output = {'rack': rack.id,
+                  'message': rackresult['message'],
+                  'photo_post_url': '/rack/%d/photos/' % rack.id,
+                  'rack_url': '/rack/%d/' % rack.id,
+                  'user': rack.user,
+                  'email': rack.email,
+                  }
     return HttpResponse(json.dumps(output), mimetype='application/json',
                         status=status)
 
