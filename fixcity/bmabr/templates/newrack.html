@@ -15,7 +15,15 @@
   };
 </script>
 <script type="text/javascript" src="/site_media/js/rackmap.js"></script>
-
+<script type="text/javascript">
+//<![CDATA[
+if (jQuery.browser.msie) {
+ jQuery(window).load(function() {loadMap();});
+} else {
+jQuery(document).ready(function() {loadMap();});
+}
+//]]>
+</script>
 {% endblock %}
 {% block menu %}
 {% endblock %}
@@ -47,7 +55,7 @@
     {{ form.photo.errors }}
 
     <div id="statement-wrap">
-      <label for="statement">Statement of Support</label>
+      <label for="statement">Statement of Support <small class="optional">(<a href="/site_media/resources/SupportStatement.pdf">optional</a>)</small></label>
       <input id="statement" name="statement" type="file" value="" size="20" />
       <div id="fakestatement" class="selfclear"><input name="fakestatementinput" id="fakestatementinput" type="text" title="" /><span class="fakebutton">browse</span></div>
     </div><!-- /#statement-wrap -->
@@ -106,8 +114,6 @@
     expandOnce('#statement-wrap', 'Add Statement of Support');
     $('textarea#description').maxLength(300);
     $('input#address, input#title, textarea#description, input#email, input#fakebrowseinput').infoSuffixify();
-    $('<small> <a href="#">Photo Guidelines</a></small>').appendTo('label[for="fakebrowseinput"]').click(function() {Boxy.ask("<p class=\"content\">Photographs should show an unobstructed view of the suggested spot, curb, and storefront. Please copy these examples closely in terms of angle, zoom, and detail.</p><div class=\"selfclear\"><div class=\"leftwise\"<h2>Ideal</h2><img src=\"/site_media/img/rackphoto-ideal.jpg\" width=\"300\" height=\"201\" /></div><div class=\"rightwise\"><h2>Good</h2><img src=\"/site_media/img/rackphoto-good.jpg\" width=\"300\" height=\"201\"  /></div></div>", null, null, {title: "Photo Guidelines", closeable: true, contentClass: 'photos'});return false;});
-    $('<small> <a href="#">Location Guidelines</a></small>').appendTo('label[for="address"]').click(function() {Boxy.ask("<div class=\"content selfclear\"><a class=\"rightwise\" href=\"/site_media/resources/PlacementGuide.pdf\"><img src=\"/site_media/img/rack_diagram-thumb.png\" width=\"160\" height=\"200\" /></a><p>Your location suggestion should comply with the requirements shown in this diagram. <a href=\"/site_media/resources/PlacementGuide.pdf\">Print</a> and take out with you to verify this location, or watch the <a href=\"http://www.streetfilms.org/archives/how-to-get-your-nyc-bike-racks/\">Rack Placement Streetfilm</a> to better inform your suggestions.</p></div>", null, null, {title: "Location Guidelines", closeable: true});return false;});
   });
 //]]>
 </script>

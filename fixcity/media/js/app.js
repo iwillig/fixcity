@@ -1,5 +1,12 @@
 jQuery(document).ready(function($) {
   $(document).superSelectify({manualSelectors: '#nav li:first-child, #nav li:last-child, #ss-form input[type="submit"], #content form>label:first-child, #content form input[type="text"], #content form input[type="password"], #content form input[type="button"], #content form input[type="submit"], .threewide>.col:last-child, #content #rackinfo dl>dt:first-child'});
+
+  $('.photo-guidelines').click(function() {Boxy.ask("<p class=\"content\">Photographs should show an unobstructed view of the suggested spot, curb, and storefront. Please copy these examples closely in terms of angle, zoom, and detail.</p><div class=\"selfclear\"><div class=\"leftwise\"<h2>Ideal</h2><img src=\"/site_media/img/rackphoto-ideal.jpg\" width=\"300\" height=\"201\" /></div><div class=\"rightwise\"><h2>Good</h2><img src=\"/site_media/img/rackphoto-good.jpg\" width=\"300\" height=\"201\"  /></div></div>", null, null, {title: "Photo Guidelines", closeable: true, contentClass: 'photos'});return false;});;
+  $('.location-guidelines').click(function() {Boxy.ask("<div class=\"content selfclear\"><a class=\"rightwise\" href=\"/site_media/resources/PlacementGuide.pdf\"><img src=\"/site_media/img/rack_diagram-thumb.png\" width=\"160\" height=\"200\" /></a><p>Your location suggestion should comply with the requirements shown in this diagram. <a href=\"/site_media/resources/PlacementGuide.pdf\">Print</a> and take out with you to verify this location, or watch the <a href=\"http://www.streetfilms.org/archives/how-to-get-your-nyc-bike-racks/\">Rack Placement Streetfilm</a> to better inform your suggestions.</p></div>", null, null, {title: "Location Guidelines", closeable: true});return false;});
+
+  $('<small> <a href="#">Photo Guidelines</a></small>').appendTo('label[for="fakebrowseinput"]').click(function() {Boxy.ask("<p class=\"content\">Photographs should show an unobstructed view of the suggested spot, curb, and storefront. Please copy these examples closely in terms of angle, zoom, and detail.</p><div class=\"selfclear\"><div class=\"leftwise\"<h2>Ideal</h2><img src=\"/site_media/img/rackphoto-ideal.jpg\" width=\"300\" height=\"201\" /></div><div class=\"rightwise\"><h2>Good</h2><img src=\"/site_media/img/rackphoto-good.jpg\" width=\"300\" height=\"201\"  /></div></div>", null, null, {title: "Photo Guidelines", closeable: true, contentClass: 'photos'});return false;});
+  $('<small> <a href="#">Location Guidelines</a></small>').appendTo('label[for="address"]').click(function() {Boxy.ask("<div class=\"content selfclear\"><a class=\"rightwise\" href=\"/site_media/resources/PlacementGuide.pdf\"><img src=\"/site_media/img/rack_diagram-thumb.png\" width=\"160\" height=\"200\" /></a><p>Your location suggestion should comply with the requirements shown in this diagram. <a href=\"/site_media/resources/PlacementGuide.pdf\">Print</a> and take out with you to verify this location, or watch the <a href=\"http://www.streetfilms.org/archives/how-to-get-your-nyc-bike-racks/\">Rack Placement Streetfilm</a> to better inform your suggestions.</p></div>", null, null, {title: "Location Guidelines", closeable: true});return false;});
+
   try
   {
   OpenLayers.ImgPath = "/site_media/img/mapicons/";
@@ -19,6 +26,9 @@ jQuery.fn.infoSuffixify = function() { //chainable
 		jQuery('<img src="/site_media/img/info.png" alt="More information about this field" title="' + obj.attr('title') + '" />').click(function () {return false;}).appendTo('label[for="' + obj.attr('id') + '"]');
 	});
 };
+
+
+
 
 // Taken from http://www.andrewpeace.com/textarea-maxlength.html
 jQuery.fn.truncate = function(len)

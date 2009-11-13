@@ -1,9 +1,3 @@
-if (jQuery.browser.msie) {
- jQuery(window).load(function() {loadMap();});
-} else {
-jQuery(document).ready(function() {loadMap();});
-}
-
 var map, layer;
 var options = {
   projection: new OpenLayers.Projection("EPSG:900913"),
@@ -18,7 +12,8 @@ var options = {
 
 format = "image/png";
 
-function loadMap() {
+function loadMap(draggable) {
+  var draggable = (draggable == null) ? true : draggable;
   map = new OpenLayers.Map('request-map', options);
   var osm = new OpenLayers.Layer.WMS("OpenStreetMap", "http://maps.opengeo.org/geowebcache/service/wms", {
     layers: "openstreetmap",
@@ -62,8 +57,10 @@ function loadMap() {
     onComplete: dropHandler
   });
 
-  map.addControl(point_control);
-  point_control.activate();
+  if(draggable) {
+    map.addControl(point_control);
+    point_control.activate();
+  }
 
   function getAddress(lonlat) {
     var lat = lonlat.lat;
@@ -77,7 +74,7 @@ function loadMap() {
       lon: lon
     },
     function (data) {
-      $("#address").val(data);
+      $("#address").val(data).change();
       $("#geocoded").val(1);
     });
   }
@@ -109,11 +106,11 @@ function loadMap() {
   // For users with JS, we only want to be forced to check on the back end if there's an unprocessed change
   $("#geocoded").val(1);
 
-  $("#address").blur(function () {
+  $("#address").bind("blur", function(event) {
     getPointsFromAddress($("#address").val());
   });
 
-  $("#address").change(function () {
+  $("#address").bind("focus change", function(event) {
     // Be paranoid and assume we're going to reverse-geocode...
     // For some reason, doing this on focus doesn't seem
     // to be enough.
