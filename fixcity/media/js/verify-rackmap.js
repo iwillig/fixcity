@@ -82,13 +82,13 @@ function loadMap() {
 
 			// Once we support multiple statuses this will need to be updated
 			this_li.addClass("new");
-			
+
             if ( attrs.verified == null ) {
 	          // XXX this always executes, even when the conditional is false!!
 	          // why???
 	      	  this_li.find("span.rack-verified").hide();
 	    	};
-			
+
             if (attrs.thumbnail != null) {
                 this_li.find("a.rack-thumbnail img").attr("src", attrs.thumbnail.value);
             } else {
@@ -105,8 +105,7 @@ function loadMap() {
         updatePagination(layer.features);
     };
     var load_rack_params = {
-        'page_size': 10,
-        // Make this user-controllable.
+        'page_size': 10, // Make this user-controllable.
         'page_number': 1
     };
 
@@ -152,8 +151,8 @@ function loadMap() {
             var link_template = $("#pagination span[class=sectionlink]:first").clone();
             $("#pagination span[class=sectionlink]").remove();
             for (var i = 1; i <= num_pages; i++) {
-                var link = link_template.clone();
-                var a = link.find("a");
+                var pagelink = link_template.clone();
+                var a = pagelink.find("a");
                 a.click(makeClickHandler(i));
                 if (i == load_rack_params.page_number) {
                     a.removeAttr("href");
@@ -161,7 +160,7 @@ function loadMap() {
                     a.attr("href", "#page_number=" + i.toString());
                 };
                 a.text(i.toString());
-                link.insertBefore("#pagination a[rel=next]");
+                pagelink.insertBefore("#pagination a[rel=next]");
             };
         };
     };
@@ -187,7 +186,7 @@ function loadMap() {
           }
       }
       // Add new features
-      for (var index=0; index<newfeatures.length; ++index) {
+      for (index=0; index<newfeatures.length; ++index) {
           var newf = newfeatures[index];
           var found = false;
           for (var search=0; search<layer.features.length; ++search) {
@@ -231,11 +230,11 @@ function loadMap() {
                   }
               }
           }
-	  
-	
+
+
 	  replaceFeatures(this.layer, resp.features);
 	  this.layer.events.triggerEvent("loadend");
-	}
+	};
         racks = new OpenLayers.Layer.Vector("Racks", {
             projection: map.displayProjection,
             strategies: [
@@ -256,7 +255,7 @@ function loadMap() {
         // Big dirty hack!!!
         var FixcityPopup = OpenLayers.Class(OpenLayers.Popup.FramedCloud, {
   	  fixedRelativePosition: true,
-          relativePosition: "tl", 
+          relativePosition: "tl",
   	  initialize: function(id, lonlat, contentSize, contentHTML, anchor, closeBox, closeBoxCallback) {
             OpenLayers.Popup.Framed.prototype.initialize.apply(this, arguments);
           }
@@ -264,7 +263,7 @@ function loadMap() {
         var featureSelected = function(feature) {
 	  $('ul#racklist li').removeClass('selected').filter('#rack_' + feature.fid).addClass('selected');
           var popup = new FixcityPopup(null, feature.geometry.getBounds().getCenterLonLat(),
-                                       null, feature.attributes.description,
+                                       null, '<strong>' + feature.attributes.name + '</strong><br />' + ((feature.attributes.description.length < 80 ) ? feature.attributes.description : feature.attributes.description.substr(0,80) + '…'),
                                        {size: new OpenLayers.Size(1, 1), offset: new OpenLayers.Pixel(-40, 48)},
                                        true, function() { selectControl.unselect(feature); });
           feature.popup = popup;
