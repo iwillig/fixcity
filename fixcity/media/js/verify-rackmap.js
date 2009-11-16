@@ -19,6 +19,15 @@ var options = {
     maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)
 };
 
+OpenLayers.Layer.Vector.prototype.getFeatureByFid = function(fid) {
+    for (var index=0, len=this.features.length; index<len; ++index) {
+        if (this.features[index].fid == fid) {
+	    return this.features[index];
+	}
+    }
+    return null;
+};
+
 function loadMap() {
     map = new OpenLayers.Map('verify-map', options);
 
@@ -61,12 +70,12 @@ function loadMap() {
             var this_li = li_template.clone();
             this_li.show();
             var attrs = layer.features[i].attributes;
-            this_li.attr("id", "rack_" + attrs.id);
+            this_li.attr("id", "rack_" + layer.features[i].fid);
             this_li.find("h4").text(attrs.address);
             this_li.find("h3 a").text(attrs.name);
             this_li.find("p").text(attrs.Snippet);
-            this_li.find("a.rack-thumbnail").attr("href", "/rack/" + attrs.id + "/");
-            this_li.find("h3 a").attr("href", "/rack/" + attrs.id + "/");
+            this_li.find("a.rack-thumbnail").attr("href", "/rack/" + layer.features[i].fid + "/");
+            this_li.find("h3 a").attr("href", "/rack/" + layer.features[i].fid + "/");
 	    if (isSelected(layer, layer.features[i])) {
 	      this_li.addClass('selected');
 	    }
@@ -88,6 +97,11 @@ function loadMap() {
         $("#racklist").append(this_li);
 
         };
+	$('#racklist li').click(function() {
+	    var me = $(this);
+	    var myid = me.attr('id').split('_')[1];
+	    selectControl.clickFeature(racks.getFeatureByFid(myid));
+	});
         updatePagination(layer.features);
     };
     var load_rack_params = {
@@ -159,7 +173,7 @@ function loadMap() {
           var found = false;
           for (var search=0; search<newfeatures.length; ++search) {
               var newf = newfeatures[search];
-              if (newf.attributes.id == oldf.attributes.id) {
+              if (newf.fid == oldf.fid) {
                 // We found it... If the description changed, we'll remove it anyway.
                 if (newf.attributes.description != oldf.attributes.description) {
                   break;
@@ -178,7 +192,7 @@ function loadMap() {
           var found = false;
           for (var search=0; search<layer.features.length; ++search) {
               var oldf = layer.features[search];
-              if (newf.attributes.id == oldf.attributes.id) {
+              if (newf.fid == oldf.fid) {
                 // We've handled this already, skip it.
                 found = true;
                 break;
@@ -248,7 +262,7 @@ function loadMap() {
           }
         });
         var featureSelected = function(feature) {
-	  $('ul#racklist li').removeClass('selected').filter('#rack_' + feature.attributes.id).addClass('selected');
+	  $('ul#racklist li').removeClass('selected').filter('#rack_' + feature.fid).addClass('selected');
           var popup = new FixcityPopup(null, feature.geometry.getBounds().getCenterLonLat(),
                                        null, feature.attributes.description,
                                        {size: new OpenLayers.Size(1, 1), offset: new OpenLayers.Pixel(-40, 48)},
@@ -261,7 +275,7 @@ function loadMap() {
           feature.popup.destroy();
           feature.popup = null;
         };
-        var selectControl = new OpenLayers.Control.SelectFeature(racks, {
+        selectControl = new OpenLayers.Control.SelectFeature(racks, {
           onSelect: featureSelected, onUnselect: featureUnselected
         });
         map.addControl(selectControl);

@@ -2,9 +2,8 @@
 {% block placemarks %}
 
 {% for rack in page.object_list %}
-  <Placemark>
+  <Placemark id="{{rack.id}}">
 
-    <atom:id>{{rack.id}}</atom:id>
     <name>{{rack.title}}</name>
     <address>{{rack.address}}</address>
 
