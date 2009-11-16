@@ -367,8 +367,6 @@ def rack_edit(request,rack_id):
         request.POST[u'user'] = rack.user
         _preprocess_rack_form(request.POST)
         form = RackForm(request.POST, request.FILES, instance=rack)
-        import pdb; pdb.set_trace()
-        
         if form.is_valid():
             x = form.save()
             flash('Your changes have been saved.', request)
