@@ -51,6 +51,9 @@ function loadMap(draggable) {
     $("#location").val(location_wkt);
     xy.transform(map.displayProjection, map.projection);
     map.setCenter(xy);
+    if (map.getZoom() < 15) {
+        map.zoomIn();
+    }
   };
   var point_control = new OpenLayers.Control.DragFeature(
   address_point, {
