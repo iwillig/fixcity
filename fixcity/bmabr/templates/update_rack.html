@@ -90,8 +90,13 @@ jQuery(document).ready(function() {loadMap();});
     {% if rack.verified %}
      <input type="checkbox" name="verified" checked="checked" />
     {% else %}
-     <input type="checkbox" name="verified" />
+      {% if rack.photo and rack.location %}
+        <input type="checkbox" name="verified" />
+      {% else %}
+        <input type="checkbox" name="verified" readonly="readonly" />
+      {% endif %}
     {% endif %}
+    {{ form.verified.errors }}
     </div>
 
     <input type="submit" value="Save" />
@@ -124,6 +129,7 @@ jQuery(document).ready(function() {loadMap();});
     expandOnce('#statement-wrap', 'Add Statement of Support');
     $('textarea#description').maxLength(300);
     $('input#address, input#title, textarea#description, input#fakebrowseinput').infoSuffixify();
+});
 //]]>
 </script>
 {% endblock %}

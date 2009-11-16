@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from django.forms import ModelForm
+from django.forms import ModelForm, ValidationError
 from sorl.thumbnail.fields import ImageWithThumbnailsField 
 
 
@@ -117,7 +117,20 @@ class SubwayStations(models.Model):
 
 class RackForm(ModelForm): 
     class Meta: 
-        model = Rack 
+        model = Rack
+
+    def clean_verified(self):
+        verified = self.cleaned_data.get('verified')
+        errors = []
+        if verified:
+            if not (self.cleaned_data.get('photo') or (
+                self.is_bound and bool(self.instance.photo))):
+                errors.append(
+                    "You can't mark a rack as verified unless it"
+                    " has a photo")
+            if errors:
+                raise ValidationError(errors)
+        return verified
 
 class CommentForm(ModelForm): 
     class Meta: 
